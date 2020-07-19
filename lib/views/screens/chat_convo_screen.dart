@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:peaman/views/widges/chat_convo_widgets/chat_compose_area.dart';
-import 'package:peaman/views/widges/chat_convo_widgets/chat_convo_list.dart';
-import 'package:peaman/views/widges/common_widgets/appbar.dart';
+import 'package:peaman/views/widgets/chat_convo_widgets/chat_compose_area.dart';
+import 'package:peaman/views/widgets/chat_convo_widgets/chat_convo_list.dart';
+import 'package:peaman/views/widgets/common_widgets/appbar.dart';
 
 class ChatConvoScreen extends StatelessWidget {
   @override

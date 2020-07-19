@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:peaman/views/widges/chat_list_tab_widgets/other_users_list.dart';
-import 'package:peaman/views/widges/chat_list_tab_widgets/pinned_users_list.dart';
+import 'package:peaman/views/widgets/chat_list_tab_widgets/other_users_list.dart';
+import 'package:peaman/views/widgets/chat_list_tab_widgets/pinned_users_list.dart';
 
 class ChatListTab extends StatelessWidget {
   @override

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:peaman/views/widges/chat_list_tab_widgets/chat_list_item.dart';
+import 'package:peaman/views/widgets/chat_list_tab_widgets/chat_list_item.dart';
 
 class OtherUsersList extends StatelessWidget {
   @override

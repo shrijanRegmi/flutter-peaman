@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:peaman/views/widges/common_widgets/single_icon_btn.dart';
+import 'package:peaman/views/widgets/common_widgets/single_icon_btn.dart';
 
 class ChatComposeArea extends StatefulWidget {
   @override

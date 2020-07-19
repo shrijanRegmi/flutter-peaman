@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:peaman/views/widges/chat_convo_widgets/chat_convo_list_item.dart';
+import 'package:peaman/views/widgets/chat_convo_widgets/chat_convo_list_item.dart';
 
 class ChatConvoList extends StatelessWidget {
   @override

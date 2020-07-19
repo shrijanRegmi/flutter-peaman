@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:peaman/views/widges/common_widgets/avatar_builder.dart';
+import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 
 class ChatConvoListItem extends StatelessWidget {
   final Alignment alignment;
