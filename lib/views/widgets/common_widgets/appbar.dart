@@ -3,13 +3,18 @@ import 'package:flutter/material.dart';
 class CommonAppbar extends StatelessWidget {
   final Widget title;
   final Widget leading;
-  CommonAppbar({this.title, this.leading});
-  
+  final Color color;
+  CommonAppbar({
+    this.title,
+    this.leading,
+    this.color = const Color(0xffF3F5F8),
+  });
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: title,
-      backgroundColor: Color(0xffF3F5F8),
+      backgroundColor: color,
       elevation: 0.0,
       leading: leading != null
           ? leading

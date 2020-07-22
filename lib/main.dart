@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:peaman/views/screens/home_screen.dart';
+import 'package:peaman/wrapper.dart';
+import 'package:peaman/wrapper_builder.dart';
 
 void main(){
   runApp(PeamanApp());
@@ -15,7 +16,11 @@ class PeamanApp extends StatelessWidget {
         fontFamily: 'Nunito'
       ),
       home: Material(
-        child: HomeScreen(),
+        child: WrapperBuilder(
+          builder: (BuildContext context){
+            return Wrapper();
+          },
+        ),
       ),
     );
   }
