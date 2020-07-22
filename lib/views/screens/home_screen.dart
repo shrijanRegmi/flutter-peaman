@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peaman/views/screens/chat_list_tab.dart';
+import 'package:peaman/views/screens/profile_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -41,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen>
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
           ChatListTab(),
-          ChatListTab(),
+          ProfileTab(),
           // ChatListTab(),
         ],
       ),
