@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:peaman/viewmodels/auth_vm.dart';
+import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/screens/auth/signup_screen.dart';
-import 'package:peaman/views/screens/home_screen.dart';
 import 'package:peaman/views/widgets/auth_widgets/auth_field.dart';
 import 'package:peaman/views/widgets/common_widgets/filled_btn.dart';
 
@@ -28,59 +29,64 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height,
-              child: SingleChildScrollView(
-                child: GestureDetector(
-                  onTap: () {
-                    FocusScope.of(context).unfocus();
-                  },
-                  child: Container(
-                    color: Colors.transparent,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(
-                          height: 40.0,
+    return ViewmodelProvider<AuthVm>(
+      vm: AuthVm(),
+      builder: (BuildContext context, AuthVm vm) {
+        return Scaffold(
+          body: SafeArea(
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  height: MediaQuery.of(context).size.height,
+                  child: SingleChildScrollView(
+                    child: GestureDetector(
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            SizedBox(
+                              height: 40.0,
+                            ),
+                            _loginTextSection(),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            _authFieldSection(),
+                            SizedBox(
+                              height: 20.0,
+                            ),
+                            _forgetPassSection(),
+                            SizedBox(
+                              height: 30.0,
+                            ),
+                            _btnSection(vm),
+                            SizedBox(
+                              height: 50.0,
+                            ),
+                          ],
                         ),
-                        _loginTextSection(),
-                        SizedBox(
-                          height: 10.0,
-                        ),
-                        _authFieldSection(),
-                        SizedBox(
-                          height: 20.0,
-                        ),
-                        _forgetPassSection(),
-                        SizedBox(
-                          height: 30.0,
-                        ),
-                        _btnSection(),
-                        SizedBox(
-                          height: 50.0,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+                if (!_keyboardVisibility)
+                  Positioned(
+                    bottom: -10.0,
+                    left: 0.0,
+                    right: 0.0,
+                    child: SvgPicture.asset(
+                      'assets/images/svgs/auth_bottom.svg',
+                    ),
+                  ),
+              ],
             ),
-            if (!_keyboardVisibility)
-              Positioned(
-                bottom: -10.0,
-                left: 0.0,
-                right: 0.0,
-                child: SvgPicture.asset(
-                  'assets/images/svgs/auth_bottom.svg',
-                ),
-              ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -141,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _btnSection() {
+  Widget _btnSection(AuthVm vm) {
     return Column(
       children: <Widget>[
         Align(
@@ -151,14 +157,10 @@ class _LoginScreenState extends State<LoginScreen> {
             child: FilledBtn(
               title: 'Log in',
               color: Color(0xff5C49E0),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => HomeScreen(),
-                  ),
-                );
-              },
+              onPressed: () => vm.loginUser(
+                email: _emailController.text.trim(),
+                password: _passController.text.trim(),
+              ),
             ),
           ),
         ),

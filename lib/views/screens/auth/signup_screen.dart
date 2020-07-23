@@ -5,11 +5,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:peaman/enums/age.dart';
+import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/viewmodels/auth_vm.dart';
+import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/auth_widgets/age_container.dart';
 import 'package:peaman/views/widgets/auth_widgets/auth_field.dart';
 import 'package:peaman/views/widgets/common_widgets/appbar.dart';
 import 'package:peaman/views/widgets/common_widgets/border_btn.dart';
 import 'package:peaman/views/widgets/common_widgets/filled_btn.dart';
+import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -42,79 +46,84 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60.0),
-        child: CommonAppbar(
-          color: Colors.transparent,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            color: Color(0xff3D4A5A),
-            onPressed: () {
-              if (_isNextPressed) {
-                setState(() {
-                  _isNextPressed = !_isNextPressed;
-                });
-              } else {
-                Navigator.pop(context);
-              }
-            },
-          ),
-        ),
-      ),
-      body: Stack(
-        children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height,
-            child: SingleChildScrollView(
-              child: GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
+    return ViewmodelProvider<AuthVm>(
+      vm: AuthVm(),
+      builder: (BuildContext context, AuthVm vm) {
+        return Scaffold(
+          key: _scaffoldKey,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(60.0),
+            child: CommonAppbar(
+              color: Colors.transparent,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back_ios),
+                color: Color(0xff3D4A5A),
+                onPressed: () {
+                  if (_isNextPressed) {
+                    setState(() {
+                      _isNextPressed = !_isNextPressed;
+                    });
+                  } else {
+                    Navigator.pop(context);
+                  }
                 },
-                child: Container(
-                  color: Colors.transparent,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20.0,
-                      right: 20.0,
-                      bottom: 20.0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        _signUpTextBuilder(),
-                        SizedBox(
-                          height: 10.0,
+              ),
+            ),
+          ),
+          body: Stack(
+            children: <Widget>[
+              Container(
+                height: MediaQuery.of(context).size.height,
+                child: SingleChildScrollView(
+                  child: GestureDetector(
+                    onTap: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    child: Container(
+                      color: Colors.transparent,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: 20.0,
+                          right: 20.0,
+                          bottom: 20.0,
                         ),
-                        _signUpDescBuilder(),
-                        SizedBox(
-                          height: 40.0,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            _signUpTextBuilder(),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            _signUpDescBuilder(),
+                            SizedBox(
+                              height: 40.0,
+                            ),
+                            _isNextPressed
+                                ? _userCredBuilder(vm)
+                                : _userInfoBuilder(),
+                            SizedBox(
+                              height: 50.0,
+                            ),
+                          ],
                         ),
-                        _isNextPressed
-                            ? _userCredBuilder()
-                            : _userInfoBuilder(),
-                        SizedBox(
-                          height: 50.0,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+              if (!_keyboardVisibility)
+                Positioned(
+                  bottom: -10.0,
+                  left: 0.0,
+                  right: 0.0,
+                  child: SvgPicture.asset(
+                    'assets/images/svgs/auth_bottom.svg',
+                  ),
+                ),
+            ],
           ),
-          if (!_keyboardVisibility)
-            Positioned(
-              bottom: -10.0,
-              left: 0.0,
-              right: 0.0,
-              child: SvgPicture.asset(
-                'assets/images/svgs/auth_bottom.svg',
-              ),
-            ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -179,7 +188,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _userCredBuilder() {
+  Widget _userCredBuilder(AuthVm vm) {
     return Column(
       children: <Widget>[
         _authFieldContainerBuilder(),
@@ -188,14 +197,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         BorderBtn(
           title: 'Sign up',
-          onPressed: () {
+          onPressed: () async {
             if (_nameController.text == '' ||
                 _emailController.text == '' ||
                 _passController.text == '') {
               _scaffoldKey.currentState.showSnackBar(SnackBar(
                 content: Text('Please fill up all fields'),
               ));
-            } else {}
+            } else {
+              await vm.signUpUser(
+                imgFile: _imgFile,
+                age: _age,
+                name: _nameController.text.trim(),
+                email: _emailController.text.trim(),
+                password: _passController.text.trim(),
+              );
+              // Navigator.pop(context);
+            }
           },
           textColor: Color(0xff5C49E0),
         ),
