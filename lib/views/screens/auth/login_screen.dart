@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:lottie/lottie.dart';
 import 'package:peaman/viewmodels/auth_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/screens/auth/signup_screen.dart';
@@ -16,6 +17,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _keyboardVisibility = false;
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passController = TextEditingController();
+  bool _isLoading = false;
+
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -33,57 +37,66 @@ class _LoginScreenState extends State<LoginScreen> {
       vm: AuthVm(),
       builder: (BuildContext context, AuthVm vm) {
         return Scaffold(
+          key: _scaffoldKey,
           body: SafeArea(
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  height: MediaQuery.of(context).size.height,
-                  child: SingleChildScrollView(
-                    child: GestureDetector(
-                      onTap: () {
-                        FocusScope.of(context).unfocus();
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(
-                              height: 40.0,
+            child: _isLoading
+                ? Center(
+                    child: Lottie.asset(
+                      'assets/lottie/loader.json',
+                      width: MediaQuery.of(context).size.width - 100.0,
+                      height: MediaQuery.of(context).size.width - 100.0,
+                    ),
+                  )
+                : Stack(
+                    children: <Widget>[
+                      Container(
+                        height: MediaQuery.of(context).size.height,
+                        child: SingleChildScrollView(
+                          child: GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).unfocus();
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 40.0,
+                                  ),
+                                  _loginTextSection(),
+                                  SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  _authFieldSection(),
+                                  SizedBox(
+                                    height: 20.0,
+                                  ),
+                                  _forgetPassSection(),
+                                  SizedBox(
+                                    height: 30.0,
+                                  ),
+                                  _btnSection(vm),
+                                  SizedBox(
+                                    height: 50.0,
+                                  ),
+                                ],
+                              ),
                             ),
-                            _loginTextSection(),
-                            SizedBox(
-                              height: 10.0,
-                            ),
-                            _authFieldSection(),
-                            SizedBox(
-                              height: 20.0,
-                            ),
-                            _forgetPassSection(),
-                            SizedBox(
-                              height: 30.0,
-                            ),
-                            _btnSection(vm),
-                            SizedBox(
-                              height: 50.0,
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
+                      if (!_keyboardVisibility)
+                        Positioned(
+                          bottom: -10.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: SvgPicture.asset(
+                            'assets/images/svgs/auth_bottom.svg',
+                          ),
+                        ),
+                    ],
                   ),
-                ),
-                if (!_keyboardVisibility)
-                  Positioned(
-                    bottom: -10.0,
-                    left: 0.0,
-                    right: 0.0,
-                    child: SvgPicture.asset(
-                      'assets/images/svgs/auth_bottom.svg',
-                    ),
-                  ),
-              ],
-            ),
           ),
         );
       },
@@ -155,13 +168,29 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: FilledBtn(
-              title: 'Log in',
-              color: Color(0xff5C49E0),
-              onPressed: () => vm.loginUser(
-                email: _emailController.text.trim(),
-                password: _passController.text.trim(),
-              ),
-            ),
+                title: 'Log in',
+                color: Color(0xff5C49E0),
+                onPressed: () async {
+                  if (_emailController.text != '' &&
+                      _passController.text != '') {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    final _result = await vm.loginUser(
+                      email: _emailController.text.trim(),
+                      password: _passController.text.trim(),
+                    );
+                    if (_result == null) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    }
+                  } else {
+                    _scaffoldKey.currentState.showSnackBar(SnackBar(
+                      content: Text('Please fill up all fields'),
+                    ));
+                  }
+                }),
           ),
         ),
         SizedBox(

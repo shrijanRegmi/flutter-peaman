@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:peaman/views/screens/auth/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -8,17 +7,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration(milliseconds: 8000), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => LoginScreen()),
-      );
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,8 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             Positioned.fill(
               top: 100.0,
-              child: Lottie.asset(
-                  'assets/lottie/paperplane.json'),
+              child: Lottie.asset('assets/lottie/paperplane.json'),
             ),
             Positioned(
               bottom: -30.0,

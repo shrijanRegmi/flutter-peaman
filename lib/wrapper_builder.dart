@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'models/app_models/user_model.dart';
 
 class WrapperBuilder extends StatelessWidget {
-  final Function(BuildContext context) builder;
+  final Function(BuildContext context, AppUser appUser) builder;
   WrapperBuilder({@required this.builder});
 
   @override
@@ -15,12 +15,13 @@ class WrapperBuilder extends StatelessWidget {
       return MultiProvider(
         providers: [
           StreamProvider<AppUser>.value(
-            value: AppUserProvider(uid: _user.uid).appUser,
+            value: AppUserProvider(uid: _user?.uid).appUser,
           ),
         ],
-        child: builder(context),
+        child: builder(context, _user),
       );
+    } else {
+      return builder(context, _user);
     }
-    return builder(context);
   }
 }
