@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:lottie/lottie.dart';
 import 'package:peaman/enums/age.dart';
-import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/auth_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/auth_widgets/age_container.dart';
@@ -13,7 +13,6 @@ import 'package:peaman/views/widgets/auth_widgets/auth_field.dart';
 import 'package:peaman/views/widgets/common_widgets/appbar.dart';
 import 'package:peaman/views/widgets/common_widgets/border_btn.dart';
 import 'package:peaman/views/widgets/common_widgets/filled_btn.dart';
-import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -34,6 +33,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -51,77 +52,87 @@ class _SignUpScreenState extends State<SignUpScreen> {
       builder: (BuildContext context, AuthVm vm) {
         return Scaffold(
           key: _scaffoldKey,
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(60.0),
-            child: CommonAppbar(
-              color: Colors.transparent,
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios),
-                color: Color(0xff3D4A5A),
-                onPressed: () {
-                  if (_isNextPressed) {
-                    setState(() {
-                      _isNextPressed = !_isNextPressed;
-                    });
-                  } else {
-                    Navigator.pop(context);
-                  }
-                },
-              ),
-            ),
-          ),
-          body: Stack(
-            children: <Widget>[
-              Container(
-                height: MediaQuery.of(context).size.height,
-                child: SingleChildScrollView(
-                  child: GestureDetector(
-                    onTap: () {
-                      FocusScope.of(context).unfocus();
-                    },
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 20.0,
-                          right: 20.0,
-                          bottom: 20.0,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            _signUpTextBuilder(),
-                            SizedBox(
-                              height: 10.0,
-                            ),
-                            _signUpDescBuilder(),
-                            SizedBox(
-                              height: 40.0,
-                            ),
-                            _isNextPressed
-                                ? _userCredBuilder(vm)
-                                : _userInfoBuilder(),
-                            SizedBox(
-                              height: 50.0,
-                            ),
-                          ],
-                        ),
-                      ),
+          appBar: _isLoading
+              ? null
+              : PreferredSize(
+                  preferredSize: Size.fromHeight(60.0),
+                  child: CommonAppbar(
+                    color: Colors.transparent,
+                    leading: IconButton(
+                      icon: Icon(Icons.arrow_back_ios),
+                      color: Color(0xff3D4A5A),
+                      onPressed: () {
+                        if (_isNextPressed) {
+                          setState(() {
+                            _isNextPressed = !_isNextPressed;
+                          });
+                        } else {
+                          Navigator.pop(context);
+                        }
+                      },
                     ),
                   ),
                 ),
-              ),
-              if (!_keyboardVisibility)
-                Positioned(
-                  bottom: -10.0,
-                  left: 0.0,
-                  right: 0.0,
-                  child: SvgPicture.asset(
-                    'assets/images/svgs/auth_bottom.svg',
+          body: _isLoading
+              ? Center(
+                  child: Lottie.asset(
+                    'assets/lottie/loader.json',
+                    width: MediaQuery.of(context).size.width - 100.0,
+                    height: MediaQuery.of(context).size.width - 100.0,
                   ),
+                )
+              : Stack(
+                  children: <Widget>[
+                    Container(
+                      height: MediaQuery.of(context).size.height,
+                      child: SingleChildScrollView(
+                        child: GestureDetector(
+                          onTap: () {
+                            FocusScope.of(context).unfocus();
+                          },
+                          child: Container(
+                            color: Colors.transparent,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                bottom: 20.0,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  _signUpTextBuilder(),
+                                  SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  _signUpDescBuilder(),
+                                  SizedBox(
+                                    height: 40.0,
+                                  ),
+                                  _isNextPressed
+                                      ? _userCredBuilder(vm)
+                                      : _userInfoBuilder(),
+                                  SizedBox(
+                                    height: 50.0,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (!_keyboardVisibility)
+                      Positioned(
+                        bottom: -10.0,
+                        left: 0.0,
+                        right: 0.0,
+                        child: SvgPicture.asset(
+                          'assets/images/svgs/auth_bottom.svg',
+                        ),
+                      ),
+                  ],
                 ),
-            ],
-          ),
         );
       },
     );
@@ -205,14 +216,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 content: Text('Please fill up all fields'),
               ));
             } else {
-              await vm.signUpUser(
+              setState(() {
+                _isLoading = true;
+              });
+              final _result = await vm.signUpUser(
                 imgFile: _imgFile,
                 age: _age,
                 name: _nameController.text.trim(),
                 email: _emailController.text.trim(),
                 password: _passController.text.trim(),
               );
-              // Navigator.pop(context);
+              if (_result == null) {
+                setState(() {
+                  _isLoading = false;
+                });
+              }
             }
           },
           textColor: Color(0xff5C49E0),

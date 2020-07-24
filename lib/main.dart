@@ -15,12 +15,12 @@ class PeamanApp extends StatelessWidget {
     return StreamProvider<AppUser>.value(
       value: AuthProvider().user,
       child: WrapperBuilder(
-        builder: (BuildContext context) {
+        builder: (BuildContext context, AppUser appUser) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: "Peaman",
             theme: ThemeData(fontFamily: 'Nunito'),
-            home: Material(child: Wrapper()),
+            home: Material(child: Wrapper(appUser: appUser,)),
           );
         },
       ),

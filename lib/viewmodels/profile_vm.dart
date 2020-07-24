@@ -6,5 +6,5 @@ class ProfileVm extends ChangeNotifier {
   BuildContext context;
   ProfileVm({@required this.context});
 
-  AppUser get appUser => Provider.of(context, listen: false);
+  AppUser get appUser => Provider.of<AppUser>(context);
 }
