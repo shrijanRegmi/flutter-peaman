@@ -9,7 +9,8 @@ import 'package:peaman/views/widgets/chat_convo_widgets/chat_convo_list_item.dar
 class ChatConvoList extends StatelessWidget {
   final AppUser appUser;
   final AppUser friend;
-  ChatConvoList({this.friend, this.appUser});
+  final bool isTypingActive;
+  ChatConvoList({this.friend, this.appUser, this.isTypingActive});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,8 @@ class ChatConvoList extends StatelessWidget {
                 if (messagesSnap.data[index].senderId == appUser.uid) {
                   if (index == 0) {
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 120.0),
+                      padding:
+                          EdgeInsets.only(bottom: isTypingActive ? 80.0 : 120.0),
                       child: ChatConvoListItem(
                         message: messagesSnap.data[index],
                         friend: appUser,
@@ -44,7 +46,8 @@ class ChatConvoList extends StatelessWidget {
                 } else {
                   if (index == 0) {
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 120.0),
+                      padding:
+                          EdgeInsets.only(bottom: isTypingActive ? 80.0 : 120.0),
                       child: ChatConvoListItem(
                         message: messagesSnap.data[index],
                         friend: friend,

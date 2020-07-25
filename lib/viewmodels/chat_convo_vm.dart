@@ -11,6 +11,9 @@ class ChatConvoVm extends ChangeNotifier {
 
   AppUser get appUser => Provider.of<AppUser>(context);
 
+  bool _isTyping = false;
+  bool get isTyping => _isTyping;
+
   // send message to friend
   Future sendMessage({
     @required final String myId,
@@ -19,5 +22,11 @@ class ChatConvoVm extends ChangeNotifier {
   }) {
     final _chatId = ChatHelper().getChatId(myId: myId, friendId: friendId);
     return MessageProvider(chatId: _chatId).sendMessage(message: message);
+  }
+
+  // update is typing value
+  void updateTypingValue(final bool newTyping) {
+    _isTyping = newTyping;
+    notifyListeners();
   }
 }

@@ -8,19 +8,28 @@ class ChatComposeArea extends StatefulWidget {
   final AppUser appUser;
   final AppUser friend;
   final Function sendMessage;
-  ChatComposeArea({this.sendMessage, this.appUser, this.friend});
+  final Function(bool newIsTypingVal) updateIsTyping;
+  final bool isTypingActive;
+  final FocusNode focusNode;
+  ChatComposeArea(
+      {this.sendMessage,
+      this.appUser,
+      this.friend,
+      this.updateIsTyping,
+      this.focusNode,
+      this.isTypingActive = false});
   @override
   _ChatComposeAreaState createState() => _ChatComposeAreaState();
 }
 
 class _ChatComposeAreaState extends State<ChatComposeArea> {
-  bool _isTypingActive = false;
-
   final TextEditingController _messageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return !_isTypingActive ? _actionButtonBuilder() : _typingInputBuilder();
+    return !widget.isTypingActive
+        ? _actionButtonBuilder()
+        : _typingInputBuilder();
   }
 
   Widget _actionButtonBuilder() {
@@ -42,9 +51,7 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
               radius: 80.0,
               icon: 'assets/images/svgs/send_btn.svg',
               onPressed: () {
-                setState(() {
-                  _isTypingActive = true;
-                });
+                widget.updateIsTyping(true);
               },
             ),
             SizedBox(
@@ -71,6 +78,7 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
             children: <Widget>[
               Expanded(
                 child: TextFormField(
+                  focusNode: widget.focusNode,
                   controller: _messageController,
                   decoration: InputDecoration(
                     border: InputBorder.none,
@@ -87,17 +95,21 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
               ),
               GestureDetector(
                 onTap: () {
-                  final _message = Message(
-                    text: _messageController.text.trim(),
-                    senderId: widget.appUser.uid,
-                    receiverId: widget.friend.uid,
-                    milliseconds: DateTime.now().millisecondsSinceEpoch,
-                  );
-                  widget.sendMessage(
-                    myId: widget.appUser.uid,
-                    friendId: widget.friend.uid,
-                    message: _message,
-                  );
+                  if (_messageController.text != '') {
+                    final _text = _messageController.text.trim();
+                    _messageController.clear();
+                    final _message = Message(
+                      text: _text,
+                      senderId: widget.appUser.uid,
+                      receiverId: widget.friend.uid,
+                      milliseconds: DateTime.now().millisecondsSinceEpoch,
+                    );
+                    widget.sendMessage(
+                      myId: widget.appUser.uid,
+                      friendId: widget.friend.uid,
+                      message: _message,
+                    );
+                  }
                 },
                 child: ClipOval(
                   child: Container(
@@ -124,11 +136,17 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
                 const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
             child: Row(
               children: <Widget>[
-                Icon(Icons.add_circle_outline),
+                Icon(
+                  Icons.add_circle_outline,
+                  color: Color(0xff3D4A5A),
+                ),
                 SizedBox(
                   width: 10.0,
                 ),
-                Icon(Icons.tag_faces),
+                Icon(
+                  Icons.tag_faces,
+                  color: Color(0xff3D4A5A),
+                ),
               ],
             ),
           ),
