@@ -17,6 +17,9 @@ class WrapperBuilder extends StatelessWidget {
           StreamProvider<AppUser>.value(
             value: AppUserProvider(uid: _user?.uid).appUser,
           ),
+          StreamProvider<List<AppUser>>.value(
+            value: AppUserProvider().allUsers,
+          ),
         ],
         child: builder(context, _user),
       );

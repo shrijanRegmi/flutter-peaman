@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AvatarBuilder extends StatelessWidget {
@@ -17,7 +18,10 @@ class AvatarBuilder extends StatelessWidget {
       children: <Widget>[
         CircleAvatar(
           maxRadius: radius,
-          backgroundImage: AssetImage('assets/images/man.png'),
+          backgroundColor: Color(0xff3D4A5A).withOpacity(0.2),
+          backgroundImage: CachedNetworkImageProvider(
+            imgUrl,
+          ),
         ),
         if (isOnline)
           Positioned(

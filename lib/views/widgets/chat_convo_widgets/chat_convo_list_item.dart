@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/models/app_models/message_model.dart';
+import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ChatConvoListItem extends StatelessWidget {
+  final Message message;
+  final AppUser friend;
   final Alignment alignment;
-  ChatConvoListItem({this.alignment});
-  
+  ChatConvoListItem({this.friend, this.alignment, this.message});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -22,34 +27,44 @@ class ChatConvoListItem extends StatelessWidget {
   }
 
   Widget _messageBuilder() {
-    return Container(
-      decoration: BoxDecoration(
-          color: Color(0xfff5f5f5),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 10.0,
-              color: Colors.black26,
+    return Row(
+      mainAxisAlignment: alignment == Alignment.centerRight
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: Align(
+            alignment: alignment,
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Color(0xfff5f5f5),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 10.0,
+                      color: Colors.black26,
+                    ),
+                  ],
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15.0),
+                    topRight: Radius.circular(15.0),
+                    bottomRight: Radius.circular(
+                        alignment == Alignment.centerRight ? 0.0 : 15.0),
+                    bottomLeft: Radius.circular(
+                        alignment == Alignment.centerLeft ? 0.0 : 15.0),
+                  )),
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                message.text,
+                style: TextStyle(
+                  fontSize: 12.0,
+                  color: Color(0xff3D4A5A),
+                  height: 1.8,
+                ),
+              ),
             ),
-          ],
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(15.0),
-            topRight: Radius.circular(15.0),
-            bottomRight: Radius.circular(
-                alignment == Alignment.centerRight ? 0.0 : 15.0),
-            bottomLeft:
-                Radius.circular(alignment == Alignment.centerLeft ? 0.0 : 15.0),
-          )),
-      padding: const EdgeInsets.all(20.0),
-      child: Center(
-        child: Text(
-          'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et',
-          style: TextStyle(
-            fontSize: 12.0,
-            color: Color(0xff3D4A5A),
-            height: 1.8,
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -58,7 +73,7 @@ class ChatConvoListItem extends StatelessWidget {
         ? Row(
             children: <Widget>[
               AvatarBuilder(
-                imgUrl: '',
+                imgUrl: friend.photoUrl_60x60,
                 isOnline: false,
                 radius: 17.0,
               ),
@@ -69,7 +84,7 @@ class ChatConvoListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    'Robert Richards',
+                    friend.name,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14.0,
@@ -77,7 +92,8 @@ class ChatConvoListItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '20m',
+                    timeago.format(DateTime.fromMillisecondsSinceEpoch(
+                        message.milliseconds)),
                     style: TextStyle(
                       fontSize: 10.0,
                       color: Colors.black26,
@@ -103,7 +119,8 @@ class ChatConvoListItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '20m',
+                    timeago.format(DateTime.fromMillisecondsSinceEpoch(
+                        message.milliseconds)),
                     style: TextStyle(
                       fontSize: 10.0,
                       color: Colors.black26,
@@ -116,7 +133,7 @@ class ChatConvoListItem extends StatelessWidget {
                 width: 10.0,
               ),
               AvatarBuilder(
-                imgUrl: '',
+                imgUrl: friend.photoUrl_60x60,
                 isOnline: false,
                 radius: 17.0,
               ),

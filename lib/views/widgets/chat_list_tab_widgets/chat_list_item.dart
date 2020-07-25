@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/views/screens/chat_convo_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 
 class ChatListItem extends StatelessWidget {
+  final AppUser friend;
+  ChatListItem({this.friend});
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -10,7 +14,9 @@ class ChatListItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ChatConvoScreen(),
+            builder: (_) => ChatConvoScreen(
+              friend: friend,
+            ),
           ),
         );
       },
@@ -23,7 +29,7 @@ class ChatListItem extends StatelessWidget {
               children: <Widget>[
                 // user image
                 AvatarBuilder(
-                  imgUrl: '',
+                  imgUrl: friend?.photoUrl_100x100,
                   radius: 25.0,
                   isOnline: true,
                 ),
@@ -46,7 +52,7 @@ class ChatListItem extends StatelessWidget {
       children: <Widget>[
         // user name
         Text(
-          "Robert Richards",
+          "${friend?.name}",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.0,
@@ -91,7 +97,7 @@ class ChatListItem extends StatelessWidget {
 
   Widget _messageCountBuilder() {
     return CircleAvatar(
-      backgroundColor: Color(0xff2663FF),
+      backgroundColor: Colors.blue[600],
       maxRadius: 10.0,
       child: Center(
         child: Text(
