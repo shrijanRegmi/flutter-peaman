@@ -10,6 +10,8 @@ class ChatConvoScreen extends StatelessWidget {
   final AppUser friend;
   ChatConvoScreen({this.friend});
 
+  final FocusNode _focusNode = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return ViewmodelProvider(
@@ -34,26 +36,47 @@ class ChatConvoScreen extends StatelessWidget {
               ),
             ),
           ),
-          floatingActionButton: ChatComposeArea(
-            sendMessage: vm.sendMessage,
-            appUser: vm.appUser,
-            friend: friend,
-          ),
+          bottomSheet: vm.isTyping
+              ? ChatComposeArea(
+                  sendMessage: vm.sendMessage,
+                  appUser: vm.appUser,
+                  friend: friend,
+                  updateIsTyping: vm.updateTypingValue,
+                  isTypingActive: vm.isTyping,
+                  focusNode: _focusNode,
+                )
+              : null,
+          floatingActionButton: !vm.isTyping
+              ? ChatComposeArea(
+                  sendMessage: vm.sendMessage,
+                  appUser: vm.appUser,
+                  friend: friend,
+                  updateIsTyping: vm.updateTypingValue,
+                  isTypingActive: vm.isTyping,
+                  focusNode: _focusNode,
+                )
+              : null,
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           body: SafeArea(
-            child: Container(
-              color: Color(0xffF3F5F8),
-              child: Center(
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: ChatConvoList(
-                        friend: friend,
-                        appUser: vm.appUser,
+            child: GestureDetector(
+              onTap: () {
+                _focusNode.unfocus();
+              },
+              child: Container(
+                color: Color(0xffF3F5F8),
+                child: Center(
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: ChatConvoList(
+                          isTypingActive: vm.isTyping,
+                          friend: friend,
+                          appUser: vm.appUser,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
