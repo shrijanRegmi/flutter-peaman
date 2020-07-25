@@ -1,24 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lottie/lottie.dart';
+import 'package:peaman/viewmodels/chat_vm.dart';
+import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/chat_list_tab_widgets/other_users_list.dart';
 import 'package:peaman/views/widgets/chat_list_tab_widgets/pinned_users_list.dart';
 
 class ChatListTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Color(0xffF3F5F8),
-      child: ListView(
-        physics: BouncingScrollPhysics(),
-        children: <Widget>[
-          _topSectionBuilder(),
-          PinnedUsersList(),
-          SizedBox(
-            height: 20.0,
-          ),
-          OtherUsersList(),
-        ],
-      ),
+    return ViewmodelProvider(
+      vm: ChatVm(context: context),
+      builder: (BuildContext context, ChatVm vm) {
+        return vm.allUsers == null
+            ? Center(
+                child: Lottie.asset(
+                  'assets/lottie/loader.json',
+                  width: MediaQuery.of(context).size.width - 100.0,
+                  height: MediaQuery.of(context).size.width - 100.0,
+                ),
+              )
+            : Container(
+                color: Color(0xffF3F5F8),
+                child: ListView(
+                  physics: BouncingScrollPhysics(),
+                  children: <Widget>[
+                    _topSectionBuilder(),
+                    // PinnedUsersList(),
+                    // SizedBox(
+                    //   height: 20.0,
+                    // ),
+                    OtherUsersList(
+                      allUsers: vm.allUsers,
+                    ),
+                  ],
+                ),
+              );
+      },
     );
   }
 
