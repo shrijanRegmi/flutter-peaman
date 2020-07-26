@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/views/screens/chat_convo_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
@@ -31,7 +32,7 @@ class ChatListItem extends StatelessWidget {
                 AvatarBuilder(
                   imgUrl: friend?.photoUrl_100x100,
                   radius: 25.0,
-                  isOnline: true,
+                  isOnline: friend.onlineStatus == OnlineStatus.active,
                 ),
                 SizedBox(
                   width: 20.0,

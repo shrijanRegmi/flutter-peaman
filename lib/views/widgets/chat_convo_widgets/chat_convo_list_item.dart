@@ -92,8 +92,7 @@ class ChatConvoListItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    timeago.format(DateTime.fromMillisecondsSinceEpoch(
-                        message.milliseconds)),
+                    _getTime(message.milliseconds),
                     style: TextStyle(
                       fontSize: 10.0,
                       color: Colors.black26,
@@ -119,8 +118,7 @@ class ChatConvoListItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    timeago.format(DateTime.fromMillisecondsSinceEpoch(
-                        message.milliseconds)),
+                    _getTime(message.milliseconds),
                     style: TextStyle(
                       fontSize: 10.0,
                       color: Colors.black26,
@@ -139,5 +137,18 @@ class ChatConvoListItem extends StatelessWidget {
               ),
             ],
           );
+  }
+
+  String _getTime(final int milliseconds) {
+    return timeago
+        .format(
+          DateTime.fromMillisecondsSinceEpoch(message.milliseconds),
+        )
+        .replaceAll('ago', '')
+        .replaceAll('minutes', 'm')
+        .replaceAll('hours', 'h')
+        .replaceAll('days', 'd')
+        .replaceAll('months', 'mon')
+        .replaceAll('a moment', 'Just now');
   }
 }

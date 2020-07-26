@@ -1,11 +1,21 @@
+import 'package:peaman/enums/online_status.dart';
+
 class AppUser {
   final String photoUrl;
   final int age;
   final String uid;
   final String name;
   final String email;
+  final OnlineStatus onlineStatus;
 
-  AppUser({this.uid, this.photoUrl, this.age, this.name, this.email});
+  AppUser({
+    this.uid,
+    this.photoUrl,
+    this.age,
+    this.name,
+    this.email,
+    this.onlineStatus,
+  });
 
   static Map<String, dynamic> toJson(AppUser appUser) {
     return {
@@ -14,6 +24,7 @@ class AppUser {
       'age': appUser.age,
       'name': appUser.name,
       'email': appUser.email,
+      'active_status': appUser.onlineStatus.index,
     };
   }
 
@@ -24,6 +35,8 @@ class AppUser {
       age: data['age'],
       name: data['name'],
       email: data['email'],
+      onlineStatus:
+          data['active_status'] == 1 ? OnlineStatus.active : OnlineStatus.away,
     );
   }
 
