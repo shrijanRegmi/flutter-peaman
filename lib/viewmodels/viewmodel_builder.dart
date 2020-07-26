@@ -6,11 +6,30 @@ class ViewmodelProvider<T extends ChangeNotifier> extends StatefulWidget {
   _ViewmodelProviderState<T> createState() => _ViewmodelProviderState<T>();
   final Function(BuildContext context, T vm) builder;
   final T vm;
-  ViewmodelProvider({@required this.vm, @required this.builder});
+  final Function(T vm) onInit;
+  final Function(T vm) onDispose;
+  ViewmodelProvider(
+      {@required this.vm, @required this.builder, this.onInit, this.onDispose});
 }
 
 class _ViewmodelProviderState<T extends ChangeNotifier>
     extends State<ViewmodelProvider<T>> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.onInit != null) {
+      widget.onInit(widget.vm);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (widget.onDispose != null) {
+      widget.onDispose(widget.vm);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<T>(

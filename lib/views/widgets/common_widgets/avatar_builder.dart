@@ -46,7 +46,7 @@ class AvatarBuilder extends StatelessWidget {
             child: Center(
               child: CircleAvatar(
                 maxRadius: 4.0,
-                backgroundColor: Colors.green,
+                backgroundColor: Colors.pink,
               ),
             ),
           ),

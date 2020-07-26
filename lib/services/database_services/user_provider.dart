@@ -1,10 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 
 class AppUserProvider {
   final String uid;
   AppUserProvider({this.uid});
   final _ref = Firestore.instance;
+
+  // set user active status
+  Future setUserActiveStatus({@required OnlineStatus onlineStatus}) async {
+    try {
+      final _userRef = _ref.collection('users').document(uid);
+      final _status = {
+        'active_status': onlineStatus.index,
+      };
+      return await _userRef.updateData(_status);
+    } catch (e) {
+      print('Error setting activity status');
+      print(e);
+      return null;
+    }
+  }
 
   // appuser from firebase;
   AppUser _appUserFromFirebase(DocumentSnapshot snap) {
@@ -20,6 +37,7 @@ class AppUserProvider {
 
   // stream of appuser;
   Stream<AppUser> get appUser {
+    print('Called');
     return _ref
         .collection('users')
         .document(uid)
@@ -28,7 +46,7 @@ class AppUserProvider {
   }
 
   // stream of list of users;
-  Stream<List<AppUser>> get allUsers{
+  Stream<List<AppUser>> get allUsers {
     return _ref.collection('users').snapshots().map(_usersFromFirebase);
   }
 }

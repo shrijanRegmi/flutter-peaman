@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/chat_convo_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
@@ -25,13 +26,26 @@ class ChatConvoScreen extends StatelessWidget {
             preferredSize: Size.fromHeight(60.0),
             child: SafeArea(
               child: CommonAppbar(
-                title: Text(
-                  friend.name,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
-                    color: Color(0xff3D4A5A),
-                  ),
+                title: Row(
+                  children: <Widget>[
+                    Text(
+                      friend.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                        color: Color(0xff3D4A5A),
+                      ),
+                    ),
+                    if (friend.onlineStatus == OnlineStatus.active)
+                      SizedBox(
+                        width: 10.0,
+                      ),
+                    if (friend.onlineStatus == OnlineStatus.active)
+                      CircleAvatar(
+                        maxRadius: 4.0,
+                        backgroundColor: Colors.pink,
+                      )
+                  ],
                 ),
               ),
             ),
