@@ -5,7 +5,8 @@ import 'package:peaman/models/app_models/user_model.dart';
 
 class AppUserProvider {
   final String uid;
-  AppUserProvider({this.uid});
+  final DocumentReference userRef;
+  AppUserProvider({this.uid, this.userRef});
   final _ref = Firestore.instance;
 
   // set user active status
@@ -43,6 +44,10 @@ class AppUserProvider {
         .document(uid)
         .snapshots()
         .map(_appUserFromFirebase);
+  }
+
+  Stream<AppUser> get appUserFromRef {
+    return userRef.snapshots().map(_appUserFromFirebase);
   }
 
   // stream of list of users;

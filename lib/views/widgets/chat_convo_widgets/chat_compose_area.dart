@@ -52,6 +52,7 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
               icon: 'assets/images/svgs/send_btn.svg',
               onPressed: () {
                 widget.updateIsTyping(true);
+                widget.focusNode.requestFocus();
               },
             ),
             SizedBox(

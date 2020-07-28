@@ -30,7 +30,7 @@ class ChatConvoList extends StatelessWidget {
                   if (index == 0) {
                     return Padding(
                       padding:
-                          EdgeInsets.only(bottom: isTypingActive ? 80.0 : 120.0),
+                          EdgeInsets.only(bottom: isTypingActive ? 20.0 : 120.0),
                       child: ChatConvoListItem(
                         message: messagesSnap.data[index],
                         friend: appUser,
@@ -47,7 +47,7 @@ class ChatConvoList extends StatelessWidget {
                   if (index == 0) {
                     return Padding(
                       padding:
-                          EdgeInsets.only(bottom: isTypingActive ? 80.0 : 120.0),
+                          EdgeInsets.only(bottom: isTypingActive ? 20.0 : 120.0),
                       child: ChatConvoListItem(
                         message: messagesSnap.data[index],
                         friend: friend,
