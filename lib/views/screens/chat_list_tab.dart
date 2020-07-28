@@ -4,7 +4,6 @@ import 'package:lottie/lottie.dart';
 import 'package:peaman/viewmodels/chat_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/chat_list_tab_widgets/other_users_list.dart';
-import 'package:peaman/views/widgets/chat_list_tab_widgets/pinned_users_list.dart';
 
 class ChatListTab extends StatelessWidget {
   @override
@@ -12,7 +11,7 @@ class ChatListTab extends StatelessWidget {
     return ViewmodelProvider(
       vm: ChatVm(context: context),
       builder: (BuildContext context, ChatVm vm) {
-        return vm.allUsers == null
+        return vm.chats == null
             ? Center(
                 child: Lottie.asset(
                   'assets/lottie/loader.json',
@@ -31,7 +30,8 @@ class ChatListTab extends StatelessWidget {
                     //   height: 20.0,
                     // ),
                     OtherUsersList(
-                      allUsers: vm.allUsers,
+                      chats: vm.chats,
+                      appUser: vm.appUser,
                     ),
                   ],
                 ),

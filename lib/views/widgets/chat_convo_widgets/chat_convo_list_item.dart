@@ -149,6 +149,9 @@ class ChatConvoListItem extends StatelessWidget {
         .replaceAll('hours', 'h')
         .replaceAll('days', 'd')
         .replaceAll('months', 'mon')
+        .replaceAll('a day', '1 d')
+        .replaceAll('a minute', '1 m')
+        .replaceAll('about an hour', '1 h')
         .replaceAll('a moment', 'Just now');
   }
 }

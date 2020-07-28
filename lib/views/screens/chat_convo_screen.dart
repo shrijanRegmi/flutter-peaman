@@ -50,15 +50,18 @@ class ChatConvoScreen extends StatelessWidget {
               ),
             ),
           ),
-          bottomSheet: vm.isTyping
-              ? ChatComposeArea(
-                  sendMessage: vm.sendMessage,
-                  appUser: vm.appUser,
-                  friend: friend,
-                  updateIsTyping: vm.updateTypingValue,
-                  isTypingActive: vm.isTyping,
-                  focusNode: _focusNode,
-                )
+          bottomNavigationBar: vm.isTyping
+              ? Padding(
+                padding: MediaQuery.of(context).viewInsets,
+                child: ChatComposeArea(
+                    sendMessage: vm.sendMessage,
+                    appUser: vm.appUser,
+                    friend: friend,
+                    updateIsTyping: vm.updateTypingValue,
+                    isTypingActive: vm.isTyping,
+                    focusNode: _focusNode,
+                  ),
+              )
               : null,
           floatingActionButton: !vm.isTyping
               ? ChatComposeArea(

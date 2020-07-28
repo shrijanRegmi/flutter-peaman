@@ -3,7 +3,7 @@ class Message {
   final String senderId;
   final String receiverId;
   final int milliseconds;
-  Message({this.text, this.senderId, this.receiverId, this.milliseconds});
+  Message({this.text, this.senderId, this.receiverId, this.milliseconds,});
 
   static Map<String, dynamic> toJson(Message message) {
     return {

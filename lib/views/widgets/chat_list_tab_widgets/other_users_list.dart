@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/models/app_models/chat_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/views/widgets/chat_list_tab_widgets/chat_list_item.dart';
 
 class OtherUsersList extends StatelessWidget {
-  final List<AppUser> allUsers;
-  OtherUsersList({this.allUsers});
+  final List<Chat> chats;
+  final AppUser appUser;
+  OtherUsersList({this.chats, this.appUser});
+  
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -35,9 +38,9 @@ class OtherUsersList extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      itemCount: allUsers.length,
+      itemCount: chats.length,
       itemBuilder: (context, index) {
-        return ChatListItem(friend: allUsers[index]);
+        return ChatListItem(appUser: appUser, chat: chats[index]);
       },
     );
   }

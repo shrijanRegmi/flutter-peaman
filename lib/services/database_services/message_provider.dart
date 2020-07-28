@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:peaman/helpers/chat_helper.dart';
+import 'package:peaman/models/app_models/chat_model.dart';
 import 'package:peaman/models/app_models/message_model.dart';
 
 class MessageProvider {
   final String chatId;
-  MessageProvider({this.chatId});
+  final DocumentReference messageRef;
+  final DocumentReference appUserRef;
+  MessageProvider({this.chatId, this.messageRef, this.appUserRef});
 
   final _ref = Firestore.instance;
 
@@ -14,10 +18,54 @@ class MessageProvider {
       final _message = Message.toJson(message);
       final _messagesRef =
           _ref.collection('chats').document(chatId).collection('messages');
-      return await _messagesRef.add(_message);
+      final _chatRef = _ref.collection('chats').document(chatId);
+
+      final _lastMsgRef = await _messagesRef.add(_message);
+
+      final _messagesDocs = await _messagesRef.limit(2).getDocuments();
+
+      if (_messagesDocs.documents.length == 1) {
+        await _chatRef.updateData({'last_updated': DateTime.now()});
+        await _chatRef.setData({'last_msg_ref': _lastMsgRef});
+        _sendFirstUserSecondUser(
+            myId: message.senderId, friendId: message.receiverId);
+      } else {
+        await _chatRef.updateData({'last_updated': DateTime.now()});
+        await _chatRef.updateData({'last_msg_ref': _lastMsgRef});
+      }
     } catch (e) {
       print(e);
       return null;
+    }
+  }
+
+  // send additional properties with message
+  Future _sendFirstUserSecondUser(
+      {final String myId, final String friendId}) async {
+    try {
+      final _chatRef = _ref.collection('chats').document(chatId);
+
+      final bool _isAppUserFirstUser =
+          ChatHelper().isAppUserFirstUser(myId: myId, friendId: friendId);
+
+      DocumentReference _firstUserRef;
+      DocumentReference _secondUserRef;
+
+      if (_isAppUserFirstUser) {
+        _firstUserRef = _ref.collection('users').document(myId);
+        _secondUserRef = _ref.collection('users').document(friendId);
+      } else {
+        _firstUserRef = _ref.collection('users').document(friendId);
+        _secondUserRef = _ref.collection('users').document(myId);
+      }
+
+      await _chatRef.updateData({'first_user_ref': _firstUserRef});
+      await _chatRef.updateData({'second_user_ref': _secondUserRef});
+
+      print('Success sending additonal fields in chats collection');
+    } catch (e) {
+      print('Error sending additonal fields in chats collection');
+      print(e);
     }
   }
 
@@ -25,6 +73,18 @@ class MessageProvider {
   List<Message> _messageFromFirebase(QuerySnapshot snap) {
     return snap.documents.map((doc) {
       return Message.fromJson(doc.data);
+    }).toList();
+  }
+
+  // message from firebase
+  Message _singleMessageFrom(DocumentSnapshot snap) {
+    return Message.fromJson(snap.data);
+  }
+
+  // chats from firebase
+  List<Chat> _chatsFromFirebase(QuerySnapshot snap) {
+    return snap.documents.map((doc) {
+      return Chat.fromJson(doc.data);
     }).toList();
   }
 
@@ -37,5 +97,20 @@ class MessageProvider {
         .orderBy('milliseconds', descending: true)
         .snapshots()
         .map(_messageFromFirebase);
+  }
+
+  // stream of chats
+  Stream<List<Chat>> get chatList {
+    return _ref
+        .collection('chats')
+        .where('first_user_ref', isEqualTo: appUserRef)
+        .orderBy('last_updated', descending: true)
+        .snapshots()
+        .map(_chatsFromFirebase);
+  }
+
+  // stream of message from a particular reference
+  Stream<Message> get messageFromRef {
+    return messageRef.snapshots().map(_singleMessageFrom);
   }
 }

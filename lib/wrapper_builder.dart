@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:peaman/models/app_models/chat_model.dart';
+import 'package:peaman/services/database_services/message_provider.dart';
 import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +14,9 @@ class WrapperBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _user = Provider.of<AppUser>(context);
+    final _ref = Firestore.instance;
     if (_user != null) {
+      final _appUserRef = _ref.collection('users').document(_user.uid);
       return MultiProvider(
         providers: [
           StreamProvider<AppUser>.value(
@@ -19,6 +24,9 @@ class WrapperBuilder extends StatelessWidget {
           ),
           StreamProvider<List<AppUser>>.value(
             value: AppUserProvider().allUsers,
+          ),
+          StreamProvider<List<Chat>>.value(
+            value: MessageProvider(appUserRef: _appUserRef).chatList,
           ),
         ],
         child: builder(context, _user),
