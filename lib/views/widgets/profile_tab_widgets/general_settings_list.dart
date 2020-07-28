@@ -11,6 +11,7 @@ class GeneralSettingsList extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         return SettingsItem(
+          index: index,
           settings: generalSettings[index],
         );
       },

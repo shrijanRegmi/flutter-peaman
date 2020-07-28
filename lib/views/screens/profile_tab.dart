@@ -35,15 +35,22 @@ class ProfileTab extends StatelessWidget {
           width: _width,
           height: _width,
           decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white,
-                width: 13.0,
-              ),
-              image: DecorationImage(
-                image: AssetImage('assets/images/man.png'),
-                fit: BoxFit.cover,
-              )),
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Colors.white,
+              width: 13.0,
+            ),
+            boxShadow: [
+              BoxShadow(
+                  offset: Offset(2.0, 10.0),
+                  blurRadius: 20.0,
+                  color: Colors.black12)
+            ],
+            image: DecorationImage(
+              image: AssetImage('assets/images/man.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
         SizedBox(
           height: 20.0,
