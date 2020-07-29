@@ -36,7 +36,9 @@ class ProfileTab extends StatelessWidget {
                       SizedBox(
                         height: 20.0,
                       ),
-                      GeneralSettingsList(),
+                      GeneralSettingsList(
+                        appUser: vm.appUser,
+                      ),
                     ],
                   ),
                 ),
@@ -71,14 +73,14 @@ class ProfileTab extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    offset: Offset(2.0, 10.0),
-                    blurRadius: 20.0,
-                    color: Colors.black12
-                  )
+                      offset: Offset(2.0, 10.0),
+                      blurRadius: 20.0,
+                      color: Colors.black12)
                 ],
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(
-                      '${appUser?.photoUrl_300x300}'),
+                    '${appUser?.photoUrl_300x300}',
+                  ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -96,7 +98,7 @@ class ProfileTab extends StatelessWidget {
               color: Color(0xff3D4A5A)),
         ),
         Text(
-          'I am a person with good heart',
+          '${appUser?.profileStatus}',
           style: TextStyle(fontSize: 16.0, color: Color(0xff3D4A5A)),
         ),
       ],

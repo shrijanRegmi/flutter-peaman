@@ -24,6 +24,19 @@ class AppUserProvider {
     }
   }
 
+  // update user details
+  Future updateUserDetail({@required final Map<String, dynamic> data}) async {
+    try {
+      final _userRef = _ref.collection('users').document(uid);
+      await _userRef.updateData(data);
+      return 'Success';
+    } catch (e) {
+      print('Error updating user data');
+      print(e);
+      return null;
+    }
+  }
+
   // appuser from firebase;
   AppUser _appUserFromFirebase(DocumentSnapshot snap) {
     return AppUser.fromJson(snap.data);

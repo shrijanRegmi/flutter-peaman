@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peaman/models/app_models/settings_model.dart';
-import 'package:peaman/services/auth_services/auth_provider.dart';
+import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/views/screens/personal_info_screen.dart';
 
 class SettingsItem extends StatelessWidget {
+  final AppUser appUser;
+  final int index;
   final SettingModel settings;
-  SettingsItem({this.settings});
+  SettingsItem({this.appUser, this.index, this.settings});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        AuthProvider().logOut();
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        child: Row(
-          children: <Widget>[
-            _iconBuilder(),
-            SizedBox(
-              width: 20.0,
-            ),
-            _titleBuilder(),
-          ],
+    return GestureDetector(
+      onTap: () => _navigate(context),
+      child: Container(
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          child: Row(
+            children: <Widget>[
+              _iconBuilder(),
+              SizedBox(
+                width: 20.0,
+              ),
+              _titleBuilder(),
+            ],
+          ),
         ),
       ),
     );
@@ -46,6 +50,26 @@ class SettingsItem extends StatelessWidget {
     return Text(
       '${settings.title}',
       style: TextStyle(fontSize: 16.0, color: Color(0xff3D4A5A)),
+    );
+  }
+
+  void _navigate(BuildContext context) {
+    Widget _screen;
+    switch (index) {
+      case 0:
+        _screen = PersonalInfoScreen(
+          uid: appUser.uid,
+          imgUrl: appUser.photoUrl_300x300,
+          name: appUser.name,
+          email: appUser.email,
+          status: appUser.profileStatus,
+        );
+        break;
+      default:
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => _screen),
     );
   }
 }
