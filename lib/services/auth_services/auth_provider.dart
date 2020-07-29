@@ -29,9 +29,11 @@ class AuthProvider {
       await UserFunctions().sendUserToFunctions(_user);
 
       _userFromFirebase(_result.user);
+      print('Success: Creating user with name $name');
       return _result;
     } catch (e) {
       print(e);
+      print('Error!!!: Creating user with name $name');
       return null;
     }
   }
@@ -45,15 +47,18 @@ class AuthProvider {
       final _result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       _userFromFirebase(_result.user);
+      print('Success: Logging in user with email $email');
       return _result;
     } catch (e) {
       print(e);
+      print('Error!!!: Logging in user with email $email');
       return null;
     }
   }
 
   // log out user
   Future logOut() async {
+    print('Success: Logging out user');
     return await _auth.signOut();
   }
 

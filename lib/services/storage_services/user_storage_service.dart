@@ -16,11 +16,11 @@ class UserStorage {
       await _uploadTask.onComplete;
       print('Upload completed!!!!');
       final _downloadUrl = await _ref.getDownloadURL();
-      print('Download url is:::: $_downloadUrl');
+      print('Success: Uploading image to firebase storage');
       return _downloadUrl;
     } catch (e) {
-      print('Storage error!!!');
       print(e);
+      print('Error!!!: Uploading image to firebase storage');
       return null;
     }
   }

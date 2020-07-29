@@ -10,10 +10,12 @@ class UserFunctions {
     try {
       _callable = _functions.getHttpsCallable(functionName: 'sendUser');
       final _jsonUser = AppUser.toJson(_user);
+
+      print('Success: Sending user with name ${_user.name} to functions');
       return _callable.call(_jsonUser);
     } catch (e) {
-      print('Functions error');
       print(e);
+      print('Error!!!: Sending user with name ${_user.name} to functions');
       return null;
     }
   }

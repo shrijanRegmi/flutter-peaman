@@ -16,9 +16,11 @@ class AppUserProvider {
       final _status = {
         'active_status': onlineStatus.index,
       };
-      return await _userRef.updateData(_status);
+      await _userRef.updateData(_status);
+      print('Success: Setting activity status of user $uid to ${onlineStatus.index}');
+      return 'Success';
     } catch (e) {
-      print('Error setting activity status');
+      print('Error!!!: Setting activity status of user $uid to ${onlineStatus.index}');
       print(e);
       return null;
     }
@@ -29,10 +31,12 @@ class AppUserProvider {
     try {
       final _userRef = _ref.collection('users').document(uid);
       await _userRef.updateData(data);
+
+      print('Success: Updating personal info of user $uid');
       return 'Success';
     } catch (e) {
-      print('Error updating user data');
       print(e);
+      print('Error!!!: Updating personal info of user $uid');
       return null;
     }
   }
@@ -51,7 +55,6 @@ class AppUserProvider {
 
   // stream of appuser;
   Stream<AppUser> get appUser {
-    print('Called');
     return _ref
         .collection('users')
         .document(uid)
