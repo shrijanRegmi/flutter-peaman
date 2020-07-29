@@ -33,8 +33,10 @@ class MessageProvider {
         await _chatRef.updateData({'last_updated': DateTime.now()});
         await _chatRef.updateData({'last_msg_ref': _lastMsgRef});
       }
+      print('Success: Sending message to ${message.receiverId}');
     } catch (e) {
       print(e);
+      print('Error: Sending message to ${message.receiverId}');
       return null;
     }
   }
@@ -62,10 +64,10 @@ class MessageProvider {
       await _chatRef.updateData({'first_user_ref': _firstUserRef});
       await _chatRef.updateData({'second_user_ref': _secondUserRef});
 
-      print('Success sending additonal fields in chats collection');
+      print('Success: Sending additonal fields in chats collection');
     } catch (e) {
-      print('Error sending additonal fields in chats collection');
       print(e);
+      print('Error!!!: Sending additonal fields in chats collection');
     }
   }
 
