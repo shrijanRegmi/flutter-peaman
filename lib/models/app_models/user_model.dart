@@ -6,6 +6,7 @@ class AppUser {
   final String uid;
   final String name;
   final String email;
+  final String profileStatus;
   final OnlineStatus onlineStatus;
 
   AppUser({
@@ -14,6 +15,7 @@ class AppUser {
     this.age,
     this.name,
     this.email,
+    this.profileStatus,
     this.onlineStatus,
   });
 
@@ -25,6 +27,7 @@ class AppUser {
       'name': appUser.name,
       'email': appUser.email,
       'active_status': appUser.onlineStatus.index,
+      'profile_status': appUser.profileStatus,
     };
   }
 
@@ -37,6 +40,7 @@ class AppUser {
       email: data['email'],
       onlineStatus:
           data['active_status'] == 1 ? OnlineStatus.active : OnlineStatus.away,
+      profileStatus: data['profile_status'] ?? 'I am a person with good heart',
     );
   }
 
