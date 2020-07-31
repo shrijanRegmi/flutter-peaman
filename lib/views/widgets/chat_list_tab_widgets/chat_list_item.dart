@@ -22,10 +22,10 @@ class ChatListItem extends StatelessWidget {
     final _appUserRef = _ref.collection('users').document(appUser.uid);
 
     DocumentReference _requiredRef;
-    if (_appUserRef == chat.firstUserRef) {
-      _requiredRef = chat.firstUserRef;
-    } else {
+    if (_appUserRef?.path == chat.firstUserRef?.path) {
       _requiredRef = chat.secondUserRef;
+    } else {
+      _requiredRef = chat.firstUserRef;
     }
 
     return StreamBuilder<AppUser>(
@@ -108,7 +108,9 @@ class ChatListItem extends StatelessWidget {
                   children: <Widget>[
                     // user message
                     AutoSizeText(
-                      _message.text.length > 20 ? '${_message.text.substring(0, 20)}...' : _message.text,
+                      _message.text.length > 20
+                          ? '${_message.text.substring(0, 20)}...'
+                          : _message.text,
                       overflow: TextOverflow.ellipsis,
                       minFontSize: 12.0,
                       maxLines: 1,
