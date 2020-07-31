@@ -16,7 +16,6 @@ class WrapperBuilder extends StatelessWidget {
     final _user = Provider.of<AppUser>(context);
     final _ref = Firestore.instance;
     if (_user != null) {
-      final _appUserRef = _ref.collection('users').document(_user.uid);
       return MultiProvider(
         providers: [
           StreamProvider<AppUser>.value(
@@ -26,7 +25,7 @@ class WrapperBuilder extends StatelessWidget {
             value: AppUserProvider().allUsers,
           ),
           StreamProvider<List<Chat>>.value(
-            value: MessageProvider(appUserRef: _appUserRef).chatList,
+            value: MessageProvider(appUserId: _user.uid).chatList,
           ),
         ],
         child: builder(context, _user),
