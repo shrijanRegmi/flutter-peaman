@@ -18,6 +18,7 @@ class BorderBtn extends StatelessWidget {
       color: color,
       textColor: textColor,
       splashColor: textColor.withOpacity(0.2),
+      highlightColor: Colors.transparent,
       onPressed: onPressed,
       minWidth: MediaQuery.of(context).size.width,
       height: 50.0,

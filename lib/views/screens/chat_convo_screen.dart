@@ -9,7 +9,8 @@ import 'package:peaman/views/widgets/common_widgets/appbar.dart';
 
 class ChatConvoScreen extends StatelessWidget {
   final AppUser friend;
-  ChatConvoScreen({this.friend});
+  final bool fromSearch;
+  ChatConvoScreen({this.friend, this.fromSearch = false});
 
   final FocusNode _focusNode = FocusNode();
 
@@ -26,6 +27,17 @@ class ChatConvoScreen extends StatelessWidget {
             preferredSize: Size.fromHeight(60.0),
             child: SafeArea(
               child: CommonAppbar(
+                leading: fromSearch
+                    ? IconButton(
+                        icon: Icon(Icons.arrow_back_ios),
+                        color: Color(0xff3D4A5A),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                      )
+                    : null,
                 title: Row(
                   children: <Widget>[
                     Text(
@@ -52,8 +64,8 @@ class ChatConvoScreen extends StatelessWidget {
           ),
           bottomNavigationBar: vm.isTyping
               ? Padding(
-                padding: MediaQuery.of(context).viewInsets,
-                child: ChatComposeArea(
+                  padding: MediaQuery.of(context).viewInsets,
+                  child: ChatComposeArea(
                     sendMessage: vm.sendMessage,
                     appUser: vm.appUser,
                     friend: friend,
@@ -61,7 +73,7 @@ class ChatConvoScreen extends StatelessWidget {
                     isTypingActive: vm.isTyping,
                     focusNode: _focusNode,
                   ),
-              )
+                )
               : null,
           floatingActionButton: !vm.isTyping
               ? ChatComposeArea(
