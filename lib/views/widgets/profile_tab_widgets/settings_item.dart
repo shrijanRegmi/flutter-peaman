@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/models/app_models/settings_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/auth_services/auth_provider.dart';
+import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:peaman/views/screens/personal_info_screen.dart';
 
 class SettingsItem extends StatelessWidget {
@@ -68,6 +70,8 @@ class SettingsItem extends StatelessWidget {
         break;
       default:
         AuthProvider().logOut();
+        AppUserProvider(uid: appUser.uid)
+            .setUserActiveStatus(onlineStatus: OnlineStatus.away);
     }
     if (_screen != null) {
       Navigator.push(
