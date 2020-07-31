@@ -25,8 +25,8 @@ class MessageProvider {
       final _messagesDocs = await _messagesRef.limit(2).getDocuments();
 
       if (_messagesDocs.documents.length == 1) {
-        await _chatRef.updateData({'last_updated': DateTime.now()});
-        await _chatRef.setData({'last_msg_ref': _lastMsgRef});
+        await _chatRef.setData({'last_updated': DateTime.now()});
+        await _chatRef.updateData({'last_msg_ref': _lastMsgRef});
         _sendFirstUserSecondUser(
             myId: message.senderId, friendId: message.receiverId);
       } else {
@@ -111,7 +111,7 @@ class MessageProvider {
     return _ref
         .collection('chats')
         .where('users', arrayContains: appUserId)
-        // .orderBy('last_updated', descending: true)
+        .orderBy('last_updated', descending: true)
         .snapshots()
         .map(_chatsFromFirebase);
   }

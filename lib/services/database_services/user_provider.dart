@@ -63,11 +63,11 @@ class AppUserProvider {
   }
 
   Stream<AppUser> get appUserFromRef {
-    return userRef.snapshots().map(_appUserFromFirebase);
+    return userRef?.snapshots()?.map(_appUserFromFirebase);
   }
 
   // stream of list of users;
   Stream<List<AppUser>> get allUsers {
-    return _ref.collection('users').snapshots().map(_usersFromFirebase);
+    return _ref.collection('users').limit(10).snapshots().map(_usersFromFirebase);
   }
 }

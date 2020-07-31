@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/viewmodels/chat_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
+import 'package:peaman/views/screens/search_screen.dart';
 import 'package:peaman/views/widgets/chat_list_tab_widgets/other_users_list.dart';
 
 class ChatListTab extends StatelessWidget {
@@ -24,7 +25,7 @@ class ChatListTab extends StatelessWidget {
                 child: ListView(
                   physics: BouncingScrollPhysics(),
                   children: <Widget>[
-                    _topSectionBuilder(),
+                    _topSectionBuilder(context),
                     // PinnedUsersList(),
                     // SizedBox(
                     //   height: 20.0,
@@ -40,7 +41,7 @@ class ChatListTab extends StatelessWidget {
     );
   }
 
-  Widget _topSectionBuilder() {
+  Widget _topSectionBuilder(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Row(
@@ -68,7 +69,17 @@ class ChatListTab extends StatelessWidget {
             ],
           ),
           // searchbar
-          SvgPicture.asset('assets/images/svgs/search_icon.svg'),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SearchScreen(),
+                ),
+              );
+            },
+            child: SvgPicture.asset('assets/images/svgs/search_icon.svg'),
+          ),
         ],
       ),
     );

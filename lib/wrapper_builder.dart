@@ -22,7 +22,7 @@ class WrapperBuilder extends StatelessWidget {
             value: AppUserProvider(uid: _user?.uid).appUser,
           ),
           StreamProvider<List<AppUser>>.value(
-            value: AppUserProvider().allUsers,
+            value: AppUserProvider(uid: _user.uid).allUsers,
           ),
           StreamProvider<List<Chat>>.value(
             value: MessageProvider(appUserId: _user.uid).chatList,

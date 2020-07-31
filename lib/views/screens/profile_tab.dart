@@ -4,46 +4,80 @@ import 'package:lottie/lottie.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/profile_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
+import 'package:peaman/views/screens/chat_convo_screen.dart';
+import 'package:peaman/views/widgets/common_widgets/border_btn.dart';
 import 'package:peaman/views/widgets/profile_tab_widgets/general_settings_list.dart';
 
 class ProfileTab extends StatelessWidget {
+  final AppUser friend;
+  ProfileTab({this.friend});
   @override
   Widget build(BuildContext context) {
     return ViewmodelProvider<ProfileVm>(
       vm: ProfileVm(context: context),
       builder: (BuildContext context, ProfileVm vm) {
-        return vm.appUser == null
-            ? Center(
-                child: Lottie.asset(
-                  'assets/lottie/loader.json',
-                  width: MediaQuery.of(context).size.width - 100.0,
-                  height: MediaQuery.of(context).size.width - 100.0,
-                ),
-              )
-            : Container(
-                child: SingleChildScrollView(
-                  physics: BouncingScrollPhysics(),
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: 20.0,
+        AppUser _user = friend ?? vm.appUser;
+        return Scaffold(
+          backgroundColor: Color(0xffF3F5F8),
+          body: _user == null
+              ? Center(
+                  child: Lottie.asset(
+                    'assets/lottie/loader.json',
+                    width: MediaQuery.of(context).size.width - 100.0,
+                    height: MediaQuery.of(context).size.width - 100.0,
+                  ),
+                )
+              : SafeArea(
+                  child: Container(
+                    child: SingleChildScrollView(
+                      physics: BouncingScrollPhysics(),
+                      child: Column(
+                        children: <Widget>[
+                          _user == friend
+                              ? _backIconBuilder(context)
+                              : SizedBox(
+                                  height: 20.0,
+                                ),
+                          _userDetailBuilder(context, _user),
+                          SizedBox(
+                            height: _user == friend ? 50.0 : 30.0,
+                          ),
+                          _user == friend
+                              ? _messsageBtnBuilder(context)
+                              : Column(
+                                  children: <Widget>[
+                                    _generalTextBuilder(),
+                                    SizedBox(
+                                      height: 20.0,
+                                    ),
+                                    GeneralSettingsList(
+                                      appUser: _user,
+                                    ),
+                                  ],
+                                )
+                        ],
                       ),
-                      _userDetailBuilder(context, vm.appUser),
-                      SizedBox(
-                        height: 30.0,
-                      ),
-                      _generalTextBuilder(),
-                      SizedBox(
-                        height: 20.0,
-                      ),
-                      GeneralSettingsList(
-                        appUser: vm.appUser,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              );
+        );
       },
+    );
+  }
+
+  Widget _backIconBuilder(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          color: Color(0xff3D4A5A),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
     );
   }
 
@@ -117,6 +151,27 @@ class ProfileTab extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _messsageBtnBuilder(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: BorderBtn(
+        title: 'Message',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChatConvoScreen(
+                fromSearch: true,
+                friend: friend,
+              ),
+            ),
+          );
+        },
+        textColor: Colors.blue[600],
       ),
     );
   }
