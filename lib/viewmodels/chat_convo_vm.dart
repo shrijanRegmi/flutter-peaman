@@ -29,4 +29,15 @@ class ChatConvoVm extends ChangeNotifier {
     _isTyping = newTyping;
     notifyListeners();
   }
+
+  // pin the chat
+  Future pinChat(
+      {final String chatId,
+      final String myId,
+      final String friendId,
+      final bool isPinned}) {
+        
+    return MessageProvider(chatId: chatId)
+        .setPinnedStatus(isPinned: isPinned, myId: myId, friendId: friendId);
+  }
 }

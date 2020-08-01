@@ -39,6 +39,7 @@ class ChatListItem extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ChatConvoScreen(
+                    chat: chat,
                     friend: _friend,
                   ),
                 ),

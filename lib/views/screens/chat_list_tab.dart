@@ -5,6 +5,7 @@ import 'package:peaman/viewmodels/chat_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/screens/search_screen.dart';
 import 'package:peaman/views/widgets/chat_list_tab_widgets/other_users_list.dart';
+import 'package:peaman/views/widgets/chat_list_tab_widgets/pinned_users_list.dart';
 
 class ChatListTab extends StatelessWidget {
   @override
@@ -26,12 +27,16 @@ class ChatListTab extends StatelessWidget {
                   physics: BouncingScrollPhysics(),
                   children: <Widget>[
                     _topSectionBuilder(context),
-                    // PinnedUsersList(),
-                    // SizedBox(
-                    //   height: 20.0,
-                    // ),
+                    PinnedUsersList(
+                      chats: vm.pinnedChats,
+                      appUser: vm.appUser,
+                    ),
+                    if (vm.pinnedChats.isNotEmpty)
+                      SizedBox(
+                        height: 20.0,
+                      ),
                     OtherUsersList(
-                      chats: vm.chats,
+                      chats: vm.otherChats,
                       appUser: vm.appUser,
                     ),
                   ],
