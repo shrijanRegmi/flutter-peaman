@@ -17,7 +17,7 @@ class ChatVm extends ChangeNotifier {
   List<Chat> get otherChats {
     final _appUserRef = _ref.collection('users').document(appUser.uid);
     return chats.where((chat) {
-      if (_appUserRef.path == chat.firstUserRef.path) {
+      if (_appUserRef?.path == chat.firstUserRef?.path) {
         return !chat.firstUserPinnedSecondUser;
       } else {
         return !chat.secondUserPinnedFirstUser;
