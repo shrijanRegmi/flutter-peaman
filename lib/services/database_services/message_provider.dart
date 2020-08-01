@@ -25,10 +25,11 @@ class MessageProvider {
       final _messagesDocs = await _messagesRef.limit(2).getDocuments();
 
       if (_messagesDocs.documents.length == 1) {
-        await _chatRef.setData({'last_updated': DateTime.now()});
-        await _chatRef.updateData({'last_msg_ref': _lastMsgRef});
-        _sendFirstUserSecondUser(
-            myId: message.senderId, friendId: message.receiverId);
+        _sendAdditionalProperties(
+          myId: message.senderId,
+          friendId: message.receiverId,
+          lastMsgRef: _lastMsgRef,
+        );
       } else {
         await _chatRef.updateData({'last_updated': DateTime.now()});
         await _chatRef.updateData({'last_msg_ref': _lastMsgRef});
@@ -42,10 +43,15 @@ class MessageProvider {
   }
 
   // send additional properties with message
-  Future _sendFirstUserSecondUser(
-      {final String myId, final String friendId}) async {
+  Future _sendAdditionalProperties(
+      {final String myId, final String friendId, final lastMsgRef}) async {
     try {
       final _chatRef = _ref.collection('chats').document(chatId);
+
+      await _chatRef.setData({'id': chatId});
+
+      await _chatRef.updateData({'last_updated': DateTime.now()});
+      await _chatRef.updateData({'last_msg_ref': lastMsgRef});
 
       final bool _isAppUserFirstUser =
           ChatHelper().isAppUserFirstUser(myId: myId, friendId: friendId);
@@ -73,6 +79,41 @@ class MessageProvider {
     } catch (e) {
       print(e);
       print('Error!!!: Sending additonal fields in chats collection');
+    }
+  }
+
+  // set pinned status
+  Future setPinnedStatus(
+      {@required final bool isPinned,
+      @required final String myId,
+      @required final String friendId}) async {
+    try {
+      final _isAppUserFirstUser = ChatHelper().isAppUserFirstUser(
+        myId: myId,
+        friendId: friendId,
+      );
+
+      final _chatRef = _ref.collection('chats').document(chatId);
+
+      Map<String, dynamic> _data;
+
+      if (_isAppUserFirstUser) {
+        _data = {
+          'first_user_pinned_second_user': isPinned,
+        };
+      } else {
+        _data = {
+          'second_user_pinned_first_user': isPinned,
+        };
+      }
+
+      await _chatRef.updateData(_data);
+      print('Success: Pinned user with id $friendId');
+      return 'Sucess';
+    } catch (e) {
+      print(e);
+      print('Error!!!: Pinned user with id $friendId');
+      return null;
     }
   }
 
@@ -115,7 +156,7 @@ class MessageProvider {
         .snapshots()
         .map(_chatsFromFirebase);
   }
-
+  
   // stream of message from a particular reference
   Stream<Message> get messageFromRef {
     return messageRef.snapshots().map(_singleMessageFrom);

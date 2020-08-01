@@ -7,18 +7,20 @@ class OtherUsersList extends StatelessWidget {
   final List<Chat> chats;
   final AppUser appUser;
   OtherUsersList({this.chats, this.appUser});
-  
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        // pinned text
-        _pinnedTextBuilder(),
-        // list of users
-        _usersListBuilder(),
-      ],
-    );
+    return chats.isEmpty
+        ? Container()
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              // pinned text
+              _pinnedTextBuilder(),
+              // list of users
+              _usersListBuilder(),
+            ],
+          );
   }
 
   Widget _pinnedTextBuilder() {

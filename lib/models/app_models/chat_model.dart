@@ -6,6 +6,9 @@ class Chat {
   final DocumentReference lastMsgRef;
   final bool firstUserTyping;
   final bool secondUserTyping;
+  final String id;
+  final bool firstUserPinnedSecondUser;
+  final bool secondUserPinnedFirstUser;
 
   Chat({
     this.firstUserRef,
@@ -13,6 +16,9 @@ class Chat {
     this.firstUserTyping,
     this.secondUserTyping,
     this.lastMsgRef,
+    this.id,
+    this.firstUserPinnedSecondUser,
+    this.secondUserPinnedFirstUser,
   });
 
   static Map<String, dynamic> toJson(Chat chat) {
@@ -22,6 +28,9 @@ class Chat {
       'first_user_typing': chat.firstUserTyping,
       'second_user_typing': chat.secondUserTyping,
       'last_msg_ref': chat.lastMsgRef,
+      'id': chat.id,
+      'first_user_pinned_second_user': chat.firstUserPinnedSecondUser,
+      'second_user_pinned_first_user': chat.secondUserPinnedFirstUser,
     };
   }
 
@@ -32,6 +41,9 @@ class Chat {
       firstUserTyping: data['first_user_typing'] ?? false,
       secondUserTyping: data['second_user_typing'] ?? false,
       lastMsgRef: data['last_msg_ref'],
+      id: data['id'],
+      firstUserPinnedSecondUser: data['first_user_pinned_second_user'] ?? false,
+      secondUserPinnedFirstUser: data['second_user_pinned_first_user'] ?? false,
     );
   }
 }
