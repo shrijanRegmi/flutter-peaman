@@ -40,28 +40,12 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SingleIconBtn(
-              radius: 50.0,
-              icon: 'assets/images/svgs/send_image_btn.svg',
-              onPressed: () {},
-            ),
-            SizedBox(
-              width: 20.0,
-            ),
-            SingleIconBtn(
               radius: 80.0,
               icon: 'assets/images/svgs/send_btn.svg',
               onPressed: () {
                 widget.updateIsTyping(true);
                 widget.focusNode.requestFocus();
               },
-            ),
-            SizedBox(
-              width: 20.0,
-            ),
-            SingleIconBtn(
-              radius: 50.0,
-              icon: 'assets/images/svgs/call_btn.svg',
-              onPressed: () {},
             ),
           ],
         ),
@@ -131,25 +115,6 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
                 width: 10.0,
               ),
             ],
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Icons.add_circle_outline,
-                  color: Color(0xff3D4A5A),
-                ),
-                SizedBox(
-                  width: 10.0,
-                ),
-                Icon(
-                  Icons.tag_faces,
-                  color: Color(0xff3D4A5A),
-                ),
-              ],
-            ),
           ),
         ],
       ),
