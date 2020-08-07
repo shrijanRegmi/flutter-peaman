@@ -235,14 +235,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           },
           textColor: Color(0xff5C49E0),
         ),
-        SizedBox(
-          height: 20.0,
-        ),
-        FilledBtn(
-          title: 'or with Google',
-          color: Color(0xffEA4335),
-          onPressed: () {},
-        ),
       ],
     );
   }

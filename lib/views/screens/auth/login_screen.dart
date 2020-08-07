@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   _forgetPassSection(),
                                   SizedBox(
-                                    height: 30.0,
+                                    height: 50.0,
                                   ),
                                   _btnSection(vm),
                                   SizedBox(
@@ -197,20 +197,6 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 20.0,
         ),
         _newUserSection(),
-        SizedBox(
-          height: 20.0,
-        ),
-        Align(
-          alignment: Alignment.center,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: FilledBtn(
-              title: 'or Log in with Google',
-              color: Color(0xffEA4335),
-              onPressed: () {},
-            ),
-          ),
-        ),
       ],
     );
   }

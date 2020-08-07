@@ -27,18 +27,24 @@ class ChatListTab extends StatelessWidget {
                   physics: BouncingScrollPhysics(),
                   children: <Widget>[
                     _topSectionBuilder(context),
-                    PinnedUsersList(
-                      chats: vm.pinnedChats,
-                      appUser: vm.appUser,
-                    ),
-                    if (vm.pinnedChats.isNotEmpty)
-                      SizedBox(
-                        height: 20.0,
-                      ),
-                    OtherUsersList(
-                      chats: vm.otherChats,
-                      appUser: vm.appUser,
-                    ),
+                    vm.chats.isEmpty
+                        ? _emptyChat(context)
+                        : Column(
+                            children: <Widget>[
+                              PinnedUsersList(
+                                chats: vm.pinnedChats,
+                                appUser: vm.appUser,
+                              ),
+                              if (vm.pinnedChats.isNotEmpty)
+                                SizedBox(
+                                  height: 20.0,
+                                ),
+                              OtherUsersList(
+                                chats: vm.otherChats,
+                                appUser: vm.appUser,
+                              ),
+                            ],
+                          ),
                   ],
                 ),
               );
@@ -63,14 +69,6 @@ class ChatListTab extends StatelessWidget {
                     fontSize: 24.0,
                     color: Color(0xff3D4A5A)),
               ),
-              SizedBox(
-                width: 10.0,
-              ),
-              // dropdown
-              Icon(
-                Icons.keyboard_arrow_down,
-                color: Color(0xff3D4A5A),
-              ),
             ],
           ),
           // searchbar
@@ -87,6 +85,40 @@ class ChatListTab extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _emptyChat(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Lottie.asset(
+          'assets/lottie/chat_empty.json',
+          width: MediaQuery.of(context).size.width - 100.0,
+          height: MediaQuery.of(context).size.width - 100.0,
+        ),
+        Text(
+          "It's very quite in here",
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18.0,
+              color: Color(0xff3D4A5A)),
+        ),
+        SizedBox(
+          height: 10.0,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Text(
+            'Tap the "search" icon in top right corner to search a user and start chatting',
+            style: TextStyle(
+              fontSize: 14.0,
+              color: Color(0xff3D4A5A),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
     );
   }
 }
