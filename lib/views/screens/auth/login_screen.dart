@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/viewmodels/auth_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    KeyboardVisibilityNotification().addNewListener(onChange: (visibility) {
+    KeyboardVisibility.onChange.listen((visibility) {
       setState(() {
         _keyboardVisibility = visibility;
       });
