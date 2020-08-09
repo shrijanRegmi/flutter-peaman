@@ -69,14 +69,6 @@ class ChatListTab extends StatelessWidget {
                     fontSize: 24.0,
                     color: Color(0xff3D4A5A)),
               ),
-              SizedBox(
-                width: 10.0,
-              ),
-              // dropdown
-              Icon(
-                Icons.keyboard_arrow_down,
-                color: Color(0xff3D4A5A),
-              ),
             ],
           ),
           // searchbar
