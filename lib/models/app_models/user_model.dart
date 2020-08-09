@@ -26,8 +26,6 @@ class AppUser {
       'age': appUser.age,
       'name': appUser.name,
       'email': appUser.email,
-      'active_status': appUser.onlineStatus.index,
-      'profile_status': appUser.profileStatus,
     };
   }
 

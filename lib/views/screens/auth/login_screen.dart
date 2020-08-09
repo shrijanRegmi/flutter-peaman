@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/viewmodels/auth_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    KeyboardVisibilityNotification().addNewListener(onChange: (visibility) {
+    KeyboardVisibility.onChange.listen((visibility) {
       setState(() {
         _keyboardVisibility = visibility;
       });
@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   _forgetPassSection(),
                                   SizedBox(
-                                    height: 30.0,
+                                    height: 50.0,
                                   ),
                                   _btnSection(vm),
                                   SizedBox(
@@ -197,20 +197,6 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 20.0,
         ),
         _newUserSection(),
-        SizedBox(
-          height: 20.0,
-        ),
-        Align(
-          alignment: Alignment.center,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: FilledBtn(
-              title: 'or Log in with Google',
-              color: Color(0xffEA4335),
-              onPressed: () {},
-            ),
-          ),
-        ),
       ],
     );
   }

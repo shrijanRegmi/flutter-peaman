@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/enums/age.dart';
 import 'package:peaman/viewmodels/auth_vm.dart';
@@ -38,7 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
-    KeyboardVisibilityNotification().addNewListener(onChange: (visibility) {
+    KeyboardVisibility.onChange.listen((visibility) {
       setState(() {
         _keyboardVisibility = visibility;
       });
@@ -234,14 +234,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             }
           },
           textColor: Color(0xff5C49E0),
-        ),
-        SizedBox(
-          height: 20.0,
-        ),
-        FilledBtn(
-          title: 'or with Google',
-          color: Color(0xffEA4335),
-          onPressed: () {},
         ),
       ],
     );
