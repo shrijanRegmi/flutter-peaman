@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/search_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
@@ -11,6 +12,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   List<AppUser> _searchedNames = [];
+  TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,11 @@ class _SearchScreenState extends State<SearchScreen> {
             },
             child: Container(
               color: Colors.transparent,
-              child: _usersList(vm.allUsers),
+              child: Center(
+                child: _searchedNames.isEmpty && _controller.text != ''
+                    ? _emptySearch(context)
+                    : _usersList(vm.allUsers),
+              ),
             ),
           ),
         );
@@ -52,6 +58,7 @@ class _SearchScreenState extends State<SearchScreen> {
         border: InputBorder.none,
         hintText: 'Type here to search...',
       ),
+      controller: _controller,
       onChanged: (val) {
         setState(() {
           if (val.length == 0) {
@@ -75,6 +82,29 @@ class _SearchScreenState extends State<SearchScreen> {
           friend: _searchedNames[index],
         );
       },
+    );
+  }
+
+  Widget _emptySearch(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Lottie.asset(
+            'assets/lottie/search_empty.json',
+            width: MediaQuery.of(context).size.width - 100.0,
+            height: MediaQuery.of(context).size.width - 100.0,
+          ),
+          Text(
+            "User not found !",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18.0,
+                color: Color(0xff3D4A5A)),
+          ),
+        ],
+      ),
     );
   }
 }
