@@ -64,7 +64,6 @@ class ChatListItem extends StatelessWidget {
                       _textBuilder(context, _friend),
                     ],
                   ),
-                  _messageCountBuilder(),
                 ],
               ),
             ),
