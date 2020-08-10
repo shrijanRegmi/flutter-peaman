@@ -1,23 +1,31 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:peaman/enums/message_types.dart';
 import 'package:peaman/models/app_models/message_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/services/storage_services/chat_storage_service.dart';
 import 'package:peaman/views/widgets/common_widgets/single_icon_btn.dart';
 
 class ChatComposeArea extends StatefulWidget {
+  final String chatId;
   final AppUser appUser;
   final AppUser friend;
   final Function sendMessage;
   final Function(bool newIsTypingVal) updateIsTyping;
   final bool isTypingActive;
   final FocusNode focusNode;
-  ChatComposeArea(
-      {this.sendMessage,
-      this.appUser,
-      this.friend,
-      this.updateIsTyping,
-      this.focusNode,
-      this.isTypingActive = false});
+  ChatComposeArea({
+    this.chatId,
+    this.sendMessage,
+    this.appUser,
+    this.friend,
+    this.updateIsTyping,
+    this.focusNode,
+    this.isTypingActive = false,
+  });
   @override
   _ChatComposeAreaState createState() => _ChatComposeAreaState();
 }
@@ -42,7 +50,25 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
             SingleIconBtn(
               radius: 50.0,
               icon: 'assets/images/svgs/send_image_btn.svg',
-              onPressed: () {},
+              onPressed: () async {
+                final _pickedImg =
+                    await ImagePicker().getImage(source: ImageSource.gallery);
+
+                final _message = TextMessage(
+                  senderId: widget.appUser.uid,
+                  receiverId: widget.friend.uid,
+                  milliseconds: DateTime.now().millisecondsSinceEpoch,
+                  type: MessageType.Image,
+                );
+
+                if (_pickedImg != null) {
+                  ChatStorage(
+                    chatId: widget.chatId,
+                    message: _message,
+                    sendMsgCallback: widget.sendMessage,
+                  ).uploadChatImage(imgFile: File(_pickedImg.path));
+                }
+              },
             ),
             SizedBox(
               width: 20.0,
@@ -99,11 +125,12 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
                   if (_messageController.text != '') {
                     final _text = _messageController.text.trim();
                     _messageController.clear();
-                    final _message = Message(
+                    final _message = TextMessage(
                       text: _text,
                       senderId: widget.appUser.uid,
                       receiverId: widget.friend.uid,
                       milliseconds: DateTime.now().millisecondsSinceEpoch,
+                      type: MessageType.Text,
                     );
                     widget.sendMessage(
                       myId: widget.appUser.uid,

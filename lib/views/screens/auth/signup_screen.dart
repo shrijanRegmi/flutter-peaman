@@ -12,7 +12,6 @@ import 'package:peaman/views/widgets/auth_widgets/age_container.dart';
 import 'package:peaman/views/widgets/auth_widgets/auth_field.dart';
 import 'package:peaman/views/widgets/common_widgets/appbar.dart';
 import 'package:peaman/views/widgets/common_widgets/border_btn.dart';
-import 'package:peaman/views/widgets/common_widgets/filled_btn.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override

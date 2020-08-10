@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:peaman/models/app_models/chat_model.dart';
 import 'package:peaman/services/database_services/message_provider.dart';
@@ -14,7 +13,6 @@ class WrapperBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _user = Provider.of<AppUser>(context);
-    final _ref = Firestore.instance;
     if (_user != null) {
       return MultiProvider(
         providers: [
