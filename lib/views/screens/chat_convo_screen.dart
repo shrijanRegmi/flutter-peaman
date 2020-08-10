@@ -115,6 +115,7 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
               ? Padding(
                   padding: MediaQuery.of(context).viewInsets,
                   child: ChatComposeArea(
+                    chatId: widget.chat.id,
                     sendMessage: vm.sendMessage,
                     appUser: vm.appUser,
                     friend: widget.friend,
@@ -126,6 +127,7 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
               : null,
           floatingActionButton: !vm.isTyping
               ? ChatComposeArea(
+                  chatId: widget.chat.id,
                   sendMessage: vm.sendMessage,
                   appUser: vm.appUser,
                   friend: widget.friend,

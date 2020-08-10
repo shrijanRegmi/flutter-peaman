@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:peaman/enums/message_types.dart';
 import 'package:peaman/models/app_models/message_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
@@ -12,11 +14,23 @@ class ChatConvoListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget _messageWidget;
+    switch (message.type) {
+      case MessageType.Text:
+        _messageWidget = _textMessageBuilder();
+        break;
+      case MessageType.Image:
+        _messageWidget = _imgMessageBuilder(context);
+        break;
+      default:
+        _messageWidget = _textMessageBuilder();
+        break;
+    }
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: <Widget>[
-          _messageBuilder(),
+          _messageWidget,
           SizedBox(
             height: 15.0,
           ),
@@ -26,7 +40,7 @@ class ChatConvoListItem extends StatelessWidget {
     );
   }
 
-  Widget _messageBuilder() {
+  Widget _textMessageBuilder() {
     return Row(
       mainAxisAlignment: alignment == Alignment.centerRight
           ? MainAxisAlignment.end
@@ -65,6 +79,29 @@ class ChatConvoListItem extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _imgMessageBuilder(BuildContext context) {
+    final _size = MediaQuery.of(context).size.width / 3;
+    return Align(
+      alignment: alignment,
+      child: LimitedBox(
+        maxWidth: _size,
+        maxHeight: _size,
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              bottom: 5.0,
+              right: 5.0,
+              child: CircularProgressIndicator(),
+            ),
+            CachedNetworkImage(
+              imageUrl: message.text,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
