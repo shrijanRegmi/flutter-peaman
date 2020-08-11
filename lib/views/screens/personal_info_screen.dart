@@ -137,8 +137,12 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         ),
         GestureDetector(
           onTap: () async {
-            final _pickedImg =
-                await ImagePicker().getImage(source: ImageSource.gallery);
+            final _pickedImg = await ImagePicker().getImage(
+              source: ImageSource.gallery,
+              imageQuality: 20,
+              maxHeight: 500.0,
+              maxWidth: 500.0,
+            );
             File _myImg = _pickedImg != null ? File(_pickedImg.path) : null;
 
             setState(() {

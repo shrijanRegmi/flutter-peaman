@@ -32,7 +32,7 @@ class UserListItem extends StatelessWidget {
                 children: <Widget>[
                   // user image
                   AvatarBuilder(
-                    imgUrl: friend?.photoUrl_100x100,
+                    imgUrl: friend?.photoUrl,
                     radius: 25.0,
                     isOnline: friend.onlineStatus == OnlineStatus.active,
                   ),

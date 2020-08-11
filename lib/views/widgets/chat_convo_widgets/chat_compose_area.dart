@@ -51,8 +51,11 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
               radius: 50.0,
               icon: 'assets/images/svgs/send_image_btn.svg',
               onPressed: () async {
-                final _pickedImg =
-                    await ImagePicker().getImage(source: ImageSource.gallery);
+                final _pickedImg = await ImagePicker().getImage(
+                  source: ImageSource.gallery,
+                  maxWidth: 640.0,
+                  maxHeight: 640.0,
+                );
 
                 final _message = TextMessage(
                   senderId: widget.appUser.uid,

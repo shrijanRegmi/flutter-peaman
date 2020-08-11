@@ -113,7 +113,7 @@ class ProfileTab extends StatelessWidget {
                 ],
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(
-                    '${appUser?.photoUrl_300x300}',
+                    '${appUser?.photoUrl}',
                   ),
                   fit: BoxFit.cover,
                 ),

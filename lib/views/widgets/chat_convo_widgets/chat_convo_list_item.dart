@@ -110,7 +110,7 @@ class ChatConvoListItem extends StatelessWidget {
         ? Row(
             children: <Widget>[
               AvatarBuilder(
-                imgUrl: friend.photoUrl_60x60,
+                imgUrl: friend.photoUrl,
                 isOnline: false,
                 radius: 17.0,
               ),
@@ -168,7 +168,7 @@ class ChatConvoListItem extends StatelessWidget {
                 width: 10.0,
               ),
               AvatarBuilder(
-                imgUrl: friend.photoUrl_60x60,
+                imgUrl: friend.photoUrl,
                 isOnline: false,
                 radius: 17.0,
               ),
