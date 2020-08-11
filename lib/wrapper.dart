@@ -33,7 +33,7 @@ class _WrapperState extends State<Wrapper> {
       if (widget.appUser == null) {
         return LoginScreen();
       } else {
-        return HomeScreen();
+        return HomeScreen(widget.appUser.uid);
       }
     }
   }
