@@ -11,6 +11,8 @@ import 'package:peaman/views/screens/profile_tab.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
+  final String uid;
+  HomeScreen(this.uid);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -35,15 +37,14 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    final _appUser = Provider.of<AppUser>(context, listen: false);
 
     switch (state) {
       case AppLifecycleState.paused:
-        AppUserProvider(uid: _appUser.uid)
+        AppUserProvider(uid: widget.uid)
             .setUserActiveStatus(onlineStatus: OnlineStatus.away);
         break;
       case AppLifecycleState.resumed:
-        AppUserProvider(uid: _appUser.uid)
+        AppUserProvider(uid: widget.uid)
             .setUserActiveStatus(onlineStatus: OnlineStatus.active);
         break;
       default:
