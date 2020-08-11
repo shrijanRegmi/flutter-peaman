@@ -62,7 +62,7 @@ class SettingsItem extends StatelessWidget {
       case 0:
         _screen = PersonalInfoScreen(
           uid: appUser.uid,
-          imgUrl: appUser.photoUrl_300x300,
+          imgUrl: appUser.photoUrl,
           name: appUser.name,
           email: appUser.email,
           status: appUser.profileStatus,

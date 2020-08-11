@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:peaman/enums/message_types.dart';
 import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/models/app_models/chat_model.dart';
 import 'package:peaman/models/app_models/message_model.dart';
@@ -54,7 +55,7 @@ class ChatListItem extends StatelessWidget {
                     children: <Widget>[
                       // user image
                       AvatarBuilder(
-                        imgUrl: _friend?.photoUrl_100x100,
+                        imgUrl: _friend?.photoUrl,
                         radius: 25.0,
                         isOnline: _friend.onlineStatus == OnlineStatus.active,
                       ),
@@ -109,9 +110,7 @@ class ChatListItem extends StatelessWidget {
                   children: <Widget>[
                     // user message
                     AutoSizeText(
-                      _message.text.length > 20
-                          ? '${_message.text.substring(0, 20)}...'
-                          : _message.text,
+                      _getMessageText(_message),
                       overflow: TextOverflow.ellipsis,
                       minFontSize: 12.0,
                       maxLines: 1,
@@ -180,5 +179,28 @@ class ChatListItem extends StatelessWidget {
         .replaceAll('a minute', '1 m')
         .replaceAll('about an hour', '1 h')
         .replaceAll('a moment', 'Just now');
+  }
+
+  String _getMessageText(Message _message) {
+    switch (_message.type) {
+      case MessageType.Text:
+        return _message.text.length > 20
+            ? _message.senderId == appUser.uid
+                ? 'You: ${_message.text.substring(0, 20)}...'
+                : '${_message.text.substring(0, 20)}...'
+            : _message.senderId == appUser.uid
+                ? 'You: ${_message.text}'
+                : _message.text;
+        break;
+      case MessageType.Image:
+        return _message.senderId == appUser.uid
+            ? 'You: Sent an image'
+            : 'Sent an image';
+        break;
+      default:
+        return _message.text.length > 20
+            ? '${_message.text.substring(0, 20)}...'
+            : _message.text;
+    }
   }
 }

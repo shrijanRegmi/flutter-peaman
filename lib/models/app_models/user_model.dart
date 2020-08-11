@@ -41,16 +41,4 @@ class AppUser {
       profileStatus: data['profile_status'] ?? 'I am a person with good heart',
     );
   }
-
-  String get photoUrl_300x300 => photoUrl
-      .replaceFirst('?alt', '_300x300?alt')
-      .replaceFirst('profile_imgs%', 'profile_imgs%2Fprofile_imgs_resized%');
-
-  String get photoUrl_100x100 => photoUrl
-      .replaceFirst('?alt', '_100x100?alt')
-      .replaceFirst('profile_imgs%', 'profile_imgs%2Fprofile_imgs_resized%');
-
-  String get photoUrl_60x60 => photoUrl
-      .replaceFirst('?alt', '_60x60?alt')
-      .replaceFirst('profile_imgs%', 'profile_imgs%2Fprofile_imgs_resized%');
 }
