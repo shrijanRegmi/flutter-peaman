@@ -20,19 +20,47 @@ class MessageProvider {
           _ref.collection('chats').document(chatId).collection('messages');
       final _chatRef = _ref.collection('chats').document(chatId);
 
+      final _messagesDocs = await _messagesRef.limit(2).getDocuments();
+
+      if (_messagesDocs.documents.length == 1) {
+        _chatRef.setData({'id': chatId});
+      }
       final _lastMsgRef = await _messagesRef.add(_message);
 
-      final _messagesDocs = await _messagesRef.limit(2).getDocuments();
+      final bool _isAppUserFirstUser = ChatHelper().isAppUserFirstUser(
+          myId: message.senderId, friendId: message.receiverId);
+
+      final _chatSnap = await _chatRef.get();
+      if (_isAppUserFirstUser) {
+        final _secondUserUnreadMessagesCount =
+            _chatSnap.data['second_user_unread_messages_count'] ?? 0;
+
+        _chatRef.updateData(
+          {
+            'second_user_unread_messages_count':
+                _secondUserUnreadMessagesCount + 1
+          },
+        );
+      } else {
+        final _firstUserUnreadMessagesCount =
+            _chatSnap.data['first_user_unread_messages_count'] ?? 0;
+
+        _chatRef.updateData(
+          {
+            'first_user_unread_messages_count':
+                _firstUserUnreadMessagesCount + 1
+          },
+        );
+      }
+
+      _chatRef.updateData({'last_updated': DateTime.now()});
+      _chatRef.updateData({'last_msg_ref': _lastMsgRef});
 
       if (_messagesDocs.documents.length == 1) {
         _sendAdditionalProperties(
           myId: message.senderId,
           friendId: message.receiverId,
-          lastMsgRef: _lastMsgRef,
         );
-      } else {
-        await _chatRef.updateData({'last_updated': DateTime.now()});
-        await _chatRef.updateData({'last_msg_ref': _lastMsgRef});
       }
       print('Success: Sending message to ${message.receiverId}');
     } catch (e) {
@@ -47,11 +75,6 @@ class MessageProvider {
       {final String myId, final String friendId, final lastMsgRef}) async {
     try {
       final _chatRef = _ref.collection('chats').document(chatId);
-
-      await _chatRef.setData({'id': chatId});
-
-      await _chatRef.updateData({'last_updated': DateTime.now()});
-      await _chatRef.updateData({'last_msg_ref': lastMsgRef});
 
       final bool _isAppUserFirstUser =
           ChatHelper().isAppUserFirstUser(myId: myId, friendId: friendId);
@@ -117,6 +140,20 @@ class MessageProvider {
     }
   }
 
+  // update chat data
+  Future updateChatData(final Map<String, dynamic> data) async {
+    try {
+      final _chatRef = _ref.collection('chats').document(chatId);
+      await _chatRef.updateData(data);
+      print('Success: Updating chat data having chatId $chatId');
+      return 'Success';
+    } catch (e) {
+      print(e);
+      print('Error!!!: Updating chat data having chatId $chatId');
+      return null;
+    }
+  }
+
   // message from firebase
   List<Message> _messageFromFirebase(QuerySnapshot snap) {
     return snap.documents.map((doc) {
@@ -156,7 +193,7 @@ class MessageProvider {
         .snapshots()
         .map(_chatsFromFirebase);
   }
-  
+
   // stream of message from a particular reference
   Stream<Message> get messageFromRef {
     return messageRef.snapshots().map(_singleMessageFrom);
