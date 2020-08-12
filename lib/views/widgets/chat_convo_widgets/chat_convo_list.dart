@@ -29,16 +29,19 @@ class ChatConvoList extends StatelessWidget {
                 if (messagesSnap.data[index].senderId == appUser.uid) {
                   if (index == 0) {
                     return Padding(
-                      padding:
-                          EdgeInsets.only(bottom: isTypingActive ? 20.0 : 120.0),
+                      padding: EdgeInsets.only(
+                          bottom: isTypingActive ? 20.0 : 120.0),
                       child: ChatConvoListItem(
+                        chatId: _chatId,
                         message: messagesSnap.data[index],
                         friend: appUser,
                         alignment: Alignment.centerRight,
+                        isLast: true,
                       ),
                     );
                   }
                   return ChatConvoListItem(
+                    chatId: _chatId,
                     message: messagesSnap.data[index],
                     friend: appUser,
                     alignment: Alignment.centerRight,
@@ -46,16 +49,19 @@ class ChatConvoList extends StatelessWidget {
                 } else {
                   if (index == 0) {
                     return Padding(
-                      padding:
-                          EdgeInsets.only(bottom: isTypingActive ? 20.0 : 120.0),
+                      padding: EdgeInsets.only(
+                          bottom: isTypingActive ? 20.0 : 120.0),
                       child: ChatConvoListItem(
+                        chatId: _chatId,
                         message: messagesSnap.data[index],
                         friend: friend,
                         alignment: Alignment.centerLeft,
+                        isLast: true,
                       ),
                     );
                   }
                   return ChatConvoListItem(
+                    chatId: _chatId,
                     message: messagesSnap.data[index],
                     friend: friend,
                     alignment: Alignment.centerLeft,

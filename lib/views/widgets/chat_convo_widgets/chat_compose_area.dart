@@ -5,9 +5,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:peaman/enums/message_types.dart';
 import 'package:peaman/models/app_models/message_model.dart';
+import 'package:peaman/models/app_models/temporary_img_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/storage_services/chat_storage_service.dart';
+import 'package:peaman/viewmodels/temp_img_vm.dart';
 import 'package:peaman/views/widgets/common_widgets/single_icon_btn.dart';
+import 'package:provider/provider.dart';
 
 class ChatComposeArea extends StatefulWidget {
   final String chatId;
@@ -51,11 +54,17 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
               radius: 50.0,
               icon: 'assets/images/svgs/send_image_btn.svg',
               onPressed: () async {
+                final _chatConvoVmProvider =
+                    Provider.of<TempImgVm>(context, listen: false);
+
                 final _pickedImg = await ImagePicker().getImage(
                   source: ImageSource.gallery,
                   maxWidth: 640.0,
                   maxHeight: 640.0,
                 );
+
+                final _imgFile =
+                    _pickedImg != null ? File(_pickedImg.path) : null;
 
                 final _message = TextMessage(
                   senderId: widget.appUser.uid,
@@ -64,12 +73,20 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
                   type: MessageType.Image,
                 );
 
-                if (_pickedImg != null) {
-                  ChatStorage(
+                if (_imgFile != null) {
+                  final _tempImg = TempImage(
+                    chatId: widget.chatId,
+                    imgFile: _imgFile,
+                  );
+
+                  _chatConvoVmProvider.addItemToTempImagesList(_tempImg);
+                  await ChatStorage(
                     chatId: widget.chatId,
                     message: _message,
                     sendMsgCallback: widget.sendMessage,
-                  ).uploadChatImage(imgFile: File(_pickedImg.path));
+                  ).uploadChatImage(imgFile: _imgFile);
+
+                  _chatConvoVmProvider.removeItemToTempImagesList(_tempImg);
                 }
               },
             ),

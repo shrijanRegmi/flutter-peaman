@@ -1,16 +1,27 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:peaman/enums/message_types.dart';
 import 'package:peaman/models/app_models/message_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/viewmodels/temp_img_vm.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatConvoListItem extends StatelessWidget {
+  final String chatId;
   final Message message;
   final AppUser friend;
   final Alignment alignment;
-  ChatConvoListItem({this.friend, this.alignment, this.message});
+  final bool isLast;
+  ChatConvoListItem(
+      {this.chatId,
+      this.friend,
+      this.alignment,
+      this.message,
+      this.isLast = false});
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +46,7 @@ class ChatConvoListItem extends StatelessWidget {
             height: 15.0,
           ),
           _userBuilder(),
+          if (isLast) ..._tempImageListBuilder(context),
         ],
       ),
     );
@@ -87,8 +99,8 @@ class ChatConvoListItem extends StatelessWidget {
     return Align(
       alignment: alignment,
       child: LimitedBox(
-        maxWidth: _size,
-        maxHeight: _size,
+        maxWidth: _size - 100,
+        maxHeight: _size + 100,
         child: Stack(
           children: <Widget>[
             Positioned(
@@ -98,6 +110,7 @@ class ChatConvoListItem extends StatelessWidget {
             ),
             CachedNetworkImage(
               imageUrl: message.text,
+              fit: BoxFit.cover,
             ),
           ],
         ),
@@ -105,7 +118,7 @@ class ChatConvoListItem extends StatelessWidget {
     );
   }
 
-  Widget _userBuilder() {
+  Widget _userBuilder({final bool isTemp = false}) {
     return alignment == Alignment.centerLeft
         ? Row(
             children: <Widget>[
@@ -129,7 +142,7 @@ class ChatConvoListItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    _getTime(message.milliseconds),
+                    isTemp ? 'Just now' : _getTime(message.milliseconds),
                     style: TextStyle(
                       fontSize: 10.0,
                       color: Colors.black26,
@@ -155,7 +168,7 @@ class ChatConvoListItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    _getTime(message.milliseconds),
+                    isTemp ? 'Just now' : _getTime(message.milliseconds),
                     style: TextStyle(
                       fontSize: 10.0,
                       color: Colors.black26,
@@ -190,5 +203,68 @@ class ChatConvoListItem extends StatelessWidget {
         .replaceAll('a minute', '1 m')
         .replaceAll('about an hour', '1 h')
         .replaceAll('a moment', 'Just now');
+  }
+
+  List<Widget> _tempImageListBuilder(BuildContext context) {
+    final _tempImagesList = Provider.of<TempImgVm>(context).tempImages;
+    List<Widget> _list = [];
+    for (var item in _tempImagesList) {
+      if (item.chatId == chatId) {
+        _list.add(_tempImageItemBuilder(context, item.imgFile));
+      }
+    }
+    return _list;
+  }
+
+  Widget _tempImageItemBuilder(BuildContext context, File imgFile) {
+    final _size = MediaQuery.of(context).size.width / 3;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            SizedBox(
+              height: 30.0,
+            ),
+            LimitedBox(
+              maxWidth: _size - 100,
+              maxHeight: _size + 100,
+              child: Stack(
+                children: <Widget>[
+                  Image.file(
+                    imgFile,
+                    fit: BoxFit.cover,
+                  ),
+                  Positioned.fill(
+                    child: Center(
+                      child: Container(
+                        width: 45.0,
+                        height: 45.0,
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            _userBuilder(isTemp: true),
+          ],
+        ),
+      ],
+    );
   }
 }

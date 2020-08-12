@@ -8,7 +8,11 @@ class ChatStorage {
   final String chatId;
   final Message message;
   final Function sendMsgCallback;
-  ChatStorage({this.chatId, this.message, this.sendMsgCallback});
+  ChatStorage({
+    this.chatId,
+    this.message,
+    this.sendMsgCallback,
+  });
   // upload chat image to storage;
   Future uploadChatImage({@required final File imgFile}) async {
     try {
