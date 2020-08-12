@@ -36,7 +36,6 @@ class ChatConvoVm extends ChangeNotifier {
       final String myId,
       final String friendId,
       final bool isPinned}) {
-        
     return MessageProvider(chatId: chatId)
         .setPinnedStatus(isPinned: isPinned, myId: myId, friendId: friendId);
   }
