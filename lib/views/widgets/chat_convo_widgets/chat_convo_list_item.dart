@@ -217,7 +217,7 @@ class ChatConvoListItem extends StatelessWidget {
   }
 
   Widget _tempImageItemBuilder(BuildContext context, File imgFile) {
-    final _size = MediaQuery.of(context).size.width / 3;
+    final _size = MediaQuery.of(context).size.width / 2;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -229,8 +229,8 @@ class ChatConvoListItem extends StatelessWidget {
               height: 30.0,
             ),
             LimitedBox(
-              maxWidth: _size - 100,
-              maxHeight: _size + 100,
+              maxWidth: _size,
+              maxHeight: _size,
               child: Stack(
                 children: <Widget>[
                   Image.file(
@@ -261,7 +261,40 @@ class ChatConvoListItem extends StatelessWidget {
             SizedBox(
               height: 20.0,
             ),
-            _userBuilder(isTemp: true),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Text(
+                      'Me',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0,
+                        color: Color(0xff3D4A5A),
+                      ),
+                    ),
+                    Text(
+                      'Just now',
+                      style: TextStyle(
+                        fontSize: 10.0,
+                        color: Colors.black26,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: 10.0,
+                ),
+                AvatarBuilder(
+                  imgUrl: friend.photoUrl,
+                  isOnline: false,
+                  radius: 17.0,
+                ),
+              ],
+            ),
           ],
         ),
       ],
