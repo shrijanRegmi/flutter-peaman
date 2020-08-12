@@ -39,4 +39,13 @@ class ChatConvoVm extends ChangeNotifier {
     return MessageProvider(chatId: chatId)
         .setPinnedStatus(isPinned: isPinned, myId: myId, friendId: friendId);
   }
+
+  Future updateChatData(Map<String, dynamic> data, final String chatId) async {
+    data.forEach((key, value) {
+      if (value == null) {
+        data = data.remove(key);
+      }
+    });
+    return await MessageProvider(chatId: chatId).updateChatData(data);
+  }
 }

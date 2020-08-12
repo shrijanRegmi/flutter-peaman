@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:peaman/enums/message_types.dart';
 import 'package:peaman/enums/online_status.dart';
+import 'package:peaman/helpers/chat_helper.dart';
 import 'package:peaman/models/app_models/chat_model.dart';
 import 'package:peaman/models/app_models/message_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
@@ -34,6 +35,17 @@ class ChatListItem extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<AppUser> snapshot) {
         if (snapshot.hasData) {
           final _friend = snapshot.data;
+
+          final _isAppUserFirstUser = ChatHelper()
+              .isAppUserFirstUser(myId: appUser.uid, friendId: _friend.uid);
+          int _unreadMessagesCount;
+
+          if (_isAppUserFirstUser) {
+            _unreadMessagesCount = chat.firstUserUnreadMessagesCount;
+          } else {
+            _unreadMessagesCount = chat.secondUserUnreadMessagesCount;
+          }
+
           return InkWell(
             onTap: () {
               Navigator.push(
@@ -65,7 +77,7 @@ class ChatListItem extends StatelessWidget {
                       _textBuilder(context, _friend),
                     ],
                   ),
-                  _messageCountBuilder(),
+                  _messageCountBuilder(_unreadMessagesCount),
                 ],
               ),
             ),
@@ -86,7 +98,7 @@ class ChatListItem extends StatelessWidget {
         if (snapshot.hasData) {
           final _message = snapshot.data;
           return Container(
-            width: _scrSize / 2,
+            width: _scrSize / 2 + 50.0,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -148,21 +160,23 @@ class ChatListItem extends StatelessWidget {
     );
   }
 
-  Widget _messageCountBuilder() {
-    return CircleAvatar(
-      backgroundColor: Colors.blue[600],
-      maxRadius: 10.0,
-      child: Center(
-        child: AutoSizeText(
-          '2',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 10.0,
-          ),
-        ),
-      ),
-    );
+  Widget _messageCountBuilder(int unreadMessagesCount) {
+    return unreadMessagesCount != 0
+        ? CircleAvatar(
+            backgroundColor: Colors.blue[600],
+            maxRadius: 10.0,
+            child: Center(
+              child: AutoSizeText(
+                unreadMessagesCount.toString(),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 10.0,
+                ),
+              ),
+            ),
+          )
+        : Container();
   }
 
   String _getTime(final int milliseconds) {

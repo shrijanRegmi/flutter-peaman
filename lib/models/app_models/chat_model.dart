@@ -9,6 +9,8 @@ class Chat {
   final String id;
   final bool firstUserPinnedSecondUser;
   final bool secondUserPinnedFirstUser;
+  final int firstUserUnreadMessagesCount;
+  final int secondUserUnreadMessagesCount;
 
   Chat({
     this.firstUserRef,
@@ -19,6 +21,8 @@ class Chat {
     this.id,
     this.firstUserPinnedSecondUser,
     this.secondUserPinnedFirstUser,
+    this.firstUserUnreadMessagesCount,
+    this.secondUserUnreadMessagesCount,
   });
 
   static Map<String, dynamic> toJson(Chat chat) {
@@ -44,6 +48,8 @@ class Chat {
       id: data['id'],
       firstUserPinnedSecondUser: data['first_user_pinned_second_user'] ?? false,
       secondUserPinnedFirstUser: data['second_user_pinned_first_user'] ?? false,
+      firstUserUnreadMessagesCount: data['first_user_unread_messages_count'] ?? 0,
+      secondUserUnreadMessagesCount: data['second_user_unread_messages_count'] ?? 0,
     );
   }
 }

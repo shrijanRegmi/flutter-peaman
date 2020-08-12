@@ -9,6 +9,7 @@ import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/chat_convo_widgets/chat_compose_area.dart';
 import 'package:peaman/views/widgets/chat_convo_widgets/chat_convo_list.dart';
 import 'package:peaman/views/widgets/common_widgets/appbar.dart';
+import 'package:provider/provider.dart';
 
 class ChatConvoScreen extends StatefulWidget {
   final AppUser friend;
@@ -42,6 +43,34 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
       },
       builder: (BuildContext context, ChatConvoVm vm) {
         final _appUser = vm.appUser;
+
+        final bool _isAppUserFirstUser = ChatHelper().isAppUserFirstUser(
+            myId: vm.appUser.uid, friendId: widget.friend.uid);
+
+        final _chats = Provider.of<List<Chat>>(context) ?? [];
+        final _dChat = _chats.firstWhere((chat) => chat.id == widget.chat?.id,
+            orElse: () => null);
+
+        Map<String, dynamic> _data = {};
+        int _unreadMessagesCount;
+
+        if (_isAppUserFirstUser) {
+          _unreadMessagesCount = _dChat?.firstUserUnreadMessagesCount;
+          _data.addAll({
+            'first_user_unread_messages_count': 0,
+          });
+        } else {
+          _unreadMessagesCount = _dChat?.secondUserUnreadMessagesCount;
+          _data.addAll({
+            'second_user_unread_messages_count': 0,
+          });
+        }
+
+        if (_unreadMessagesCount != 0) {
+          print('Called');
+          vm.updateChatData(_data, widget.chat?.id);
+        }
+
         return Scaffold(
           backgroundColor: Color(0xffF3F5F8),
           appBar: PreferredSize(
