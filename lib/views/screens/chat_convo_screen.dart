@@ -67,7 +67,6 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
         }
 
         if (_unreadMessagesCount != 0) {
-          print('Called');
           vm.updateChatData(_data, widget.chat?.id);
         }
 
