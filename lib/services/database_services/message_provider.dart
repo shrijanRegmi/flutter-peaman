@@ -22,8 +22,8 @@ class MessageProvider {
 
       final _messagesDocs = await _messagesRef.limit(2).getDocuments();
 
-      if (_messagesDocs.documents.length == 1) {
-        _chatRef.setData({'id': chatId});
+      if (_messagesDocs.documents.length == 0) {
+        await _chatRef.setData({'id': chatId});
       }
       final _lastMsgRef = await _messagesRef.add(_message);
 
@@ -32,8 +32,9 @@ class MessageProvider {
 
       final _chatSnap = await _chatRef.get();
       if (_isAppUserFirstUser) {
-        final _secondUserUnreadMessagesCount =
-            _chatSnap.data['second_user_unread_messages_count'] ?? 0;
+        final _secondUserUnreadMessagesCount = _chatSnap.data != null
+            ? _chatSnap.data['second_user_unread_messages_count'] ?? 0
+            : 0;
 
         _chatRef.updateData(
           {
@@ -42,8 +43,9 @@ class MessageProvider {
           },
         );
       } else {
-        final _firstUserUnreadMessagesCount =
-            _chatSnap.data['first_user_unread_messages_count'] ?? 0;
+        final _firstUserUnreadMessagesCount = _chatSnap.data != null
+            ? _chatSnap.data['first_user_unread_messages_count'] ?? 0
+            : 0;
 
         _chatRef.updateData(
           {
@@ -56,7 +58,7 @@ class MessageProvider {
       _chatRef.updateData({'last_updated': DateTime.now()});
       _chatRef.updateData({'last_msg_ref': _lastMsgRef});
 
-      if (_messagesDocs.documents.length == 1) {
+      if (_messagesDocs.documents.length == 0) {
         _sendAdditionalProperties(
           myId: message.senderId,
           friendId: message.receiverId,
