@@ -13,6 +13,7 @@ class ChatVm extends ChangeNotifier {
 
   final _ref = Firestore.instance;
 
+  // filter chats list to get otherChats list
   List<Chat> get otherChats {
     final _appUserRef = _ref.collection('users').document(appUser.uid);
     return chats.where((chat) {
@@ -24,6 +25,7 @@ class ChatVm extends ChangeNotifier {
     }).toList();
   }
 
+  // filter chat list to get pinnedChats list
   List<Chat> get pinnedChats {
     final _appUserRef = _ref.collection('users').document(appUser.uid);
     return chats.where((chat) {
@@ -34,4 +36,7 @@ class ChatVm extends ChangeNotifier {
       }
     }).toList();
   }
+
+
+
 }
