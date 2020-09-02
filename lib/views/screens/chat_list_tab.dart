@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/viewmodels/chat_vm.dart';
@@ -7,9 +8,11 @@ import 'package:peaman/views/screens/search_screen.dart';
 import 'package:peaman/views/widgets/chat_list_tab_widgets/other_users_list.dart';
 import 'package:peaman/views/widgets/chat_list_tab_widgets/pinned_users_list.dart';
 
-class ChatListTab extends StatelessWidget {
+class ChatListTab extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final _animationController =
+        useAnimationController(duration: Duration(milliseconds: 5000));
     return ViewmodelProvider(
       vm: ChatVm(context: context),
       builder: (BuildContext context, ChatVm vm) {
@@ -28,7 +31,7 @@ class ChatListTab extends StatelessWidget {
                   children: <Widget>[
                     _topSectionBuilder(context),
                     vm.chats.isEmpty
-                        ? _emptyChat(context)
+                        ? _emptyChat(context, _animationController)
                         : Column(
                             children: <Widget>[
                               PinnedUsersList(
@@ -96,7 +99,8 @@ class ChatListTab extends StatelessWidget {
     );
   }
 
-  Widget _emptyChat(BuildContext context) {
+  Widget _emptyChat(
+      BuildContext context, AnimationController _animationController) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -104,6 +108,12 @@ class ChatListTab extends StatelessWidget {
           'assets/lottie/chat_empty.json',
           width: MediaQuery.of(context).size.width - 100.0,
           height: MediaQuery.of(context).size.width - 100.0,
+          controller: _animationController,
+          onLoaded: (comp) {
+            _animationController
+              ..duration = Duration(milliseconds: 3000)
+              ..repeat();
+          },
         ),
         Text(
           "It's very quite in here",
