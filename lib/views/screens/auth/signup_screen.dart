@@ -1,9 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/enums/age.dart';
 import 'package:peaman/viewmodels/auth_vm.dart';
@@ -13,45 +9,19 @@ import 'package:peaman/views/widgets/auth_widgets/auth_field.dart';
 import 'package:peaman/views/widgets/common_widgets/appbar.dart';
 import 'package:peaman/views/widgets/common_widgets/border_btn.dart';
 
-class SignUpScreen extends StatefulWidget {
-  @override
-  _SignUpScreenState createState() => _SignUpScreenState();
-}
-
-class _SignUpScreenState extends State<SignUpScreen> {
-  bool _keyboardVisibility = false;
+class SignUpScreen extends StatelessWidget {
   final Color _textColor = Color(0xff3D4A5A);
-
-  bool _isNextPressed = false;
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passController = TextEditingController();
-  File _imgFile;
-
-  Age _age;
-
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    KeyboardVisibility.onChange.listen((visibility) {
-      setState(() {
-        _keyboardVisibility = visibility;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return ViewmodelProvider<AuthVm>(
-      vm: AuthVm(),
+      vm: AuthVm(context),
+      onInit: (vm) => vm.onInit(),
+      onDispose: (vm) => vm.onDispose(),
       builder: (BuildContext context, AuthVm vm) {
         return Scaffold(
-          key: _scaffoldKey,
-          appBar: _isLoading
+          key: vm.scaffoldKey,
+          appBar: vm.isLoading
               ? null
               : PreferredSize(
                   preferredSize: Size.fromHeight(60.0),
@@ -60,19 +30,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     leading: IconButton(
                       icon: Icon(Icons.arrow_back_ios),
                       color: Color(0xff3D4A5A),
-                      onPressed: () {
-                        if (_isNextPressed) {
-                          setState(() {
-                            _isNextPressed = !_isNextPressed;
-                          });
-                        } else {
-                          Navigator.pop(context);
-                        }
-                      },
+                      onPressed: vm.onPressedBackBtn,
                     ),
                   ),
                 ),
-          body: _isLoading
+          body: vm.isLoading
               ? Center(
                   child: Lottie.asset(
                     'assets/lottie/loader.json',
@@ -108,9 +70,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   SizedBox(
                                     height: 40.0,
                                   ),
-                                  _isNextPressed
+                                  vm.isNextPressed
                                       ? _userCredBuilder(vm)
-                                      : _userInfoBuilder(),
+                                      : _userInfoBuilder(context, vm),
                                   SizedBox(
                                     height: 50.0,
                                   ),
@@ -121,7 +83,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                     ),
-                    if (!_keyboardVisibility)
+                    if (!vm.keyboardVisibility)
                       Positioned(
                         bottom: -10.0,
                         left: 0.0,
@@ -158,40 +120,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _userInfoBuilder() {
+  Widget _userInfoBuilder(BuildContext context, AuthVm vm) {
     return Column(
       children: <Widget>[
-        _uploadImageBuilder(),
+        _uploadImageBuilder(context, vm),
         SizedBox(
           height: 40.0,
         ),
-        _ageBuilder(),
+        _ageBuilder(vm),
         SizedBox(
           height: 50.0,
         ),
         BorderBtn(
           title: 'Next',
-          onPressed: () {
-            if (_imgFile != null && _age != null) {
-              setState(() {
-                _isNextPressed = true;
-              });
-            } else {
-              if (_imgFile == null) {
-                _scaffoldKey.currentState.showSnackBar(
-                  SnackBar(
-                    content: Text('Please upload your image'),
-                  ),
-                );
-              } else {
-                _scaffoldKey.currentState.showSnackBar(
-                  SnackBar(
-                    content: Text('Please select your age'),
-                  ),
-                );
-              }
-            }
-          },
+          onPressed: vm.onPressedNextBtn,
           textColor: Color(0xff5C49E0),
         ),
       ],
@@ -201,44 +143,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _userCredBuilder(AuthVm vm) {
     return Column(
       children: <Widget>[
-        _authFieldContainerBuilder(),
+        _authFieldContainerBuilder(vm),
         SizedBox(
           height: 30.0,
         ),
         BorderBtn(
           title: 'Sign up',
-          onPressed: () async {
-            if (_nameController.text == '' ||
-                _emailController.text == '' ||
-                _passController.text == '') {
-              _scaffoldKey.currentState.showSnackBar(SnackBar(
-                content: Text('Please fill up all fields'),
-              ));
-            } else {
-              setState(() {
-                _isLoading = true;
-              });
-              final _result = await vm.signUpUser(
-                imgFile: _imgFile,
-                age: _age,
-                name: _nameController.text.trim(),
-                email: _emailController.text.trim(),
-                password: _passController.text.trim(),
-              );
-              if (_result == null) {
-                setState(() {
-                  _isLoading = false;
-                });
-              }
-            }
-          },
+          onPressed: vm.signUpUser,
           textColor: Color(0xff5C49E0),
         ),
       ],
     );
   }
 
-  Widget _uploadImageBuilder() {
+  Widget _uploadImageBuilder(BuildContext context, AuthVm vm) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
@@ -251,21 +169,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ),
         GestureDetector(
-          onTap: () async {
-            final _pickedImg = await ImagePicker().getImage(
-              source: ImageSource.gallery,
-              imageQuality: 20,
-              maxHeight: 500.0,
-              maxWidth: 500.0,
-            );
-
-            File _myImg = _pickedImg != null ? File(_pickedImg.path) : null;
-
-            setState(() {
-              _imgFile = _myImg;
-            });
-          },
-          child: _imgFile == null
+          onTap: vm.uploadImage,
+          child: vm.imgFile == null
               ? Stack(
                   overflow: Overflow.visible,
                   children: <Widget>[
@@ -299,7 +204,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   height: 120.0,
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: FileImage(_imgFile), fit: BoxFit.cover),
+                          image: FileImage(vm.imgFile), fit: BoxFit.cover),
                       shape: BoxShape.circle),
                 ),
         )
@@ -307,7 +212,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _ageBuilder() {
+  Widget _ageBuilder(AuthVm vm) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -327,39 +232,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
           children: <Widget>[
             AgeContainer(
               ageRange: '15-20',
-              onPressed: () {
-                setState(() {
-                  _age = Age.below20;
-                });
-              },
-              color: _age == Age.below20 ? Color(0xff3D4A5A) : null,
+              onPressed: () => vm.updateAgeValue(Age.below20),
+              color: vm.age == Age.below20 ? Color(0xff3D4A5A) : null,
             ),
             AgeContainer(
               ageRange: '21-30',
-              onPressed: () {
-                setState(() {
-                  _age = Age.below30;
-                });
-              },
-              color: _age == Age.below30 ? Color(0xff3D4A5A) : null,
+              onPressed: () => vm.updateAgeValue(Age.below30),
+              color: vm.age == Age.below30 ? Color(0xff3D4A5A) : null,
             ),
             AgeContainer(
               ageRange: '31-40',
-              onPressed: () {
-                setState(() {
-                  _age = Age.below40;
-                });
-              },
-              color: _age == Age.below40 ? Color(0xff3D4A5A) : null,
+              onPressed: () => vm.updateAgeValue(Age.below40),
+              color: vm.age == Age.below40 ? Color(0xff3D4A5A) : null,
             ),
             AgeContainer(
               ageRange: '41-50',
-              onPressed: () {
-                setState(() {
-                  _age = Age.below50;
-                });
-              },
-              color: _age == Age.below50 ? Color(0xff3D4A5A) : null,
+              onPressed: () => vm.updateAgeValue(Age.below50),
+              color: vm.age == Age.below50 ? Color(0xff3D4A5A) : null,
             ),
           ],
         ),
@@ -367,21 +256,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _authFieldContainerBuilder() {
+  Widget _authFieldContainerBuilder(AuthVm vm) {
     return Column(
       children: <Widget>[
         AuthField(
-          label: 'Name',
-          type: TextInputType.text,
-          controller: _nameController,
-        ),
+            label: 'Name',
+            type: TextInputType.text,
+            controller: vm.nameController),
         SizedBox(
           height: 20.0,
         ),
         AuthField(
           label: 'Email',
           type: TextInputType.emailAddress,
-          controller: _emailController,
+          controller: vm.emailController,
         ),
         SizedBox(
           height: 20.0,
@@ -389,7 +277,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         AuthField(
           label: 'Password',
           type: TextInputType.text,
-          controller: _passController,
+          controller: vm.passController,
           isPassword: true,
         ),
         SizedBox(

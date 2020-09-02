@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/viewmodels/auth_vm.dart';
@@ -8,38 +7,18 @@ import 'package:peaman/views/screens/auth/signup_screen.dart';
 import 'package:peaman/views/widgets/auth_widgets/auth_field.dart';
 import 'package:peaman/views/widgets/common_widgets/filled_btn.dart';
 
-class LoginScreen extends StatefulWidget {
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  bool _keyboardVisibility = false;
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passController = TextEditingController();
-  bool _isLoading = false;
-
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  @override
-  void initState() {
-    super.initState();
-    KeyboardVisibility.onChange.listen((visibility) {
-      setState(() {
-        _keyboardVisibility = visibility;
-      });
-    });
-  }
-
+class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewmodelProvider<AuthVm>(
-      vm: AuthVm(),
+      vm: AuthVm(context),
+      onInit: (vm) => vm.onInit(),
+      onDispose: (vm) => vm.onDispose(),
       builder: (BuildContext context, AuthVm vm) {
         return Scaffold(
-          key: _scaffoldKey,
+          key: vm.scaffoldKey,
           body: SafeArea(
-            child: _isLoading
+            child: vm.isLoading
                 ? Center(
                     child: Lottie.asset(
                       'assets/lottie/loader.json',
@@ -68,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   SizedBox(
                                     height: 10.0,
                                   ),
-                                  _authFieldSection(),
+                                  _authFieldSection(vm),
                                   SizedBox(
                                     height: 20.0,
                                   ),
@@ -76,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   SizedBox(
                                     height: 50.0,
                                   ),
-                                  _btnSection(vm),
+                                  _btnSection(context, vm),
                                   SizedBox(
                                     height: 50.0,
                                   ),
@@ -86,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      if (!_keyboardVisibility)
+                      if (!vm.keyboardVisibility)
                         Positioned(
                           bottom: -10.0,
                           left: 0.0,
@@ -117,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _authFieldSection() {
+  Widget _authFieldSection(AuthVm vm) {
     return Column(
       children: <Widget>[
         Padding(
@@ -125,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: AuthField(
             label: 'Email',
             type: TextInputType.emailAddress,
-            controller: _emailController,
+            controller: vm.emailController,
           ),
         ),
         SizedBox(
@@ -137,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
             label: 'Password',
             type: TextInputType.visiblePassword,
             isPassword: true,
-            controller: _passController,
+            controller: vm.passController,
           ),
         ),
       ],
@@ -160,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _btnSection(AuthVm vm) {
+  Widget _btnSection(BuildContext context, AuthVm vm) {
     return Column(
       children: <Widget>[
         Align(
@@ -168,40 +147,21 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: FilledBtn(
-                title: 'Log in',
-                color: Color(0xff5C49E0),
-                onPressed: () async {
-                  if (_emailController.text != '' &&
-                      _passController.text != '') {
-                    setState(() {
-                      _isLoading = true;
-                    });
-                    final _result = await vm.loginUser(
-                      email: _emailController.text.trim(),
-                      password: _passController.text.trim(),
-                    );
-                    if (_result == null) {
-                      setState(() {
-                        _isLoading = false;
-                      });
-                    }
-                  } else {
-                    _scaffoldKey.currentState.showSnackBar(SnackBar(
-                      content: Text('Please fill up all fields'),
-                    ));
-                  }
-                }),
+              title: 'Log in',
+              color: Color(0xff5C49E0),
+              onPressed: vm.loginUser,
+            ),
           ),
         ),
         SizedBox(
           height: 20.0,
         ),
-        _newUserSection(),
+        _newUserSection(context),
       ],
     );
   }
 
-  Widget _newUserSection() {
+  Widget _newUserSection(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.push(
