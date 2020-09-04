@@ -75,10 +75,10 @@ class ChatListTab extends HookWidget {
                 width: 10.0,
               ),
               // dropdown
-              Icon(
-                Icons.keyboard_arrow_down,
-                color: Color(0xff3D4A5A),
-              ),
+              // Icon(
+              //   Icons.keyboard_arrow_down,
+              //   color: Color(0xff3D4A5A),
+              // ),
             ],
           ),
           // searchbar

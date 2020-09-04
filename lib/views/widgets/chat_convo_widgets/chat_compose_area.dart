@@ -107,20 +107,20 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
             SizedBox(
               width: 20.0,
             ),
-            SingleIconBtn(
-              radius: 50.0,
-              icon: 'assets/images/svgs/call_btn.svg',
-              onPressed: () async {
-                await _handleCameraAndMic();
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => CallScreen(
-                              channelName: 'shirjan',
-                              role: ClientRole.Broadcaster,
-                            )));
-              },
-            ),
+            // SingleIconBtn(
+            //   radius: 50.0,
+            //   icon: 'assets/images/svgs/call_btn.svg',
+            //   onPressed: () async {
+            //     await _handleCameraAndMic();
+            //     await Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (_) => CallScreen(
+            //                   channelName: 'shirjan',
+            //                   role: ClientRole.Broadcaster,
+            //                 )));
+            //   },
+            // ),
           ],
         ),
       ),
@@ -191,25 +191,25 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
               ),
             ],
           ),
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Icons.add_circle_outline,
-                  color: Color(0xff3D4A5A),
-                ),
-                SizedBox(
-                  width: 10.0,
-                ),
-                Icon(
-                  Icons.tag_faces,
-                  color: Color(0xff3D4A5A),
-                ),
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding:
+          //       const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
+          //   child: Row(
+          //     children: <Widget>[
+          //       Icon(
+          //         Icons.add_circle_outline,
+          //         color: Color(0xff3D4A5A),
+          //       ),
+          //       SizedBox(
+          //         width: 10.0,
+          //       ),
+          //       Icon(
+          //         Icons.tag_faces,
+          //         color: Color(0xff3D4A5A),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );
