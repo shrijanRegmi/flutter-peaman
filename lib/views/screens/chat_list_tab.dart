@@ -11,8 +11,7 @@ import 'package:peaman/views/widgets/chat_list_tab_widgets/pinned_users_list.dar
 class ChatListTab extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final _animationController =
-        useAnimationController(duration: Duration(milliseconds: 5000));
+    final _animationController = useAnimationController();
     return ViewmodelProvider(
       vm: ChatVm(context: context),
       builder: (BuildContext context, ChatVm vm) {
