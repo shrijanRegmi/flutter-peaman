@@ -18,7 +18,7 @@ class FilledBtn extends StatelessWidget {
       color: color,
       textColor: textColor,
       onPressed: onPressed,
-      minWidth: MediaQuery.of(context).size.width,
+      minWidth: MediaQuery.of(context).size.width - 100.0,
       height: 50.0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
