@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/views/screens/friend_profile_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 
 class ChatConvoListItem extends StatelessWidget {
   final Alignment alignment;
   ChatConvoListItem({this.alignment});
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -15,7 +16,7 @@ class ChatConvoListItem extends StatelessWidget {
           SizedBox(
             height: 15.0,
           ),
-          _userBuilder(),
+          _userBuilder(context),
         ],
       ),
     );
@@ -53,40 +54,50 @@ class ChatConvoListItem extends StatelessWidget {
     );
   }
 
-  Widget _userBuilder() {
+  Widget _userBuilder(BuildContext context) {
     return alignment == Alignment.centerLeft
-        ? Row(
-            children: <Widget>[
-              AvatarBuilder(
-                imgUrl: '',
-                isOnline: false,
-                radius: 17.0,
-              ),
-              SizedBox(
-                width: 10.0,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Robert Richards',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14.0,
-                      color: Color(0xff3D4A5A),
+        ? GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FriendProfileScreen(),
+                ),
+              );
+            },
+            child: Row(
+              children: <Widget>[
+                AvatarBuilder(
+                  imgUrl: '',
+                  isOnline: false,
+                  radius: 17.0,
+                ),
+                SizedBox(
+                  width: 10.0,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Robert Richards',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0,
+                        color: Color(0xff3D4A5A),
+                      ),
                     ),
-                  ),
-                  Text(
-                    '20m',
-                    style: TextStyle(
-                      fontSize: 10.0,
-                      color: Colors.black26,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      '20m',
+                      style: TextStyle(
+                        fontSize: 10.0,
+                        color: Colors.black26,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           )
         : Row(
             mainAxisAlignment: MainAxisAlignment.end,
