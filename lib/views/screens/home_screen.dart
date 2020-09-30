@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peaman/views/screens/chat_list_tab.dart';
+import 'package:peaman/views/screens/explore_tab.dart';
 import 'package:peaman/views/screens/profile_tab.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -41,9 +42,9 @@ class _HomeScreenState extends State<HomeScreen>
         controller: _tabController,
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
+          ExploreTab(),
           ChatListTab(),
           ProfileTab(),
-          // ChatListTab(),
         ],
       ),
     );
@@ -75,22 +76,22 @@ class _HomeScreenState extends State<HomeScreen>
 
   List<Widget> _getTab() {
     List<Tab> _tabsList = [
-      // Tab(
-      //   child: SvgPicture.asset(
-      //     'assets/images/svgs/home_tab.svg',
-      //     color: _tabController.index == 0 ? Colors.blue : null,
-      //   ),
-      // ),
+      Tab(
+        child: SvgPicture.asset(
+          'assets/images/svgs/home_tab.svg',
+          color: _tabController.index == 0 ? Colors.blue : null,
+        ),
+      ),
       Tab(
         child: SvgPicture.asset(
           'assets/images/svgs/chat_tab.svg',
-          color: _tabController.index == 0 ? Colors.blue: null,
+          color: _tabController.index == 1 ? Colors.blue : null,
         ),
       ),
       Tab(
         child: SvgPicture.asset(
           'assets/images/svgs/profile_tab.svg',
-          color: _tabController.index == 1 ? Colors.blue : null,
+          color: _tabController.index == 2 ? Colors.blue : null,
         ),
       ),
     ];
