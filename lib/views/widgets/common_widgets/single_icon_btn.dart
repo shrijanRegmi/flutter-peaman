@@ -5,7 +5,8 @@ class SingleIconBtn extends StatelessWidget {
   final String icon;
   final Function onPressed;
   final double radius;
-  SingleIconBtn({this.icon, this.onPressed, this.radius});
+  final Color color;
+  SingleIconBtn({this.icon, this.onPressed, this.radius, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +24,7 @@ class SingleIconBtn extends StatelessWidget {
             child: Center(
               child: SvgPicture.asset(
                 icon,
+                color: color,
               ),
             ),
           ),
