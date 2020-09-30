@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:peaman/views/widgets/friends_profile_widgets/photos_item.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/videos_item.dart';
 
 class Videos extends StatelessWidget {
