@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen>
               AppUserProvider(uid: _appUser.uid)
                   .setUserActiveStatus(onlineStatus: OnlineStatus.active);
             },
-            builder: (BuildContext context, HomeVm vm) {
+            builder: (context, vm, appUser) {
               return Scaffold(
                 backgroundColor: Color(0xffF3F5F8),
                 body: SafeArea(

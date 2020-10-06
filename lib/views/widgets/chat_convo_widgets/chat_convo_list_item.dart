@@ -6,7 +6,6 @@ import 'package:peaman/enums/message_types.dart';
 import 'package:peaman/models/app_models/message_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/temp_img_vm.dart';
-import 'package:peaman/views/screens/friend_profile_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;

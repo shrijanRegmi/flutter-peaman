@@ -1,6 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:peaman/viewmodels/create_post_vm.dart';
 
 class CreatePostPhotos extends StatelessWidget {
+  final CreatePostVm vm;
+  CreatePostPhotos(this.vm);
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -32,7 +38,7 @@ class CreatePostPhotos extends StatelessWidget {
   }
 
   Widget _addPhotoBuilder() {
-    final _list = [null, null, null];
+    final _list = [null, ...vm.photos.reversed];
     return Container(
       height: 120.0,
       child: ListView.builder(
@@ -47,7 +53,7 @@ class CreatePostPhotos extends StatelessWidget {
                 bottom: 20.0,
               ),
               child: GestureDetector(
-                onTap: () {},
+                onTap: vm.uploadPhoto,
                 child: Container(
                   width: 100.0,
                   height: 100.0,
@@ -75,13 +81,13 @@ class CreatePostPhotos extends StatelessWidget {
               ),
             );
           }
-          return _imgListItemBuilder();
+          return _imgListItemBuilder(_list[index]);
         },
       ),
     );
   }
 
-  Widget _imgListItemBuilder() {
+  Widget _imgListItemBuilder(final File img) {
     return Padding(
       padding: const EdgeInsets.only(right: 20.0, bottom: 20.0),
       child: GestureDetector(
@@ -93,9 +99,7 @@ class CreatePostPhotos extends StatelessWidget {
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(5.0),
             image: DecorationImage(
-              image: AssetImage(
-                'assets/images/sample2.jpg',
-              ),
+              image: FileImage(img),
               fit: BoxFit.cover,
             ),
           ),
@@ -114,7 +118,7 @@ class CreatePostPhotos extends StatelessWidget {
                   icon: Icon(Icons.delete),
                   iconSize: 18.0,
                   color: Colors.grey[100],
-                  onPressed: () {},
+                  onPressed: () => vm.removePhoto(img),
                 ),
               ),
             ),

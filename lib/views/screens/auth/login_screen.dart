@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
       vm: AuthVm(context),
       onInit: (vm) => vm.onInit(),
       onDispose: (vm) => vm.onDispose(),
-      builder: (BuildContext context, AuthVm vm) {
+      builder: (context, vm, appUser) {
         return Scaffold(
           key: vm.scaffoldKey,
           body: SafeArea(
