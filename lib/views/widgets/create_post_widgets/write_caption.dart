@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/viewmodels/create_post_vm.dart';
 
 class WriteCaption extends StatelessWidget {
+  final CreatePostVm vm;
+  WriteCaption(this.vm);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -8,7 +12,7 @@ class WriteCaption extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _addPhotosTextBuilder(),
+          _writeCaptionTextBuilder(),
           SizedBox(
             height: 10.0,
           ),
@@ -18,7 +22,7 @@ class WriteCaption extends StatelessWidget {
     );
   }
 
-  Widget _addPhotosTextBuilder() {
+  Widget _writeCaptionTextBuilder() {
     return Text(
       'Write Caption',
       style: TextStyle(
@@ -32,6 +36,7 @@ class WriteCaption extends StatelessWidget {
     return Container(
       height: 300.0,
       child: TextFormField(
+        controller: vm.captionController,
         maxLines: 5,
         decoration: InputDecoration(
           border: OutlineInputBorder(
@@ -43,8 +48,8 @@ class WriteCaption extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
               color: Colors.black,
-            )
-          )
+            ),
+          ),
         ),
       ),
     );

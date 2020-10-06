@@ -14,7 +14,7 @@ class ChatListTab extends HookWidget {
     final _animationController = useAnimationController();
     return ViewmodelProvider(
       vm: ChatVm(context: context),
-      builder: (BuildContext context, ChatVm vm) {
+      builder: (context, vm, appUser) {
         return vm.chats == null
             ? Center(
                 child: Lottie.asset(
