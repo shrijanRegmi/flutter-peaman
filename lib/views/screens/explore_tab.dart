@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:peaman/views/screens/create_post_screen.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feeds_list.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/moments_list.dart';
 
@@ -20,8 +20,15 @@ class ExploreTab extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xff3D4A5A),
-        onPressed: () {},
+        backgroundColor: Colors.blue,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CreatePostScreen(),
+            ),
+          );
+        },
         child: Icon(Icons.create),
       ),
     );
