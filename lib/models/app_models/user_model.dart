@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:peaman/enums/online_status.dart';
 
 class AppUser {
@@ -40,5 +41,23 @@ class AppUser {
           data['active_status'] == 1 ? OnlineStatus.active : OnlineStatus.away,
       profileStatus: data['profile_status'] ?? 'I am a person with good heart',
     );
+  }
+
+  DocumentReference getUserRef(final String uid) {
+    final _ref = Firestore.instance;
+    return _ref.collection('users').document(uid);
+  }
+
+  Future<AppUser> fromRef(final DocumentReference userRef) async {
+    final _userSnap = await userRef.get();
+
+    if (_userSnap.exists) {
+      final _userData = _userSnap.data;
+      if (_userData != null) {
+        return AppUser.fromJson(_userData);
+      }
+    }
+
+    return null;
   }
 }

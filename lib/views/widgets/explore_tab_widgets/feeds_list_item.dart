@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:peaman/enums/online_status.dart';
+import 'package:peaman/models/app_models/feed.dart';
 import 'package:peaman/views/screens/friend_profile_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feed_img_carousel.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/people_who_reacted.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class FeedsListItem extends StatelessWidget {
+  final Feed feed;
+  FeedsListItem(this.feed);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -22,7 +28,7 @@ class FeedsListItem extends StatelessWidget {
           SizedBox(
             height: 10.0,
           ),
-          FeedImageCarousel(),
+          FeedImageCarousel(feed.photos),
           SizedBox(
             height: 15.0,
           ),
@@ -30,7 +36,7 @@ class FeedsListItem extends StatelessWidget {
           SizedBox(
             height: 15.0,
           ),
-          PeopleWhoReacted(3),
+          PeopleWhoReacted(feed),
           SizedBox(
             height: 10.0,
           ),
@@ -58,7 +64,8 @@ class FeedsListItem extends StatelessWidget {
             child: Row(
               children: [
                 AvatarBuilder(
-                  imgUrl: '',
+                  imgUrl: feed.owner.photoUrl,
+                  isOnline: feed.owner.onlineStatus == OnlineStatus.active,
                   radius: 20.0,
                 ),
                 SizedBox(
@@ -68,7 +75,7 @@ class FeedsListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Shrijan Regmi',
+                      feed.owner.name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14.0,
@@ -76,7 +83,8 @@ class FeedsListItem extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '30th Aug, 2020',
+                      timeago.format(
+                          DateTime.fromMillisecondsSinceEpoch(feed.updatedAt)),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 10.0,
@@ -162,15 +170,14 @@ class FeedsListItem extends StatelessWidget {
         ),
         children: [
           TextSpan(
-            text: 'Shrijan Regmi ',
+            text: '${feed.owner.name} ',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Color(0xff3D4A5A),
             ),
           ),
           TextSpan(
-            text:
-                'The world is taking action on COVID-19. With Greta Thunberg, these young people are calling for urgent climate action too.',
+            text: '${feed.caption}',
           ),
         ],
       ),
