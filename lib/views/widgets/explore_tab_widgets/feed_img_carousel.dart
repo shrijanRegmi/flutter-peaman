@@ -1,8 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class FeedImageCarousel extends StatefulWidget {
   @override
   _FeedImageCarouselState createState() => _FeedImageCarouselState();
+
+  final List<String> photos;
+  FeedImageCarousel(this.photos);
 }
 
 class _FeedImageCarouselState extends State<FeedImageCarousel> {
@@ -12,16 +16,10 @@ class _FeedImageCarouselState extends State<FeedImageCarousel> {
   void initState() {
     super.initState();
     _pageViewController = PageController(
-      initialPage: 1,
-      viewportFraction: 0.8,
+      initialPage: widget.photos.length ~/ 3,
+      viewportFraction: widget.photos.length != 1 ? 0.8 : 1.0,
     );
   }
-
-  final _images = [
-    'sample.jpg',
-    'sample2.jpg',
-    'sample3.jpg',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -29,16 +27,17 @@ class _FeedImageCarouselState extends State<FeedImageCarousel> {
       height: 250.0,
       child: PageView.builder(
         controller: _pageViewController,
-        itemCount: 3,
+        itemCount: widget.photos.length,
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Container(
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
+                color: Color(0xff3D4A5A).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20.0),
                 image: DecorationImage(
-                  image: AssetImage('assets/images/${_images[index]}'),
+                  image: CachedNetworkImageProvider(widget.photos[index]),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -65,7 +64,7 @@ class _FeedImageCarouselState extends State<FeedImageCarousel> {
         ),
         child: Center(
           child: Text(
-            '$count/3',
+            '$count/${widget.photos.length}',
             style: TextStyle(
               color: Colors.white,
               fontSize: 12.0,

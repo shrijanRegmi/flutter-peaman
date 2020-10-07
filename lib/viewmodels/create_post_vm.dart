@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:peaman/models/app_models/feed.dart';
+import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/feed_provider.dart';
 import 'package:peaman/services/storage_services/feed_storage_service.dart';
 
@@ -14,13 +15,14 @@ class CreatePostVm extends ChangeNotifier {
   TextEditingController get captionController => _captionController;
 
   // create post
-  createPost(final String uid) async {
+  createPost(final AppUser _appUser) async {
     if (_photos.isNotEmpty) {
       final _photosString =
-          await FeedStorage(uid: uid).uploadFeedImages(_photos);
+          await FeedStorage(uid: _appUser.uid).uploadFeedImages(_photos);
       if (_photosString != null) {
         final _feed = Feed(
-          ownerId: uid,
+          ownerId: _appUser.uid,
+          ownerRef: AppUser().getUserRef(_appUser.uid),
           photos: _photosString,
           caption: _captionController.text.trim(),
           updatedAt: DateTime.now().millisecondsSinceEpoch,
@@ -36,7 +38,9 @@ class CreatePostVm extends ChangeNotifier {
     final _pickedImg =
         await ImagePicker().getImage(source: ImageSource.gallery);
     final _img = _pickedImg != null ? File(_pickedImg.path) : null;
-    _photos.add(_img);
+    if (_img != null) {
+      _photos.add(_img);
+    }
     notifyListeners();
   }
 
