@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/models/app_models/feed.dart';
+import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/viewmodels/feed_vm.dart';
+import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/screens/friend_profile_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feed_img_carousel.dart';
@@ -14,35 +17,44 @@ class FeedsListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: 10.0,
-        right: 10.0,
-        left: 10.0,
-        bottom: 40.0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _headerBuilder(context),
-          SizedBox(
-            height: 10.0,
+    return ViewmodelProvider<FeedVm>(
+      vm: FeedVm(),
+      onInit: (vm) => vm.onInit(feed),
+      builder: (context, vm, appVm, appUser) {
+        return Padding(
+          padding: const EdgeInsets.only(
+            top: 10.0,
+            right: 10.0,
+            left: 10.0,
+            bottom: 40.0,
           ),
-          FeedImageCarousel(feed.photos),
-          SizedBox(
-            height: 15.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _headerBuilder(context),
+              SizedBox(
+                height: 10.0,
+              ),
+              GestureDetector(
+                onDoubleTap: () => vm.reactPost(appUser),
+                child: FeedImageCarousel(feed.photos),
+              ),
+              SizedBox(
+                height: 15.0,
+              ),
+              _actionButtonBuilder(appUser, vm),
+              SizedBox(
+                height: 15.0,
+              ),
+              PeopleWhoReacted(vm.thisFeed),
+              SizedBox(
+                height: 10.0,
+              ),
+              _descriptionBuilder(),
+            ],
           ),
-          _actionButtonBuilder(),
-          SizedBox(
-            height: 15.0,
-          ),
-          PeopleWhoReacted(feed),
-          SizedBox(
-            height: 10.0,
-          ),
-          _descriptionBuilder(),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -105,7 +117,7 @@ class FeedsListItem extends StatelessWidget {
     );
   }
 
-  Widget _actionButtonBuilder() {
+  Widget _actionButtonBuilder(final AppUser appUser, final FeedVm vm) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: Row(
@@ -114,14 +126,18 @@ class FeedsListItem extends StatelessWidget {
           Row(
             children: [
               GestureDetector(
-                onTap: () {},
+                onTap: () => vm.unReactPost(appUser),
                 child: Container(
                   color: Colors.transparent,
                   child: SvgPicture.asset(
-                    'assets/images/svgs/heart_blank.svg',
+                    vm.thisFeed.isReacted
+                        ? 'assets/images/svgs/heart_filled.svg'
+                        : 'assets/images/svgs/heart_blank.svg',
                     width: 27.0,
                     height: 27.0,
-                    color: Color(0xff3D4A5A),
+                    color: vm.thisFeed.isReacted
+                        ? Colors.deepOrange
+                        : Color(0xff3D4A5A),
                   ),
                 ),
               ),

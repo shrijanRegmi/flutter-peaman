@@ -42,7 +42,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   Widget build(BuildContext context) {
     return ViewmodelProvider(
       vm: ProfileInfoVm(),
-      builder: (context, vm, appUser) {
+      builder: (context, vm, appVm, appUser) {
         return Scaffold(
           backgroundColor: Color(0xffF3F5F8),
           appBar: _isLoading

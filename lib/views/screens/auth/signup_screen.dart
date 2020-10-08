@@ -18,7 +18,7 @@ class SignUpScreen extends StatelessWidget {
       vm: AuthVm(context),
       onInit: (vm) => vm.onInit(),
       onDispose: (vm) => vm.onDispose(),
-      builder: (context, vm, appUser) {
+      builder: (context, vm, appVm, appUser) {
         return Scaffold(
           key: vm.scaffoldKey,
           appBar: vm.isLoading

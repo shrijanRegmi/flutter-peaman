@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/user_provider.dart';
+import 'package:peaman/viewmodels/app_vm.dart';
 import 'package:peaman/viewmodels/home_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/screens/chat_list_tab.dart';
@@ -55,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final _appUser = Provider.of<AppUser>(context);
+    final _appVm = Provider.of<AppVm>(context);
     return _appUser == null
         ? Center(
             child: Lottie.asset(
@@ -70,8 +72,9 @@ class _HomeScreenState extends State<HomeScreen>
             onInit: (vm) {
               AppUserProvider(uid: _appUser.uid)
                   .setUserActiveStatus(onlineStatus: OnlineStatus.active);
+              _appVm.getMyPosts(_appUser);
             },
-            builder: (context, vm, appUser) {
+            builder: (context, vm, appVm, appUser) {
               return Scaffold(
                 backgroundColor: Color(0xffF3F5F8),
                 body: SafeArea(
