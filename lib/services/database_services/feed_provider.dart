@@ -143,9 +143,7 @@ class FeedProvider {
       if (_thisFeed.initialReactor == appUser.name &&
           _thisFeed.reactorsPhoto.contains(appUser.photoUrl)) {
         _data['init_reactor'] = '';
-      }
-
-      if (_thisFeed.initialReactor != '') {
+      } else {
         _data.removeWhere((key, value) => key == 'init_reactor');
       }
 
