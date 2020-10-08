@@ -12,6 +12,7 @@ class ExploreTab extends StatelessWidget {
         vm: ExploreVm(context),
         builder: (context, vm, appVm, appUser) {
           return Scaffold(
+            backgroundColor: Color(0xffF3F5F8),
             body: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

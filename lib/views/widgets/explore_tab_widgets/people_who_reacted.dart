@@ -1,6 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:peaman/models/app_models/feed.dart';
-import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 
 class PeopleWhoReacted extends StatelessWidget {
   final Feed feed;
@@ -48,9 +48,31 @@ class PeopleWhoReacted extends StatelessWidget {
       _list.add(
         Positioned(
           left: _pos.toDouble(),
-          child: AvatarBuilder(
-            imgUrl: feed.reactorsPhoto[i],
-            radius: 12.0,
+          child: Container(
+            width: 27.0,
+            height: 27.0,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Color(0xffF3F5F8),
+                width: 3.0,
+              ),
+            ),
+            child: Center(
+              child: Container(
+                width: 27.0,
+                height: 27.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: CachedNetworkImageProvider(
+                      feed.reactorsPhoto[i],
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       );
