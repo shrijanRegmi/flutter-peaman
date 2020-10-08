@@ -12,6 +12,7 @@ class Feed {
   final String initialReactor;
   final int reactionCount;
   final List<String> reactorsPhoto;
+  final bool isReacted;
 
   Feed({
     this.id,
@@ -24,7 +25,36 @@ class Feed {
     this.initialReactor,
     this.reactionCount,
     this.reactorsPhoto,
+    this.isReacted,
   });
+
+  Feed copyWith({
+    String id,
+    final String ownerId,
+    final DocumentReference ownerRef,
+    final AppUser owner,
+    final int updatedAt,
+    final String caption,
+    final List<String> photos,
+    final String initialReactor,
+    final int reactionCount,
+    final List<String> reactorsPhoto,
+    final bool isReacted,
+  }) {
+    return Feed(
+      id: id ?? this.id,
+      ownerId: ownerId ?? this.ownerId,
+      ownerRef: ownerRef ?? this.ownerRef,
+      owner: owner ?? this.owner,
+      updatedAt: updatedAt ?? this.updatedAt,
+      caption: caption ?? this.caption,
+      photos: photos ?? this.photos,
+      initialReactor: initialReactor ?? this.initialReactor,
+      reactionCount: reactionCount ?? this.reactionCount,
+      reactorsPhoto: reactorsPhoto ?? this.reactorsPhoto,
+      isReacted: isReacted ?? this.isReacted,
+    );
+  }
 
   static Feed fromJson(final Map<String, dynamic> data, final AppUser owner) {
     return Feed(
@@ -38,6 +68,7 @@ class Feed {
       initialReactor: data['init_reactor'] ?? '',
       reactionCount: data['reaction_count'] ?? 0,
       reactorsPhoto: List<String>.from(data['reactors_photo'] ?? []),
+      isReacted: data['is_reacted'] ?? false,
     );
   }
 

@@ -18,7 +18,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return ViewmodelProvider<SearchVm>(
       vm: SearchVm(context: context),
-      builder: (context, vm, appUser) {
+      builder: (context, vm, appVm, appUser) {
         return Scaffold(
           backgroundColor: Color(0xffF3F5F8),
           appBar: AppBar(

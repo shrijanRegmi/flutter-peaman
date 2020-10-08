@@ -41,7 +41,7 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
           _isPinned = widget.chat?.secondUserPinnedFirstUser;
         }
       },
-      builder: (context, vm, appUser) {
+      builder: (context, vm, appVm, appUser) {
         final _appUser = vm.appUser;
 
         final bool _isAppUserFirstUser = ChatHelper().isAppUserFirstUser(

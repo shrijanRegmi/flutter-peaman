@@ -15,7 +15,7 @@ class ProfileTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewmodelProvider<ProfileVm>(
       vm: ProfileVm(context: context),
-      builder: (context, vm, appUser) {
+      builder: (context, vm, appVm, appUser) {
         AppUser _user = friend ?? vm.appUser;
         return Scaffold(
           backgroundColor: Color(0xffF3F5F8),

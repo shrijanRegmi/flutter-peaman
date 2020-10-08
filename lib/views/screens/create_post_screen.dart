@@ -10,7 +10,7 @@ class CreatePostScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewmodelProvider<CreatePostVm>(
       vm: CreatePostVm(),
-      builder: (context, vm, appUser) {
+      builder: (context, vm, appVm, appUser) {
         return Scaffold(
           appBar: AppBar(
             title: Text(
