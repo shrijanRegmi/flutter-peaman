@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:peaman/viewmodels/explore_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/screens/create_post_screen.dart';
+import 'package:peaman/views/widgets/explore_tab_widgets/feed_loader.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feeds_list.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/moments_list.dart';
 
@@ -21,7 +22,7 @@ class ExploreTab extends StatelessWidget {
                   Divider(
                     color: Color(0xff3D4A5A).withOpacity(0.2),
                   ),
-                  FeedsList(appVm.feeds),
+                  appVm.feeds == null ? FeedLoader() : FeedsList(appVm.feeds),
                 ],
               ),
             ),

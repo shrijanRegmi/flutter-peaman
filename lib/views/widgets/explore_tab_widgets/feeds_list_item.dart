@@ -47,10 +47,11 @@ class FeedsListItem extends StatelessWidget {
                 height: 15.0,
               ),
               PeopleWhoReacted(vm.thisFeed),
-              SizedBox(
-                height: 10.0,
-              ),
-              _descriptionBuilder(),
+              if (vm.thisFeed.caption != '')
+                SizedBox(
+                  height: 10.0,
+                ),
+              if (vm.thisFeed.caption != '') _descriptionBuilder(),
             ],
           ),
         );
