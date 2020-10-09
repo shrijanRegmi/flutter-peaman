@@ -4,7 +4,7 @@ import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/feed_provider.dart';
 
 class AppVm extends ChangeNotifier {
-  List<Feed> _feeds = [];
+  List<Feed> _feeds;
   List<Feed> get feeds => _feeds;
 
   // get my posts

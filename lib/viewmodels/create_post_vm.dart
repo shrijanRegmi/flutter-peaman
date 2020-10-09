@@ -8,15 +8,22 @@ import 'package:peaman/services/database_services/feed_provider.dart';
 import 'package:peaman/services/storage_services/feed_storage_service.dart';
 
 class CreatePostVm extends ChangeNotifier {
+  BuildContext context;
+  CreatePostVm(this.context);
+
   List<File> _photos = [];
   TextEditingController _captionController = TextEditingController();
+  bool _isLoading = false;
 
   List<File> get photos => _photos;
   TextEditingController get captionController => _captionController;
+  bool get isLoading => _isLoading;
 
   // create post
   createPost(final AppUser _appUser) async {
     if (_photos.isNotEmpty) {
+      _updateIsLoading(true);
+
       final _photosString =
           await FeedStorage(uid: _appUser.uid).uploadFeedImages(_photos);
       if (_photosString != null) {
@@ -28,7 +35,13 @@ class CreatePostVm extends ChangeNotifier {
           updatedAt: DateTime.now().millisecondsSinceEpoch,
         );
 
-        return await FeedProvider().createPost(_feed);
+        final _result = await FeedProvider().createPost(_feed);
+
+        if (_result != null) {
+          Navigator.pop(context);
+        } else {
+          _updateIsLoading(false);
+        }
       }
     }
   }
@@ -48,6 +61,12 @@ class CreatePostVm extends ChangeNotifier {
   removePhoto(final File myPhoto) async {
     _photos.remove(myPhoto);
 
+    notifyListeners();
+  }
+
+  // update value of is loading
+  _updateIsLoading(final bool newVal) {
+    _isLoading = newVal;
     notifyListeners();
   }
 }
