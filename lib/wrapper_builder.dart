@@ -30,9 +30,6 @@ class WrapperBuilder extends StatelessWidget {
           ChangeNotifierProvider<TempImgVm>(
             create: (_) => TempImgVm(),
           ),
-          ChangeNotifierProvider<AppVm>(
-            create: (_) => AppVm(),
-          ),
         ],
         child: builder(context, _user),
       );
