@@ -63,6 +63,7 @@ class PeopleWhoReacted extends StatelessWidget {
                 width: 27.0,
                 height: 27.0,
                 decoration: BoxDecoration(
+                  color: Color(0xff3D4A5A).withOpacity(0.1),
                   shape: BoxShape.circle,
                   image: DecorationImage(
                     image: CachedNetworkImageProvider(
