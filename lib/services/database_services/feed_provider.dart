@@ -33,7 +33,7 @@ class FeedProvider {
           .collection('posts')
           .where('owner_id', isEqualTo: appUser.uid)
           .orderBy('updated_at', descending: true)
-          .limit(10);
+          .limit(5);
 
       final _postSnap = await _postsRef.getDocuments();
 
@@ -70,6 +70,56 @@ class FeedProvider {
     } catch (e) {
       print(e);
       print('Error!!!: Getting my posts');
+      return null;
+    }
+  }
+
+  // get my old posts
+  Future<List<Feed>> getMyOldPosts() async {
+    try {
+      List<Feed> _feeds = [];
+
+      final _postsRef = _ref
+          .collection('posts')
+          .where('owner_id', isEqualTo: appUser.uid)
+          .orderBy('updated_at', descending: true)
+          .startAfter([feed.updatedAt]).limit(5);
+
+      final _postSnap = await _postsRef.getDocuments();
+
+      if (_postSnap.documents.isNotEmpty) {
+        for (final doc in _postSnap.documents) {
+          final _data = doc.data;
+          final _owner = await AppUser().fromRef(_data['owner_ref']);
+          Feed _feed = Feed.fromJson(doc.data, _owner);
+
+          final _reactionsRef = _ref
+              .collection('posts')
+              .document(_feed.id)
+              .collection('reactions')
+              .document(appUser.uid);
+
+          final _reactionSnap = await _reactionsRef.get();
+          if (_reactionSnap.exists) {
+            _feed = _feed.copyWith(isReacted: true);
+          } else {
+            _feed = _feed.copyWith(isReacted: false);
+          }
+
+          if (_feed.initialReactor == appUser.name &&
+              _feed.reactorsPhoto.contains(appUser.photoUrl)) {
+            _feed = _feed.copyWith(initialReactor: 'You');
+          }
+
+          _feeds.add(_feed);
+          print('Success: Getting single old post ${_feed.toJson()}');
+        }
+      }
+      print('Success: Getting my old posts');
+      return _feeds;
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting my old posts');
       return null;
     }
   }
