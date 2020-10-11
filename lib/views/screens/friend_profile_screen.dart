@@ -9,16 +9,19 @@ import 'package:peaman/views/widgets/friends_profile_widgets/friend_btns.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/friends_status.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/photos.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/videos.dart';
+import 'package:provider/provider.dart';
 
 class FriendProfileScreen extends StatelessWidget {
   final AppUser user;
-  FriendProfileScreen(this.user);
+  final bool fromSearch;
+  FriendProfileScreen(this.user, {this.fromSearch = false});
 
   @override
   Widget build(BuildContext context) {
+    final _appUser = Provider.of<AppUser>(context);
     return ViewmodelProvider<FriendProfileVm>(
       vm: FriendProfileVm(),
-      onInit: (vm) => vm.onInit(user),
+      onInit: (vm) => vm.onInit(_appUser, user),
       builder: (context, vm, appVm, appUser) {
         // bool _isAppUser = user == appUser;
         bool _isAppUser = false;
@@ -50,7 +53,13 @@ class FriendProfileScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (!_isAppUser) FriendBtns(),
+                              if (!_isAppUser)
+                                FriendBtns(
+                                  vm: vm,
+                                  appUser: appUser,
+                                  user: user,
+                                  fromSearch: fromSearch,
+                                ),
                               SizedBox(
                                 height: !_isAppUser ? 40.0 : 30.0,
                               ),

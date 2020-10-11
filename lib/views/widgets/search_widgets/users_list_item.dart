@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/models/app_models/user_model.dart';
-import 'package:peaman/views/screens/profile_tab.dart';
+import 'package:peaman/views/screens/friend_profile_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 
 class UserListItem extends StatelessWidget {
@@ -15,8 +15,9 @@ class UserListItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ProfileTab(
-              friend: friend,
+            builder: (_) => FriendProfileScreen(
+              friend,
+              fromSearch: true,
             ),
           ),
         );
