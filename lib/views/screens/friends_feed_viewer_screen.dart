@@ -15,7 +15,7 @@ class FriendsFeedViewerScreen extends StatelessWidget {
         preferredSize: Size.fromHeight(60.0),
         child: CommonAppbar(
           title: Text(
-            'Photos',
+            'PostsList',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,

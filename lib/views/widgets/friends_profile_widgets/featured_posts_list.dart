@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:peaman/views/widgets/friends_profile_widgets/videos_item.dart';
+import 'package:peaman/models/app_models/feed.dart';
+import 'package:peaman/views/widgets/friends_profile_widgets/featured_posts_list_item.dart';
 
-class Videos extends StatelessWidget {
+class FeaturedPostList extends StatelessWidget {
+  final List<Feed> feeds;
+  FeaturedPostList(this.feeds);
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _videosTextBuilder(),
+        _featuredPostTextBuilder(),
         SizedBox(
           height: 10.0,
         ),
-        _videosListBuilder(),
+        _featuredPostListBuilder(),
       ],
     );
   }
 
-  Widget _videosTextBuilder() {
+  Widget _featuredPostTextBuilder() {
     return Row(
       children: [
         Text(
-          'Videos',
+          'Featured Posts',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.0,
@@ -30,13 +34,13 @@ class Videos extends StatelessWidget {
     );
   }
 
-  Widget _videosListBuilder() {
+  Widget _featuredPostListBuilder() {
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      itemCount: 3,
+      itemCount: feeds.length,
       itemBuilder: (context, index) {
-        return VideoItem();
+        return VideoItem(feeds[index].photos[0], feeds[index].photos.length);
       },
     );
   }
