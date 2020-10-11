@@ -17,6 +17,9 @@ class FeedProvider {
       feed.id = _postref.documentID;
       await _postref.setData(feed.toJson());
       print('Success: Creating post');
+
+      _addPhotosCount(feed.photos.length);
+
       return 'Success';
     } catch (e) {
       print(e);
@@ -122,6 +125,23 @@ class FeedProvider {
       print(e);
       print('Error!!!: Commenting in post ${feed.id}');
       return null;
+    }
+  }
+
+  // update photos count
+  Future _addPhotosCount(final int count) async {
+    try {
+      final _userRef = appUser.appUserRef;
+
+      await _userRef.updateData({
+        'photos': FieldValue.increment(count),
+      });
+
+      print('Success: Increasing photos count');
+      return 'Success';
+    } catch (e) {
+      print(e);
+      print('Error!!!: Increasing photos count');
     }
   }
 
