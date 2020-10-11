@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/viewmodels/create_post_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
+import 'package:peaman/views/widgets/common_widgets/appbar.dart';
 import 'package:peaman/views/widgets/common_widgets/border_btn.dart';
 import 'package:peaman/views/widgets/create_post_widgets/photos.dart';
 import 'package:peaman/views/widgets/create_post_widgets/write_caption.dart';
@@ -13,22 +14,21 @@ class CreatePostScreen extends StatelessWidget {
       vm: CreatePostVm(context),
       builder: (context, vm, appVm, appUser) {
         return Scaffold(
+          backgroundColor: Color(0xffF3F5F8),
           appBar: vm.isLoading
               ? null
-              : AppBar(
-                  title: Text(
-                    'New post',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+              : PreferredSize(
+                  preferredSize: Size.fromHeight(60.0),
+                  child: CommonAppbar(
+                    title: Text(
+                      'New Post',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                        color: Color(0xff3D4A5A),
+                      ),
                     ),
                   ),
-                  leading: IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.arrow_back_ios),
-                    color: Colors.black,
-                  ),
-                  backgroundColor: Colors.white,
                 ),
           body: SafeArea(
             child: vm.isLoading
