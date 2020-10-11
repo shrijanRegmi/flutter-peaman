@@ -7,8 +7,8 @@ import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/common_widgets/scroll_appbar.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/friend_btns.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/friends_status.dart';
-import 'package:peaman/views/widgets/friends_profile_widgets/photos.dart';
-import 'package:peaman/views/widgets/friends_profile_widgets/videos.dart';
+import 'package:peaman/views/widgets/friends_profile_widgets/posts_list.dart';
+import 'package:peaman/views/widgets/friends_profile_widgets/featured_posts_list.dart';
 import 'package:provider/provider.dart';
 
 class FriendProfileScreen extends StatelessWidget {
@@ -67,11 +67,11 @@ class FriendProfileScreen extends StatelessWidget {
                               SizedBox(
                                 height: 50.0,
                               ),
-                              Photos(vm.feeds),
+                              PostsList(vm.feeds),
                               SizedBox(
                                 height: 50.0,
                               ),
-                              Videos(),
+                              FeaturedPostList(vm.feeds),
                               SizedBox(
                                 height: 100.0,
                               ),

@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:peaman/models/app_models/feed.dart';
 import 'package:peaman/views/screens/friends_feed_viewer_screen.dart';
-import 'package:peaman/views/widgets/friends_profile_widgets/photos_item.dart';
+import 'package:peaman/views/widgets/friends_profile_widgets/posts_list_item.dart';
 
-class Photos extends StatelessWidget {
+class PostsList extends StatelessWidget {
   final List<Feed> feeds;
-  Photos(this.feeds);
+  PostsList(this.feeds);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _photosTextBuilder(),
+        _postsTextBuilder(),
         SizedBox(
           height: 10.0,
         ),
-        _photosGridBuilder(),
+        _postsGridBuilder(),
       ],
     );
   }
 
-  Widget _photosTextBuilder() {
+  Widget _postsTextBuilder() {
     return Row(
       children: [
         Text(
-          'Photos',
+          'Posts',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.0,
@@ -35,7 +35,7 @@ class Photos extends StatelessWidget {
     );
   }
 
-  Widget _photosGridBuilder() {
+  Widget _postsGridBuilder() {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         mainAxisSpacing: 10.0,

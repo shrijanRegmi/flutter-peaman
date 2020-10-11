@@ -139,7 +139,7 @@ class FeedsListItem extends StatelessWidget {
                     width: 27.0,
                     height: 27.0,
                     color: vm.thisFeed.isReacted
-                        ? Colors.deepOrange
+                        ? Colors.pink
                         : Color(0xff3D4A5A),
                   ),
                 ),
