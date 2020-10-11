@@ -7,6 +7,7 @@ import 'package:peaman/viewmodels/feed_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/screens/friend_profile_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
+import 'package:peaman/views/widgets/explore_tab_widgets/feed_comments_list.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feed_img_carousel.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/people_who_reacted.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -42,7 +43,7 @@ class FeedsListItem extends StatelessWidget {
               SizedBox(
                 height: 15.0,
               ),
-              _actionButtonBuilder(appUser, vm),
+              _actionButtonBuilder(context, appUser, vm),
               SizedBox(
                 height: 15.0,
               ),
@@ -68,7 +69,7 @@ class FeedsListItem extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => FriendProfileScreen(),
+                builder: (_) => FriendProfileScreen(feed.owner),
               ),
             );
           },
@@ -118,7 +119,8 @@ class FeedsListItem extends StatelessWidget {
     );
   }
 
-  Widget _actionButtonBuilder(final AppUser appUser, final FeedVm vm) {
+  Widget _actionButtonBuilder(
+      final BuildContext context, final AppUser appUser, final FeedVm vm) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: Row(
@@ -146,7 +148,14 @@ class FeedsListItem extends StatelessWidget {
                 width: 15.0,
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FeedCommentScreen(feed),
+                    ),
+                  );
+                },
                 child: Container(
                   color: Colors.transparent,
                   child: SvgPicture.asset(

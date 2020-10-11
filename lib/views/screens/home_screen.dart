@@ -9,7 +9,7 @@ import 'package:peaman/viewmodels/home_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/screens/chat_list_tab.dart';
 import 'package:peaman/views/screens/explore_tab.dart';
-import 'package:peaman/views/screens/profile_tab.dart';
+import 'package:peaman/views/screens/friend_profile_screen.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen>
             onInit: (vm) {
               AppUserProvider(uid: _appUser.uid)
                   .setUserActiveStatus(onlineStatus: OnlineStatus.active);
-              _appVm.getMyPosts(_appUser);
+              _appVm.getPosts(_appUser);
             },
             builder: (context, vm, appVm, appUser) {
               return Scaffold(
@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen>
                   child: Container(
                     child: Column(
                       children: <Widget>[
-                        _tabViewBuilder(),
+                        _tabViewBuilder(appUser),
                         _tabsBuilder(),
                       ],
                     ),
@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen>
           );
   }
 
-  Widget _tabViewBuilder() {
+  Widget _tabViewBuilder(final AppUser appUser) {
     return Expanded(
       child: TabBarView(
         controller: _tabController,
@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen>
         children: <Widget>[
           ExploreTab(),
           ChatListTab(),
-          ProfileTab(),
+          FriendProfileScreen(appUser),
         ],
       ),
     );

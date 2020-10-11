@@ -3,6 +3,7 @@ import 'package:peaman/models/app_models/user_model.dart';
 
 class Feed {
   String id;
+  final DocumentReference feedRef;
   final String ownerId;
   final DocumentReference ownerRef;
   final AppUser owner;
@@ -16,6 +17,7 @@ class Feed {
 
   Feed({
     this.id,
+    this.feedRef,
     this.ownerId,
     this.ownerRef,
     this.owner,
@@ -30,6 +32,7 @@ class Feed {
 
   Feed copyWith({
     String id,
+    final DocumentReference feedRef,
     final String ownerId,
     final DocumentReference ownerRef,
     final AppUser owner,
@@ -43,6 +46,7 @@ class Feed {
   }) {
     return Feed(
       id: id ?? this.id,
+      feedRef: feedRef ?? this.feedRef,
       ownerId: ownerId ?? this.ownerId,
       ownerRef: ownerRef ?? this.ownerRef,
       owner: owner ?? this.owner,
@@ -57,8 +61,10 @@ class Feed {
   }
 
   static Feed fromJson(final Map<String, dynamic> data, final AppUser owner) {
+    final _ref = Firestore.instance;
     return Feed(
       id: data['id'],
+      feedRef: _ref.collection('posts').document(data['id']),
       ownerId: data['owner_id'],
       updatedAt: data['updated_at'] ?? DateTime.now().millisecondsSinceEpoch,
       caption: data['caption'] ?? '',

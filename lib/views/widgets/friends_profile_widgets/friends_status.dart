@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/models/app_models/user_model.dart';
 
 class FriendStatus extends StatelessWidget {
+  final AppUser user;
+  FriendStatus(this.user);
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _itemBuilder(365, 'Photos'),
-        _itemBuilder(860, 'Followers'),
-        _itemBuilder(748, 'Following'),
+        _itemBuilder(user.photos, 'Photos'),
+        _itemBuilder(user.followers, 'Followers'),
+        _itemBuilder(user.following, 'Following'),
       ],
     );
   }
