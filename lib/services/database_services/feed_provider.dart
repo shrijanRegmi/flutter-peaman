@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:peaman/models/app_models/comment_model.dart';
 import 'package:peaman/models/app_models/feed.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 
@@ -24,8 +25,108 @@ class FeedProvider {
     }
   }
 
+  // react to post
+  Future reactPost() async {
+    try {
+      final _postRef = _ref.collection('posts').document(feed.id);
+      final _reactionsRef =
+          _postRef.collection('reactions').document(appUser.uid);
+
+      final _reactionSnap = await _reactionsRef.get();
+
+      final _reactionData = {
+        'uid': appUser.uid,
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      };
+
+      await _reactionsRef.setData(_reactionData);
+
+      final _postSnap = await _postRef.get();
+      final _postData = _postSnap.data;
+      final _thisFeed = Feed.fromJson(_postData, null);
+
+      if (!_reactionSnap.exists) {
+        final _data = {
+          'reaction_count': FieldValue.increment(1),
+          'init_reactor': appUser.name,
+          'reactors_photo': FieldValue.arrayUnion([appUser.photoUrl]),
+        };
+
+        if (_thisFeed.initialReactor != '') {
+          _data.removeWhere((key, value) => key == 'init_reactor');
+        }
+
+        if (_thisFeed.reactorsPhoto.length >= 3) {
+          _data.removeWhere((key, value) => key == 'reactors_photo');
+        }
+
+        await _postRef.updateData(_data);
+      }
+
+      print('Success: Reacting to post ${feed.id}');
+      return 'Success';
+    } catch (e) {
+      print(e);
+      print('Error!!!: Reacting to post ${feed.id}');
+      return null;
+    }
+  }
+
+  // unreact to post
+  Future unReactPost() async {
+    try {
+      final _postRef = _ref.collection('posts').document(feed.id);
+      final _reactionsRef =
+          _postRef.collection('reactions').document(appUser.uid);
+
+      await _reactionsRef.delete();
+
+      Map<String, dynamic> _data = {
+        'reaction_count': FieldValue.increment(-1),
+        'init_reactor': appUser.name,
+        'reactors_photo': FieldValue.arrayRemove([appUser.photoUrl]),
+      };
+
+      final _postSnap = await _postRef.get();
+      final _postData = _postSnap.data;
+      final _thisFeed = Feed.fromJson(_postData, null);
+
+      if (_thisFeed.initialReactor == appUser.name &&
+          _thisFeed.reactorsPhoto.contains(appUser.photoUrl)) {
+        _data['init_reactor'] = '';
+      } else {
+        _data.removeWhere((key, value) => key == 'init_reactor');
+      }
+
+      await _postRef.updateData(_data);
+      print('Success: Unreacting to post ${feed.id}');
+      return 'Success';
+    } catch (e) {
+      print(e);
+      print('Error!!!: Unreacting to post ${feed.id}');
+      return null;
+    }
+  }
+
+  // comment in a post
+  Future commentPost(final Comment comment) async {
+    try {
+      final _feedRef = _ref.collection('posts').document(feed.id);
+      final _commentRef = _feedRef.collection('comments').document();
+      final _comment = comment.copyWith(id: _commentRef.documentID);
+
+      await _commentRef.setData(_comment.toJson());
+      print('Success: Commenting in post ${feed.id}');
+      return 'Success';
+    } catch (e) {
+      print(e);
+      print('Error!!!: Commenting in post ${feed.id}');
+      return null;
+    }
+  }
+
   // get my posts
-  Future<List<Feed>> getMyPosts() async {
+  Future<List<Feed>> getPosts() async {
     try {
       List<Feed> _feeds = [];
 
@@ -33,7 +134,7 @@ class FeedProvider {
           .collection('posts')
           .where('owner_id', isEqualTo: appUser.uid)
           .orderBy('updated_at', descending: true)
-          .limit(5);
+          .limit(6);
 
       final _postSnap = await _postsRef.getDocuments();
 
@@ -124,85 +225,37 @@ class FeedProvider {
     }
   }
 
-  // react to post
-  Future reactPost() async {
+  // get comment
+  Future<List<Comment>> getComments() async {
     try {
-      final _postRef = _ref.collection('posts').document(feed.id);
-      final _reactionsRef =
-          _postRef.collection('reactions').document(appUser.uid);
+      List<Comment> _comments = [];
 
-      final _reactionSnap = await _reactionsRef.get();
+      final _commentRef = feed.feedRef
+          .collection('comments')
+          .orderBy('updated_at', descending: true)
+          .limit(10);
+      final _commentSnap = await _commentRef.getDocuments();
 
-      final _reactionData = {
-        'uid': appUser.uid,
-        'updated_at': DateTime.now().millisecondsSinceEpoch,
-      };
+      if (_commentSnap.documents.isNotEmpty) {
+        for (final commentDoc in _commentSnap.documents) {
+          final _commentData = commentDoc.data;
+          final DocumentReference _userRef = _commentData['user_ref'];
+          final _userSnap = await _userRef.get();
+          if (_userSnap.exists) {
+            final _userData = _userSnap.data;
+            final _user = AppUser.fromJson(_userData);
+            final _comment = Comment.fromJson(_commentData, _user);
 
-      await _reactionsRef.setData(_reactionData);
-
-      final _postSnap = await _postRef.get();
-      final _postData = _postSnap.data;
-      final _thisFeed = Feed.fromJson(_postData, null);
-
-      if (!_reactionSnap.exists) {
-        final _data = {
-          'reaction_count': FieldValue.increment(1),
-          'init_reactor': appUser.name,
-          'reactors_photo': FieldValue.arrayUnion([appUser.photoUrl]),
-        };
-
-        if (_thisFeed.initialReactor != '') {
-          _data.removeWhere((key, value) => key == 'init_reactor');
+            _comments.add(_comment);
+          }
         }
-
-        if (_thisFeed.reactorsPhoto.length >= 3) {
-          _data.removeWhere((key, value) => key == 'reactors_photo');
-        }
-
-        await _postRef.updateData(_data);
       }
 
-      print('Success: Reacting to post ${feed.id}');
-      return 'Success';
+      print('Success: Getting all comments');
+      return _comments;
     } catch (e) {
       print(e);
-      print('Error!!!: Reacting to post ${feed.id}');
-      return null;
-    }
-  }
-
-  // unreact to post
-  Future unReactPost() async {
-    try {
-      final _postRef = _ref.collection('posts').document(feed.id);
-      final _reactionsRef =
-          _postRef.collection('reactions').document(appUser.uid);
-
-      await _reactionsRef.delete();
-
-      Map<String, dynamic> _data = {
-        'reaction_count': FieldValue.increment(-1),
-        'init_reactor': appUser.name,
-        'reactors_photo': FieldValue.arrayRemove([appUser.photoUrl]),
-      };
-
-      final _postSnap = await _postRef.get();
-      final _postData = _postSnap.data;
-      final _thisFeed = Feed.fromJson(_postData, null);
-
-      if (_thisFeed.initialReactor == appUser.name &&
-          _thisFeed.reactorsPhoto.contains(appUser.photoUrl)) {
-        _data['init_reactor'] = '';
-      } else {
-        _data.removeWhere((key, value) => key == 'init_reactor');
-      }
-
-      await _postRef.updateData(_data);
-      print('Success: Unreacting to post ${feed.id}');
-      return 'Success';
-    } catch (e) {
-      print(e);
-      print('Error!!!: Unreacting to post ${feed.id}');
+      print('Error!!!: Getting all comments');
       return null;
     }
   }

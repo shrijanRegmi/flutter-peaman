@@ -18,7 +18,7 @@ class FriendBtns extends StatelessWidget {
               ),
             ),
             child: Text(
-              'Add Friend',
+              'Follow',
               style: TextStyle(
                 fontSize: 12.0,
               ),

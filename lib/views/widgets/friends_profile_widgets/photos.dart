@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/models/app_models/feed.dart';
+import 'package:peaman/views/screens/friends_feed_viewer_screen.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/photos_item.dart';
 
 class Photos extends StatelessWidget {
+  final List<Feed> feeds;
+  Photos(this.feeds);
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -39,9 +44,18 @@ class Photos extends StatelessWidget {
       ),
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      itemCount: 6,
+      itemCount: feeds.length,
       itemBuilder: (context, index) {
-        return PhotosItem();
+        return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FriendsFeedViewerScreen(feeds),
+                ),
+              );
+            },
+            child: PhotosItem(feeds[index].photos[0]));
       },
     );
   }

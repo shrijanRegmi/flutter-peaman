@@ -11,8 +11,8 @@ class AppVm extends ChangeNotifier {
   bool get isLoadingOldFeeds => _isLoadingOldFeeds;
 
   // get my posts
-  Future getMyPosts(final AppUser appUser) async {
-    final _thisFeeds = await FeedProvider(appUser: appUser).getMyPosts();
+  Future getPosts(final AppUser appUser) async {
+    final _thisFeeds = await FeedProvider(appUser: appUser).getPosts();
 
     if (_thisFeeds != null) {
       _feeds = _thisFeeds;
