@@ -47,7 +47,7 @@ class FriendProfileVm extends ChangeNotifier {
 
   // get posts
   Future _getPosts(final AppUser user) async {
-    final _result = await FeedProvider(appUser: user).getPosts();
+    final _result = await FeedProvider(appUser: user).getPostsById();
     _updateFeeds(_result);
   }
 
