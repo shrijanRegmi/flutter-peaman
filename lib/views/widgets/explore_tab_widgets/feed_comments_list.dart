@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:peaman/models/app_models/feed.dart';
+import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/comment_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peaman/models/app_models/comment_model.dart';
-import 'package:peaman/models/app_models/feed.dart';
+import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/feed_provider.dart';
 
