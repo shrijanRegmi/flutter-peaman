@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen>
             onInit: (vm) {
               AppUserProvider(uid: _appUser.uid)
                   .setUserActiveStatus(onlineStatus: OnlineStatus.active);
-              _appVm.getPosts(_appUser);
+              _appVm.getPostsById(_appUser);
             },
             builder: (context, vm, appVm, appUser) {
               return Scaffold(
