@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:peaman/models/app_models/feed.dart';
+import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/views/screens/friends_feed_viewer_screen.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/posts_list_item.dart';
 

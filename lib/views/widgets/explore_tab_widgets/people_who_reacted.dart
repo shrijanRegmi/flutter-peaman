@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:peaman/models/app_models/feed.dart';
+import 'package:peaman/models/app_models/feed_model.dart';
 
 class PeopleWhoReacted extends StatelessWidget {
   final Feed feed;

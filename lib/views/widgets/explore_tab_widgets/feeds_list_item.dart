@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peaman/enums/online_status.dart';
-import 'package:peaman/models/app_models/feed.dart';
+import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/feed_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
