@@ -66,11 +66,13 @@ class FriendProfileScreen extends StatelessWidget {
                               SizedBox(
                                 height: 50.0,
                               ),
-                              PostsList(vm.feeds),
+                              if (vm.feeds.isEmpty) _emptyBuilder(),
+                              if (vm.feeds.isNotEmpty) PostsList(vm.feeds),
                               SizedBox(
                                 height: 50.0,
                               ),
-                              FeaturedPostList(vm.featuredFeeds),
+                              if (vm.featuredFeeds.isNotEmpty)
+                                FeaturedPostList(vm.featuredFeeds),
                               SizedBox(
                                 height: 100.0,
                               ),
@@ -83,6 +85,22 @@ class FriendProfileScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _emptyBuilder() {
+    return Container(
+      height: 100.0,
+      child: Center(
+        child: Text(
+          "${user.name} hasn't posted in a while",
+          style: TextStyle(
+            // fontWeight: FontWeight.bold,
+            fontSize: 14.0,
+            color: Color(0xff3D4A5A),
+          ),
+        ),
+      ),
     );
   }
 
