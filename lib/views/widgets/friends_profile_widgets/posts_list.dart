@@ -79,7 +79,7 @@ class PostsList extends StatelessWidget {
       ),
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      itemCount: feeds.length,
+      itemCount: feeds.length <= 6 ? feeds.length : 6,
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
