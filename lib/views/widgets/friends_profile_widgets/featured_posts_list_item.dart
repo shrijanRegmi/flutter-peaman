@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-class VideoItem extends StatelessWidget {
+class FeaturedPostListItem extends StatelessWidget {
   final String img;
   final int count;
-  VideoItem(this.img, this.count);
+  FeaturedPostListItem(this.img, this.count);
 
   @override
   Widget build(BuildContext context) {

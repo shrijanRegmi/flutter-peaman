@@ -4,8 +4,9 @@ import 'package:peaman/views/widgets/common_widgets/appbar.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feeds_list.dart';
 
 class FriendsFeedViewerScreen extends StatelessWidget {
+  final String title;
   final List<Feed> feeds;
-  FriendsFeedViewerScreen(this.feeds);
+  FriendsFeedViewerScreen(this.title, this.feeds);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class FriendsFeedViewerScreen extends StatelessWidget {
         preferredSize: Size.fromHeight(60.0),
         child: CommonAppbar(
           title: Text(
-            'PostsList',
+            '$title',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,

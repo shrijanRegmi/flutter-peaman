@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/views/screens/friends_feed_viewer_screen.dart';
+import 'package:peaman/views/screens/view_post_screen.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/posts_list_item.dart';
 
 class PostsList extends StatelessWidget {
@@ -11,7 +12,7 @@ class PostsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _postsTextBuilder(),
+        _postsTextBuilder(context),
         SizedBox(
           height: 10.0,
         ),
@@ -20,8 +21,9 @@ class PostsList extends StatelessWidget {
     );
   }
 
-  Widget _postsTextBuilder() {
+  Widget _postsTextBuilder(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           'Posts',
@@ -29,6 +31,39 @@ class PostsList extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontSize: 16.0,
             color: Color(0xff3D4A5A),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => FriendsFeedViewerScreen('Posts', feeds),
+              ),
+            );
+          },
+          child: Container(
+            color: Colors.transparent,
+            child: Row(
+              children: [
+                Text(
+                  'View All',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                    color: Colors.blue,
+                  ),
+                ),
+                SizedBox(
+                  width: 5.0,
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.blue,
+                  size: 14.0,
+                )
+              ],
+            ),
           ),
         ),
       ],
@@ -47,15 +82,18 @@ class PostsList extends StatelessWidget {
       itemCount: feeds.length,
       itemBuilder: (context, index) {
         return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => FriendsFeedViewerScreen(feeds),
-                ),
-              );
-            },
-            child: PhotosItem(feeds[index].photos[0]));
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ViewFeedScreen('View Post', feeds[index]),
+              ),
+            );
+          },
+          child: PhotosItem(
+            feeds[index].photos[feeds[index].photos.length ~/ 3],
+          ),
+        );
       },
     );
   }
