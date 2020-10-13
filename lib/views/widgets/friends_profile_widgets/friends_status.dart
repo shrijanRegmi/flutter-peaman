@@ -10,7 +10,7 @@ class FriendStatus extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _itemBuilder(user.photos, 'PostsList'),
+        _itemBuilder(user.photos, 'Posts'),
         _itemBuilder(user.followers, 'Followers'),
         _itemBuilder(user.following, 'Following'),
       ],
