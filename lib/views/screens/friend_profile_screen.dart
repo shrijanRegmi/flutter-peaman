@@ -71,7 +71,7 @@ class FriendProfileScreen extends StatelessWidget {
                               SizedBox(
                                 height: 50.0,
                               ),
-                              FeaturedPostList(vm.feeds),
+                              FeaturedPostList(vm.featuredFeeds),
                               SizedBox(
                                 height: 100.0,
                               ),
