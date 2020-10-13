@@ -14,6 +14,7 @@ class Feed {
   final int reactionCount;
   final List<String> reactorsPhoto;
   final bool isReacted;
+  final bool isFeatured;
 
   Feed({
     this.id,
@@ -28,6 +29,7 @@ class Feed {
     this.reactionCount,
     this.reactorsPhoto,
     this.isReacted,
+    this.isFeatured,
   });
 
   Feed copyWith({
@@ -43,6 +45,7 @@ class Feed {
     final int reactionCount,
     final List<String> reactorsPhoto,
     final bool isReacted,
+    final bool isFeatured,
   }) {
     return Feed(
       id: id ?? this.id,
@@ -57,6 +60,7 @@ class Feed {
       reactionCount: reactionCount ?? this.reactionCount,
       reactorsPhoto: reactorsPhoto ?? this.reactorsPhoto,
       isReacted: isReacted ?? this.isReacted,
+      isFeatured: isFeatured ?? this.isFeatured,
     );
   }
 
@@ -75,6 +79,7 @@ class Feed {
       reactionCount: data['reaction_count'] ?? 0,
       reactorsPhoto: List<String>.from(data['reactors_photo'] ?? []),
       isReacted: data['is_reacted'] ?? false,
+      isFeatured: data['is_featured'] ?? false,
     );
   }
 
@@ -86,6 +91,7 @@ class Feed {
       'updated_at': updatedAt,
       'caption': caption,
       'photos': photos,
+      'is_featured': isFeatured,
     };
   }
 }

@@ -14,10 +14,12 @@ class CreatePostVm extends ChangeNotifier {
   List<File> _photos = [];
   TextEditingController _captionController = TextEditingController();
   bool _isLoading = false;
+  bool _isFeatured = false;
 
   List<File> get photos => _photos;
   TextEditingController get captionController => _captionController;
   bool get isLoading => _isLoading;
+  bool get isFeatured => _isFeatured;
 
   // create post
   createPost(final AppUser _appUser) async {
@@ -33,9 +35,10 @@ class CreatePostVm extends ChangeNotifier {
           photos: _photosString,
           caption: _captionController.text.trim(),
           updatedAt: DateTime.now().millisecondsSinceEpoch,
+          isFeatured: _isFeatured,
         );
 
-        final _result = await FeedProvider().createPost(_feed);
+        final _result = await FeedProvider(feed: _feed).createPost();
 
         if (_result != null) {
           Navigator.pop(context);
@@ -67,6 +70,12 @@ class CreatePostVm extends ChangeNotifier {
   // update value of is loading
   _updateIsLoading(final bool newVal) {
     _isLoading = newVal;
+    notifyListeners();
+  }
+
+  // update value of is featured
+  updateIsFeatured(final bool newVal) {
+    _isFeatured = newVal;
     notifyListeners();
   }
 }

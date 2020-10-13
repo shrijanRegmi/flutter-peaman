@@ -11,19 +11,43 @@ class FeedProvider {
   final _ref = Firestore.instance;
 
   // create post
-  Future createPost(final Feed feed) async {
+  Future createPost() async {
     try {
       final _postref = _ref.collection('posts').document();
       feed.id = _postref.documentID;
       await _postref.setData(feed.toJson());
       print('Success: Creating post');
 
-      _addPhotosCount(feed.photos.length);
+      await _addPhotosCount(feed.photos.length);
+
+      if (feed.isFeatured) {
+        await _saveFeatured();
+      }
 
       return 'Success';
     } catch (e) {
       print(e);
       print('Error!!!: Creating post');
+      return null;
+    }
+  }
+
+  // save featured post to users collection too
+  Future _saveFeatured() async {
+    try {
+      final _userRef = appUser.appUserRef;
+      final _featuredPostsRef =
+          _userRef.collection('featured_posts').document(feed.id);
+
+      await _featuredPostsRef.setData({
+        'post_ref': feed.feedRef,
+      });
+
+      print('Success: Saving featured post ${feed.id}');
+      return 'Success';
+    } catch (e) {
+      print(e);
+      print('Success: Saving featured post ${feed.id}');
       return null;
     }
   }
