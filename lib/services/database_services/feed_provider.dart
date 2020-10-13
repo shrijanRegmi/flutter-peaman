@@ -219,6 +219,56 @@ class FeedProvider {
     }
   }
 
+  // get featured posts by id
+  Future<List<Feed>> getFeaturedPostsById() async {
+    try {
+      List<Feed> _feeds = [];
+
+      final _featuredPosts =
+          appUser.appUserRef.collection('featured_posts').limit(6);
+
+      final _featuredPostsSnap = await _featuredPosts.getDocuments();
+
+      if (_featuredPostsSnap.documents.isNotEmpty) {
+        for (final doc in _featuredPostsSnap.documents) {
+          final DocumentReference _postRef = doc.data['post_ref'];
+          final _postSnap = await _postRef.get();
+          final _data = _postSnap.data;
+          print('The data :::: $_data');
+          final _owner = await AppUser().fromRef(_data['owner_ref']);
+          Feed _feed = Feed.fromJson(_data, _owner);
+
+          final _reactionsRef = _ref
+              .collection('posts')
+              .document(_feed.id)
+              .collection('reactions')
+              .document(appUser.uid);
+
+          final _reactionSnap = await _reactionsRef.get();
+          if (_reactionSnap.exists) {
+            _feed = _feed.copyWith(isReacted: true);
+          } else {
+            _feed = _feed.copyWith(isReacted: false);
+          }
+
+          if (_feed.initialReactor == appUser.name &&
+              _feed.reactorsPhoto.contains(appUser.photoUrl)) {
+            _feed = _feed.copyWith(initialReactor: 'You');
+          }
+
+          _feeds.add(_feed);
+          print('Success: Getting single featured post ${_feed.toJson()}');
+        }
+      }
+      print('Success: Getting featured posts');
+      return _feeds;
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting featured posts');
+      return null;
+    }
+  }
+
   // get posts by id
   Future<List<Feed>> getPosts() async {
     try {

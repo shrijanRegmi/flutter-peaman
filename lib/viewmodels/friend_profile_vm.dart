@@ -6,10 +6,12 @@ import 'package:peaman/services/database_services/friend_provider.dart';
 
 class FriendProfileVm extends ChangeNotifier {
   List<Feed> _feeds;
+  List<Feed> _featuredFeeds;
   bool _isLoading = false;
   String _btnText = 'Follow';
 
   List<Feed> get feeds => _feeds;
+  List<Feed> get featuredFeeds => _featuredFeeds;
   bool get isLoading => _isLoading;
   String get btnText => _btnText;
 
@@ -48,7 +50,10 @@ class FriendProfileVm extends ChangeNotifier {
   // get posts
   Future _getPosts(final AppUser user) async {
     final _result = await FeedProvider(appUser: user).getPostsById();
+    final _featuredResult =
+        await FeedProvider(appUser: user).getFeaturedPostsById();
     _updateFeeds(_result);
+    _updateFeaturedFeeds(_featuredResult);
   }
 
   // get initial btn text
@@ -96,6 +101,12 @@ class FriendProfileVm extends ChangeNotifier {
   // update value of feeds
   _updateFeeds(final List<Feed> newFeeds) {
     _feeds = newFeeds;
+    notifyListeners();
+  }
+
+  // update value of featured feeds
+  _updateFeaturedFeeds(final List<Feed> newFeeds) {
+    _featuredFeeds = newFeeds;
     notifyListeners();
   }
 
