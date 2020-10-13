@@ -23,8 +23,7 @@ class FriendProfileScreen extends StatelessWidget {
       vm: FriendProfileVm(),
       onInit: (vm) => vm.onInit(_appUser, user),
       builder: (context, vm, appVm, appUser) {
-        // bool _isAppUser = user == appUser;
-        bool _isAppUser = false;
+        bool _isAppUser = user == appUser;
         return Scaffold(
           backgroundColor: Color(0xffF3F5F8),
           body: SafeArea(
