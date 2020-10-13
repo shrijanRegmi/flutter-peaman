@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:peaman/enums/online_status.dart';
 
 class AppUser {
@@ -8,6 +9,10 @@ class AppUser {
   final String email;
   final String profileStatus;
   final OnlineStatus onlineStatus;
+  final DocumentReference appUserRef;
+  final int photos;
+  final int followers;
+  final int following;
 
   AppUser({
     this.uid,
@@ -17,6 +22,10 @@ class AppUser {
     this.email,
     this.profileStatus,
     this.onlineStatus,
+    this.appUserRef,
+    this.photos,
+    this.followers,
+    this.following,
   });
 
   static Map<String, dynamic> toJson(AppUser appUser) {
@@ -30,6 +39,8 @@ class AppUser {
   }
 
   static AppUser fromJson(Map<String, dynamic> data) {
+    final _ref = Firestore.instance;
+
     return AppUser(
       uid: data['uid'],
       photoUrl: data['photoUrl'],
@@ -39,6 +50,28 @@ class AppUser {
       onlineStatus:
           data['active_status'] == 1 ? OnlineStatus.active : OnlineStatus.away,
       profileStatus: data['profile_status'] ?? 'I am a person with good heart',
+      appUserRef: _ref.collection('users').document(data['uid']),
+      photos: data['photos'] ?? 0,
+      followers: data['followers'] ?? 0,
+      following: data['following'] ?? 0,
     );
+  }
+
+  DocumentReference getUserRef(final String uid) {
+    final _ref = Firestore.instance;
+    return _ref.collection('users').document(uid);
+  }
+
+  Future<AppUser> fromRef(final DocumentReference userRef) async {
+    final _userSnap = await userRef.get();
+
+    if (_userSnap.exists) {
+      final _userData = _userSnap.data;
+      if (_userData != null) {
+        return AppUser.fromJson(_userData);
+      }
+    }
+
+    return null;
   }
 }

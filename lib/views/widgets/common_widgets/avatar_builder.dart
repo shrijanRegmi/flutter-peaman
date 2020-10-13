@@ -7,8 +7,8 @@ class AvatarBuilder extends StatelessWidget {
   final bool isOnline;
   AvatarBuilder({
     @required this.imgUrl,
-    @required this.radius,
-    @required this.isOnline,
+    this.radius = 20.0,
+    this.isOnline = false,
   });
 
   @override
