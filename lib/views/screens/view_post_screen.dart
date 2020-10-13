@@ -16,7 +16,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class ViewFeedScreen extends StatelessWidget {
   final String title;
   final Feed feed;
-  ViewFeedScreen(this.title ,this.feed);
+  ViewFeedScreen(this.title, this.feed);
 
   @override
   Widget build(BuildContext context) {

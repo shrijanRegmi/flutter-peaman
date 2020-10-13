@@ -78,7 +78,7 @@ class CreatePostScreen extends StatelessWidget {
               : Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: BorderBtn(
-                    onPressed: () => vm.createPost(appUser),
+                    onPressed: () => vm.createPost(appUser, appVm),
                     title: 'Share',
                     textColor: Colors.green,
                   ),

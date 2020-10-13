@@ -3,6 +3,7 @@ import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/feed_provider.dart';
 import 'package:peaman/services/database_services/friend_provider.dart';
+import 'package:peaman/viewmodels/app_vm.dart';
 
 class FriendProfileVm extends ChangeNotifier {
   List<Feed> _feeds;
@@ -16,10 +17,15 @@ class FriendProfileVm extends ChangeNotifier {
   String get btnText => _btnText;
 
   // init function
-  onInit(final AppUser appUser, final AppUser user) async {
+  onInit(final AppUser appUser, final AppUser user, final AppVm appVm) async {
     _updateIsLoading(true);
-    await _getPosts(user);
-    await _getInitialBtnText(appUser, user);
+    if (appUser != user) {
+      await _getPosts(user);
+      await _getInitialBtnText(appUser, user);
+    } else {
+      _updateFeeds(appVm.myFeeds);
+      _updateFeaturedFeeds(appVm.myFeaturedfeeds);
+    }
     _updateIsLoading(false);
   }
 

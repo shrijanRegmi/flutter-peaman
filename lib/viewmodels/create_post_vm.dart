@@ -6,6 +6,7 @@ import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/feed_provider.dart';
 import 'package:peaman/services/storage_services/feed_storage_service.dart';
+import 'package:peaman/viewmodels/app_vm.dart';
 
 class CreatePostVm extends ChangeNotifier {
   BuildContext context;
@@ -22,7 +23,7 @@ class CreatePostVm extends ChangeNotifier {
   bool get isFeatured => _isFeatured;
 
   // create post
-  createPost(final AppUser _appUser) async {
+  createPost(final AppUser _appUser, final AppVm appVm) async {
     if (_photos.isNotEmpty) {
       _updateIsLoading(true);
 
@@ -38,9 +39,21 @@ class CreatePostVm extends ChangeNotifier {
           isFeatured: _isFeatured,
         );
 
-        final _result = await FeedProvider(feed: _feed).createPost();
+        final _result =
+            await FeedProvider(feed: _feed, appUser: _appUser).createPost();
 
         if (_result != null) {
+          final _tempFeed = _result.copyWith(owner: _appUser);
+          final _myExistingFeeds = appVm.myFeeds;
+          final _myExistingFeaturedFeeds = appVm.myFeaturedfeeds;
+          _myExistingFeeds.insert(0, _tempFeed);
+          _myExistingFeaturedFeeds.insert(0, _tempFeed);
+
+          appVm.updateMyFeedsList(_myExistingFeeds);
+          if (_isFeatured) {
+            appVm.updateMyFeaturedFeedsList(_myExistingFeaturedFeeds);
+          }
+
           Navigator.pop(context);
         } else {
           _updateIsLoading(false);

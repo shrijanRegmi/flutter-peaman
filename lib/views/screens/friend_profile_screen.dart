@@ -2,13 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/viewmodels/app_vm.dart';
 import 'package:peaman/viewmodels/friend_profile_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/common_widgets/scroll_appbar.dart';
+import 'package:peaman/views/widgets/friends_profile_widgets/featured_posts_list.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/friend_btns.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/friends_status.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/posts_list.dart';
-import 'package:peaman/views/widgets/friends_profile_widgets/featured_posts_list.dart';
 import 'package:provider/provider.dart';
 
 class FriendProfileScreen extends StatelessWidget {
@@ -19,9 +20,10 @@ class FriendProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _appUser = Provider.of<AppUser>(context);
+    final _appVm = Provider.of<AppVm>(context);
     return ViewmodelProvider<FriendProfileVm>(
       vm: FriendProfileVm(),
-      onInit: (vm) => vm.onInit(_appUser, user),
+      onInit: (vm) => vm.onInit(_appUser, user, _appVm),
       builder: (context, vm, appVm, appUser) {
         bool _isAppUser = user == appUser;
         return Scaffold(

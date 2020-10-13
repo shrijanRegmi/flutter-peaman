@@ -11,7 +11,7 @@ class FeedProvider {
   final _ref = Firestore.instance;
 
   // create post
-  Future createPost() async {
+  Future<Feed> createPost() async {
     try {
       final _postref = _ref.collection('posts').document();
       feed.id = _postref.documentID;
@@ -24,7 +24,7 @@ class FeedProvider {
         await _saveFeatured();
       }
 
-      return 'Success';
+      return feed;
     } catch (e) {
       print(e);
       print('Error!!!: Creating post');

@@ -27,8 +27,8 @@ class Feed {
     this.photos,
     this.initialReactor,
     this.reactionCount,
-    this.reactorsPhoto,
-    this.isReacted,
+    this.reactorsPhoto = const [],
+    this.isReacted = false,
     this.isFeatured,
   });
 
