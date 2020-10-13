@@ -14,14 +14,15 @@ class FeedProvider {
   Future<Feed> createPost() async {
     try {
       final _postref = _ref.collection('posts').document();
-      feed.id = _postref.documentID;
-      await _postref.setData(feed.toJson());
+      Feed _feed = feed;
+      _feed = _feed.copyWith(id: _postref.documentID, feedRef: _postref);
+      await _postref.setData(_feed.toJson());
       print('Success: Creating post');
 
       await _addPhotosCount(feed.photos.length);
 
       if (feed.isFeatured) {
-        await _saveFeatured();
+        await _saveFeatured(_feed);
       }
 
       return feed;
@@ -33,14 +34,14 @@ class FeedProvider {
   }
 
   // save featured post to users collection too
-  Future _saveFeatured() async {
+  Future _saveFeatured(final Feed _feed) async {
     try {
       final _userRef = appUser.appUserRef;
       final _featuredPostsRef =
-          _userRef.collection('featured_posts').document(feed.id);
+          _userRef.collection('featured_posts').document(_feed.id);
 
       await _featuredPostsRef.setData({
-        'post_ref': feed.feedRef,
+        'post_ref': _feed.feedRef,
       });
 
       print('Success: Saving featured post ${feed.id}');
@@ -234,7 +235,6 @@ class FeedProvider {
           final DocumentReference _postRef = doc.data['post_ref'];
           final _postSnap = await _postRef.get();
           final _data = _postSnap.data;
-          print('The data :::: $_data');
           final _owner = await AppUser().fromRef(_data['owner_ref']);
           Feed _feed = Feed.fromJson(_data, _owner);
 
