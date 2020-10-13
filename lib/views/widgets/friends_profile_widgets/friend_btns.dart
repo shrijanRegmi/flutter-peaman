@@ -17,7 +17,7 @@ class FriendBtns extends StatelessWidget {
       children: [
         Expanded(
           child: MaterialButton(
-            color: Color(0xff5C49E0),
+            color: Colors.blue,
             textColor: Colors.white,
             onPressed: () {
               if (vm.btnText == 'Follow') {
@@ -50,7 +50,7 @@ class FriendBtns extends StatelessWidget {
         SingleIconBtn(
           radius: 40.0,
           icon: 'assets/images/svgs/chat_tab.svg',
-          color: Color(0xff5C49E0).withOpacity(0.7),
+          color: Colors.blue.withOpacity(0.7),
           onPressed: () {
             Navigator.push(
               context,

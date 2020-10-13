@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:peaman/models/app_models/feed_model.dart';
+import 'package:peaman/views/screens/friends_feed_viewer_screen.dart';
+import 'package:peaman/views/screens/view_post_screen.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/featured_posts_list_item.dart';
 
 class FeaturedPostList extends StatelessWidget {
@@ -10,7 +12,7 @@ class FeaturedPostList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _featuredPostTextBuilder(),
+        _featuredPostTextBuilder(context),
         SizedBox(
           height: 10.0,
         ),
@@ -19,8 +21,9 @@ class FeaturedPostList extends StatelessWidget {
     );
   }
 
-  Widget _featuredPostTextBuilder() {
+  Widget _featuredPostTextBuilder(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           'Featured Posts',
@@ -28,6 +31,40 @@ class FeaturedPostList extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontSize: 16.0,
             color: Color(0xff3D4A5A),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    FriendsFeedViewerScreen('Featured Posts', feeds),
+              ),
+            );
+          },
+          child: Container(
+            color: Colors.transparent,
+            child: Row(
+              children: [
+                Text(
+                  'View All',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                    color: Colors.blue,
+                  ),
+                ),
+                SizedBox(
+                  width: 5.0,
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.blue,
+                  size: 14.0,
+                )
+              ],
+            ),
           ),
         ),
       ],
@@ -40,7 +77,21 @@ class FeaturedPostList extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(),
       itemCount: feeds.length,
       itemBuilder: (context, index) {
-        return VideoItem(feeds[index].photos[0], feeds[index].photos.length);
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    ViewFeedScreen('View Featured Post', feeds[index]),
+              ),
+            );
+          },
+          child: FeaturedPostListItem(
+            feeds[index].photos[feeds[index].photos.length ~/ 3],
+            feeds[index].photos.length,
+          ),
+        );
       },
     );
   }
