@@ -29,9 +29,10 @@ class CreatePostPhotos extends StatelessWidget {
 
   Widget _addPhotosTextBuilder() {
     return Text(
-      'PostsList',
+      'Photos',
       style: TextStyle(
         fontWeight: FontWeight.w600,
+        color: Color(0xff3D4A5A),
         fontSize: 14.0,
       ),
     );

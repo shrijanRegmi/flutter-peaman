@@ -63,6 +63,10 @@ class CreatePostScreen extends StatelessWidget {
                             ),
                             CreatePostPhotos(vm),
                             WriteCaption(vm),
+                            SizedBox(
+                              height: 20.0,
+                            ),
+                            _featuredSection(vm),
                           ],
                         ),
                       ),
@@ -81,6 +85,31 @@ class CreatePostScreen extends StatelessWidget {
                 ),
         );
       },
+    );
+  }
+
+  Widget _featuredSection(final CreatePostVm vm) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Make this post featured',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Color(0xff3D4A5A),
+              fontSize: 14.0,
+            ),
+          ),
+          Switch(
+            value: vm.isFeatured,
+            onChanged: (val) {
+              vm.updateIsFeatured(val);
+            },
+          ),
+        ],
+      ),
     );
   }
 }

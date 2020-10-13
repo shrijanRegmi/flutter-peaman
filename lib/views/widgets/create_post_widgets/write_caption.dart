@@ -27,6 +27,7 @@ class WriteCaption extends StatelessWidget {
       'Write Caption',
       style: TextStyle(
         fontWeight: FontWeight.w600,
+        color: Color(0xff3D4A5A),
         fontSize: 14.0,
       ),
     );
@@ -34,7 +35,6 @@ class WriteCaption extends StatelessWidget {
 
   Widget _textAreaBuilder() {
     return Container(
-      height: 300.0,
       child: TextFormField(
         controller: vm.captionController,
         maxLines: 5,
