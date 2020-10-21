@@ -25,7 +25,7 @@ class FeedProvider {
         await _saveFeatured(_feed);
       }
 
-      return feed;
+      return _feed;
     } catch (e) {
       print(e);
       print('Error!!!: Creating post');
