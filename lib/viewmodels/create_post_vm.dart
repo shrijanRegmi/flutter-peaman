@@ -55,6 +55,11 @@ class CreatePostVm extends ChangeNotifier {
           }
 
           Navigator.pop(context);
+
+          print('The id ${_result.toJson()}');
+
+          await FeedProvider(feed: _result, appUser: _appUser)
+              .sendToTimelines();
         } else {
           _updateIsLoading(false);
         }

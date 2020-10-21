@@ -25,10 +25,45 @@ class FeedProvider {
         await _saveFeatured(_feed);
       }
 
-      return feed;
+      return _feed;
     } catch (e) {
       print(e);
       print('Error!!!: Creating post');
+      return null;
+    }
+  }
+
+  // send feed to friends timeline
+  Future sendToTimelines() async {
+    try {
+      final _userRef = appUser.appUserRef;
+      final _followersRef = _userRef.collection('followers');
+      final _followersSnap = await _followersRef.getDocuments();
+      if (_followersSnap.documents.isNotEmpty) {
+        for (final _docSnap in _followersSnap.documents) {
+          if (_docSnap.exists) {
+            final _data = _docSnap.data;
+            final _uid = _data['id'];
+            final _timelineRef = _ref
+                .collection('users')
+                .document(_uid)
+                .collection('timeline')
+                .document(feed.id);
+
+            await _timelineRef.setData({
+              'id': feed.id,
+              'post_ref': feed.feedRef,
+              'updated_at': DateTime.now().millisecondsSinceEpoch,
+            });
+            print('Success: Posting to $_uid timeline');
+          }
+        }
+      }
+      print('Success: Saving to followers timeline');
+      return 'Success';
+    } catch (e) {
+      print(e);
+      print('Error!!!: Saving to followers timeline');
       return null;
     }
   }
