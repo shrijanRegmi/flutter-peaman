@@ -55,6 +55,9 @@ class CreatePostVm extends ChangeNotifier {
           }
 
           Navigator.pop(context);
+
+          await FeedProvider(feed: _result, appUser: _appUser)
+              .sendToTimelines();
         } else {
           _updateIsLoading(false);
         }
