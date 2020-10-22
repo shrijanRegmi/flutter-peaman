@@ -25,7 +25,7 @@ class ExploreVm extends ChangeNotifier {
             appVm.updateIsLoadingOldFeeds(true);
             final _oldFeeds =
                 await FeedProvider(appUser: appUser, feed: appVm.feeds.last)
-                    .getOldPostsById();
+                    .getOldTimelinePosts();
 
             if (_oldFeeds != null) {
               appVm.updateFeedsList([...appVm.feeds, ..._oldFeeds]);

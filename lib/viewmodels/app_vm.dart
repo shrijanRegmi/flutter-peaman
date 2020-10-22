@@ -18,8 +18,19 @@ class AppVm extends ChangeNotifier {
   Future getPostsById(final AppUser appUser) async {
     final _thisFeeds = await FeedProvider(appUser: appUser).getPostsById();
 
-    updateFeedsList(_thisFeeds);
     updateMyFeedsList(_thisFeeds);
+
+    final _thisFeaturedFeeds =
+        await FeedProvider(appUser: appUser).getFeaturedPostsById();
+
+    updateMyFeaturedFeedsList(_thisFeaturedFeeds);
+  }
+
+  // get timeline
+  Future getTimeline(final AppUser appUser) async {
+    final _thisFeeds = await FeedProvider(appUser: appUser).getTimeline();
+
+    updateFeedsList(_thisFeeds);
 
     final _thisFeaturedFeeds =
         await FeedProvider(appUser: appUser).getFeaturedPostsById();
