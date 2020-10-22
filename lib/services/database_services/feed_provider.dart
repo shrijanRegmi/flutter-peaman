@@ -304,6 +304,63 @@ class FeedProvider {
     }
   }
 
+  // get my timeline
+  Future<List<Feed>> getTimeline() async {
+    try {
+      List<Feed> _feeds = [];
+
+      final _userRef = appUser.appUserRef;
+      final _timelineRef = _userRef
+          .collection('timeline')
+          .orderBy('updated_at', descending: true)
+          .limit(6);
+
+      final _timelineSnap = await _timelineRef.getDocuments();
+
+      if (_timelineSnap.documents.isNotEmpty) {
+        for (final doc in _timelineSnap.documents) {
+          final _data = doc.data;
+          final DocumentReference _postRef = _data['post_ref'];
+          final _postSnap = await _postRef.get();
+
+          if (_postSnap.exists) {
+            final _postData = _postSnap.data;
+            final _owner = await AppUser().fromRef(_postData['owner_ref']);
+
+            Feed _feed = Feed.fromJson(_postData, _owner);
+
+            final _reactionsRef = _ref
+                .collection('posts')
+                .document(_feed.id)
+                .collection('reactions')
+                .document(appUser.uid);
+
+            final _reactionSnap = await _reactionsRef.get();
+            if (_reactionSnap.exists) {
+              _feed = _feed.copyWith(isReacted: true);
+            } else {
+              _feed = _feed.copyWith(isReacted: false);
+            }
+
+            if (_feed.initialReactor == appUser.name &&
+                _feed.reactorsPhoto.contains(appUser.photoUrl)) {
+              _feed = _feed.copyWith(initialReactor: 'You');
+            }
+
+            _feeds.add(_feed);
+            print('Success: Getting single post ${_feed.toJson()}');
+          }
+        }
+      }
+      print('Success: Getting my posts');
+      return _feeds;
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting my posts');
+      return null;
+    }
+  }
+
   // get posts by id
   Future<List<Feed>> getPosts() async {
     try {
@@ -400,6 +457,64 @@ class FeedProvider {
     } catch (e) {
       print(e);
       print('Error!!!: Getting my old posts');
+      return null;
+    }
+  }
+
+  // get old posts of timeline
+  Future<List<Feed>> getOldTimelinePosts() async {
+    try {
+      List<Feed> _feeds = [];
+
+      final _userRef = appUser.appUserRef;
+
+      final _timelineRef = _userRef
+          .collection('timeline')
+          .orderBy('updated_at', descending: true)
+          .startAfter([feed.updatedAt]).limit(5);
+
+      final _timelineSnap = await _timelineRef.getDocuments();
+
+      if (_timelineSnap.documents.isNotEmpty) {
+        for (final doc in _timelineSnap.documents) {
+          final _data = doc.data;
+          final DocumentReference _postRef = _data['post_ref'];
+          final _postSnap = await _postRef.get();
+
+          if (_postSnap.exists) {
+            final _postData = _postSnap.data;
+            final _owner = await AppUser().fromRef(_postData['owner_ref']);
+
+            Feed _feed = Feed.fromJson(_postData, _owner);
+
+            final _reactionsRef = _ref
+                .collection('posts')
+                .document(_feed.id)
+                .collection('reactions')
+                .document(appUser.uid);
+
+            final _reactionSnap = await _reactionsRef.get();
+            if (_reactionSnap.exists) {
+              _feed = _feed.copyWith(isReacted: true);
+            } else {
+              _feed = _feed.copyWith(isReacted: false);
+            }
+
+            if (_feed.initialReactor == appUser.name &&
+                _feed.reactorsPhoto.contains(appUser.photoUrl)) {
+              _feed = _feed.copyWith(initialReactor: 'You');
+            }
+
+            _feeds.add(_feed);
+            print('Success: Getting single post ${_feed.toJson()}');
+          }
+        }
+      }
+      print('Success: Getting old timeline posts');
+      return _feeds;
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting old timeline posts');
       return null;
     }
   }

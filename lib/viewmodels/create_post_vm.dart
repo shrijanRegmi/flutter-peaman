@@ -47,10 +47,10 @@ class CreatePostVm extends ChangeNotifier {
           final _myExistingFeeds = appVm.myFeeds;
           final _myExistingFeaturedFeeds = appVm.myFeaturedfeeds;
           _myExistingFeeds.insert(0, _tempFeed);
-          _myExistingFeaturedFeeds.insert(0, _tempFeed);
-
           appVm.updateMyFeedsList(_myExistingFeeds);
+          
           if (_isFeatured) {
+            _myExistingFeaturedFeeds.insert(0, _tempFeed);
             appVm.updateMyFeaturedFeedsList(_myExistingFeaturedFeeds);
           }
 

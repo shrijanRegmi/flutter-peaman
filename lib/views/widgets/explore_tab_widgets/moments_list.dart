@@ -7,9 +7,6 @@ class MomentsList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          height: 20.0,
-        ),
         _momentTextBuilder(),
         SizedBox(
           height: 10.0,
@@ -26,7 +23,7 @@ class MomentsList extends StatelessWidget {
         'Moments',
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 18.0,
+          fontSize: 16.0,
           color: Color(0xff3D4A5A),
         ),
       ),

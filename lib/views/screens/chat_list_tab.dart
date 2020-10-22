@@ -74,24 +74,12 @@ class ChatListTab extends HookWidget {
               SizedBox(
                 width: 10.0,
               ),
-              // dropdown
-              Icon(
-                Icons.keyboard_arrow_down,
-                color: Color(0xff3D4A5A),
-              ),
+              // // dropdown
+              // Icon(
+              //   Icons.keyboard_arrow_down,
+              //   color: Color(0xff3D4A5A),
+              // ),
             ],
-          ),
-          // searchbar
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => SearchScreen(),
-                ),
-              );
-            },
-            child: SvgPicture.asset('assets/images/svgs/search_icon.svg'),
           ),
         ],
       ),

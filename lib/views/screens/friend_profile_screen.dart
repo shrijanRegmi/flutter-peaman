@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/services/auth_services/auth_provider.dart';
 import 'package:peaman/viewmodels/app_vm.dart';
 import 'package:peaman/viewmodels/friend_profile_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
@@ -45,6 +47,7 @@ class FriendProfileScreen extends StatelessWidget {
                             height: 20.0,
                           ),
                         if (!_isAppUser) ScrollAppbar(),
+                        if (_isAppUser) _logoutBuilder(),
                         _userDetailBuilder(context),
                         SizedBox(
                           height: 10.0,
@@ -87,6 +90,52 @@ class FriendProfileScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _logoutBuilder() {
+    return GestureDetector(
+      onTap: () => AuthProvider().logOut(),
+      child: Container(
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              _titleBuilder(),
+              SizedBox(
+                width: 20.0,
+              ),
+              _iconBuilder(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _iconBuilder() {
+    return Container(
+      width: 40.0,
+      height: 40.0,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xff3D4A5A).withOpacity(0.1),
+      ),
+      child: Center(
+        child: RotatedBox(
+          quarterTurns: 90,
+          child: SvgPicture.asset('assets/images/svgs/logout.svg'),
+        ),
+      ),
+    );
+  }
+
+  Widget _titleBuilder() {
+    return Text(
+      'Log out',
+      style: TextStyle(fontSize: 16.0, color: Color(0xff3D4A5A)),
     );
   }
 
