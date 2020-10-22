@@ -69,9 +69,9 @@ class SettingsItem extends StatelessWidget {
         );
         break;
       default:
-        AuthProvider().logOut();
         AppUserProvider(uid: appUser.uid)
             .setUserActiveStatus(onlineStatus: OnlineStatus.away);
+        AuthProvider().logOut();
     }
     if (_screen != null) {
       Navigator.push(

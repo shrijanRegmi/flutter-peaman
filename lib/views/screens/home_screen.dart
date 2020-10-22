@@ -24,32 +24,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.addObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-
-    switch (state) {
-      case AppLifecycleState.paused:
-        AppUserProvider(uid: widget.uid)
-            .setUserActiveStatus(onlineStatus: OnlineStatus.away);
-        break;
-      case AppLifecycleState.resumed:
-        AppUserProvider(uid: widget.uid)
-            .setUserActiveStatus(onlineStatus: OnlineStatus.active);
-        break;
-      default:
-        return null;
-    }
   }
 
   @override
@@ -70,6 +45,21 @@ class _HomeScreenState extends State<HomeScreen>
             onInit: (vm) {
               AppUserProvider(uid: _appUser.uid)
                   .setUserActiveStatus(onlineStatus: OnlineStatus.active);
+            },
+            onDidChangeLifeCycle: (vm, state) {
+              print(state);
+              switch (state) {
+                case AppLifecycleState.paused:
+                  AppUserProvider(uid: _appUser.uid)
+                      .setUserActiveStatus(onlineStatus: OnlineStatus.away);
+                  break;
+                case AppLifecycleState.resumed:
+                  AppUserProvider(uid: _appUser.uid)
+                      .setUserActiveStatus(onlineStatus: OnlineStatus.active);
+                  break;
+                default:
+                  return null;
+              }
             },
             builder: (BuildContext context, HomeVm vm) {
               return Scaffold(

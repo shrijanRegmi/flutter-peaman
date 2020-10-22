@@ -8,15 +8,23 @@ class ViewmodelProvider<T extends ChangeNotifier> extends StatefulWidget {
   final T vm;
   final Function(T vm) onInit;
   final Function(T vm) onDispose;
-  ViewmodelProvider(
-      {@required this.vm, @required this.builder, this.onInit, this.onDispose});
+  final Function(T vm, AppLifecycleState state) onDidChangeLifeCycle;
+  ViewmodelProvider({
+    @required this.vm,
+    @required this.builder,
+    this.onInit,
+    this.onDispose,
+    this.onDidChangeLifeCycle,
+  });
 }
 
 class _ViewmodelProviderState<T extends ChangeNotifier>
-    extends State<ViewmodelProvider<T>> {
+    extends State<ViewmodelProvider<T>> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    
     if (widget.onInit != null) {
       widget.onInit(widget.vm);
     }
@@ -25,8 +33,18 @@ class _ViewmodelProviderState<T extends ChangeNotifier>
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance.addObserver(this);
+
     if (widget.onDispose != null) {
       widget.onDispose(widget.vm);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (widget.onDidChangeLifeCycle != null) {
+      widget.onDidChangeLifeCycle(widget.vm, state);
     }
   }
 
