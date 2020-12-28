@@ -40,7 +40,7 @@ class FeedCommentScreen extends StatelessWidget {
             child: vm.comments == null
                 ? Container()
                 : ListView.separated(
-                    reverse: true,
+                    // reverse: true,
                     itemCount: vm.comments.length,
                     itemBuilder: (context, index) {
                       return FeedCommentItem(vm.comments[index]);

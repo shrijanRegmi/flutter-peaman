@@ -47,7 +47,7 @@ class FriendProfileScreen extends StatelessWidget {
                             height: 20.0,
                           ),
                         if (!_isAppUser) ScrollAppbar(),
-                        if (_isAppUser) _logoutBuilder(),
+                        if (_isAppUser) _logoutBuilder(appVm),
                         _userDetailBuilder(context),
                         SizedBox(
                           height: 10.0,
@@ -71,12 +71,15 @@ class FriendProfileScreen extends StatelessWidget {
                               SizedBox(
                                 height: 50.0,
                               ),
-                              if (vm.feeds.isEmpty) _emptyBuilder(),
-                              if (vm.feeds.isNotEmpty) PostsList(vm.feeds),
+                              if (vm.feeds != null && vm.feeds.isEmpty)
+                                _emptyBuilder(),
+                              if (vm.feeds != null && vm.feeds.isNotEmpty)
+                                PostsList(vm.feeds),
                               SizedBox(
                                 height: 50.0,
                               ),
-                              if (vm.featuredFeeds.isNotEmpty)
+                              if (vm.featuredFeeds != null &&
+                                  vm.featuredFeeds.isNotEmpty)
                                 FeaturedPostList(vm.featuredFeeds),
                               SizedBox(
                                 height: 100.0,
@@ -93,9 +96,12 @@ class FriendProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _logoutBuilder() {
+  Widget _logoutBuilder(final AppVm vm) {
     return GestureDetector(
-      onTap: () => AuthProvider().logOut(),
+      onTap: () {
+        vm.updateFeedsList(null);
+        AuthProvider().logOut();
+      },
       child: Container(
         color: Colors.transparent,
         child: Padding(
