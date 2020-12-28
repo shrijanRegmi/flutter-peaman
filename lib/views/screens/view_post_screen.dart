@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/viewmodels/app_vm.dart';
 import 'package:peaman/viewmodels/feed_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/screens/friend_profile_screen.dart';
@@ -21,7 +22,7 @@ class ViewFeedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewmodelProvider<FeedVm>(
-      vm: FeedVm(),
+      vm: FeedVm(context: context),
       onInit: (vm) => vm.onInit(feed),
       builder: (context, vm, appVm, appUser) {
         return Scaffold(
@@ -50,7 +51,7 @@ class ViewFeedScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _headerBuilder(context),
+                  _headerBuilder(context, appUser, vm, appVm),
                   SizedBox(
                     height: 10.0,
                   ),
@@ -80,7 +81,8 @@ class ViewFeedScreen extends StatelessWidget {
     );
   }
 
-  Widget _headerBuilder(BuildContext context) {
+  Widget _headerBuilder(
+      BuildContext context, AppUser appUser, FeedVm vm, AppVm appVm) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -131,10 +133,26 @@ class ViewFeedScreen extends StatelessWidget {
             ),
           ),
         ),
-        Icon(
-          Icons.more_vert,
-          color: Color(0xff3D4A5A),
-        )
+        if (feed.ownerId == appUser.uid)
+          PopupMenuButton(
+            icon: Icon(
+              Icons.more_vert,
+              color: Color(0xff3D4A5A),
+            ),
+            itemBuilder: (context) {
+              return <PopupMenuItem>[
+                PopupMenuItem(
+                  value: 0,
+                  child: Text('Delete'),
+                ),
+              ];
+            },
+            onSelected: (value) {
+              if (value == 0) {
+                vm.deleteMyFeed(feed, appVm, appUser);
+              }
+            },
+          )
       ],
     );
   }

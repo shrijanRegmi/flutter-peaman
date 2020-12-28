@@ -19,7 +19,7 @@ class FeedProvider {
       await _postref.setData(_feed.toJson());
       print('Success: Creating post');
 
-      await _addPhotosCount(feed.photos.length);
+      await _updatePhotosCount(feed.photos.length);
 
       if (feed.isFeatured) {
         await _saveFeatured(_feed);
@@ -189,7 +189,7 @@ class FeedProvider {
   }
 
   // update photos count
-  Future _addPhotosCount(final int count) async {
+  Future _updatePhotosCount(final int count) async {
     try {
       final _userRef = appUser.appUserRef;
 
@@ -197,11 +197,30 @@ class FeedProvider {
         'photos': FieldValue.increment(count),
       });
 
-      print('Success: Increasing photos count');
+      print('Success: Updating photos count');
       return 'Success';
     } catch (e) {
       print(e);
-      print('Error!!!: Increasing photos count');
+      print('Error!!!: Updating photos count');
+    }
+  }
+
+  // delete my post
+  Future deletePost() async {
+    try {
+      final _postRef = feed.feedRef;
+      final _featuredPostsRef =
+          appUser.appUserRef.collection('featured_posts').document(feed.id);
+
+      await _postRef.delete();
+      await _featuredPostsRef.delete();
+      print("Success: Deleting my post ${feed.id}");
+
+      return _updatePhotosCount(-feed.photos.length);
+    } catch (e) {
+      print(e);
+      print('Error!!!: Deleting my post ${feed.id}');
+      return null;
     }
   }
 

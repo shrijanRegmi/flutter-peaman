@@ -32,7 +32,7 @@ class FeedsListItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _headerBuilder(context),
+              _headerBuilder(context, appUser),
               SizedBox(
                 height: 10.0,
               ),
@@ -60,7 +60,7 @@ class FeedsListItem extends StatelessWidget {
     );
   }
 
-  Widget _headerBuilder(BuildContext context) {
+  Widget _headerBuilder(BuildContext context, AppUser appUser) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -111,10 +111,6 @@ class FeedsListItem extends StatelessWidget {
             ),
           ),
         ),
-        Icon(
-          Icons.more_vert,
-          color: Color(0xff3D4A5A),
-        )
       ],
     );
   }
@@ -138,9 +134,8 @@ class FeedsListItem extends StatelessWidget {
                         : 'assets/images/svgs/heart_blank.svg',
                     width: 27.0,
                     height: 27.0,
-                    color: vm.thisFeed.isReacted
-                        ? Colors.pink
-                        : Color(0xff3D4A5A),
+                    color:
+                        vm.thisFeed.isReacted ? Colors.pink : Color(0xff3D4A5A),
                   ),
                 ),
               ),

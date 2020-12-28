@@ -33,39 +33,40 @@ class PostsList extends StatelessWidget {
             color: Color(0xff3D4A5A),
           ),
         ),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => FriendsFeedViewerScreen('Posts', feeds),
-              ),
-            );
-          },
-          child: Container(
-            color: Colors.transparent,
-            child: Row(
-              children: [
-                Text(
-                  'View All',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0,
-                    color: Colors.blue,
+        if (feeds.length > 6)
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FriendsFeedViewerScreen('Posts', feeds),
+                ),
+              );
+            },
+            child: Container(
+              color: Colors.transparent,
+              child: Row(
+                children: [
+                  Text(
+                    'View All',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                      color: Colors.blue,
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: 5.0,
-                ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.blue,
-                  size: 14.0,
-                )
-              ],
+                  SizedBox(
+                    width: 5.0,
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.blue,
+                    size: 14.0,
+                  )
+                ],
+              ),
             ),
           ),
-        ),
       ],
     );
   }

@@ -74,7 +74,7 @@ class MessageProvider {
 
   // send additional properties with message
   Future _sendAdditionalProperties(
-      {final String myId, final String friendId, final lastMsgRef}) async {
+      {final String myId, final String friendId}) async {
     try {
       final _chatRef = _ref.collection('chats').document(chatId);
 

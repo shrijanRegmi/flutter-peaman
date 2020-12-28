@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/viewmodels/chat_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
-import 'package:peaman/views/screens/search_screen.dart';
 import 'package:peaman/views/widgets/chat_list_tab_widgets/other_users_list.dart';
 import 'package:peaman/views/widgets/chat_list_tab_widgets/pinned_users_list.dart';
 
