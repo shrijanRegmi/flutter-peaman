@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:peaman/models/app_models/comment_model.dart';
 import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/models/moment_model.dart';
 
 class FeedProvider {
   final AppUser appUser;
   final Feed feed;
-  FeedProvider({this.appUser, this.feed});
+  final Moment moment;
+  FeedProvider({this.appUser, this.feed, this.moment});
 
   final _ref = Firestore.instance;
 
@@ -29,6 +31,25 @@ class FeedProvider {
     } catch (e) {
       print(e);
       print('Error!!!: Creating post');
+      return null;
+    }
+  }
+
+  // create moments
+  Future<Moment> createMoment() async {
+    try {
+      final _momentRef = _ref.collection('moments').document();
+      final _moment = moment.copyWith(
+        id: _momentRef.documentID,
+      );
+
+      await _momentRef.setData(_moment.toJson());
+
+      print('Success: Creating moment ${_moment.id}');
+      return _moment;
+    } catch (e) {
+      print(e);
+      print('Error!!!: Creating moment');
       return null;
     }
   }
@@ -272,6 +293,36 @@ class FeedProvider {
       print('Error!!!: Getting my posts');
       return null;
     }
+  }
+
+  // get moments
+  Future<List<Moment>> getMoments() async {
+    final _moments = <Moment>[];
+    try {
+      final _momentsRef =
+          _ref.collection('moments').where('owner_id', isEqualTo: appUser.uid);
+      final _momentsSnap = await _momentsRef.getDocuments();
+      if (_momentsSnap.documents.isNotEmpty) {
+        for (var doc in _momentsSnap.documents) {
+          if (doc.exists) {
+            final DocumentReference _ownerRef = doc['owner_ref'];
+            final _ownerSnap = await _ownerRef.get();
+            if (_ownerSnap.exists) {
+              final _owner = AppUser.fromJson(_ownerSnap.data);
+              final _moment = Moment.fromJson(doc.data, _owner);
+
+              _moments.add(_moment);
+            }
+          }
+        }
+      }
+      print('Success: Getting moments');
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting moments');
+    }
+
+    return _moments;
   }
 
   // get featured posts by id
