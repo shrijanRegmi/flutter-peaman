@@ -7,6 +7,7 @@ import 'package:peaman/services/auth_services/auth_provider.dart';
 import 'package:peaman/viewmodels/app_vm.dart';
 import 'package:peaman/viewmodels/friend_profile_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
+import 'package:peaman/views/screens/view_saved_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/scroll_appbar.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/featured_posts_list.dart';
 import 'package:peaman/views/widgets/friends_profile_widgets/friend_btns.dart';
@@ -47,7 +48,14 @@ class FriendProfileScreen extends StatelessWidget {
                             height: 20.0,
                           ),
                         if (!_isAppUser) ScrollAppbar(),
-                        if (_isAppUser) _logoutBuilder(appVm),
+                        if (_isAppUser)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _savedBuilder(context),
+                              _logoutBuilder(appVm),
+                            ],
+                          ),
                         _userDetailBuilder(context),
                         SizedBox(
                           height: 10.0,
@@ -109,7 +117,7 @@ class FriendProfileScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              _titleBuilder(),
+              _titleBuilder('Log out'),
               SizedBox(
                 width: 20.0,
               ),
@@ -138,9 +146,52 @@ class FriendProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _titleBuilder() {
+  Widget _savedBuilder(final BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ViewSavedScreen(),
+          ),
+        );
+      },
+      child: Container(
+        color: Colors.transparent,
+        child: Row(
+          children: [
+            SizedBox(
+              width: 20.0,
+            ),
+            Container(
+              width: 40.0,
+              height: 40.0,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xff3D4A5A).withOpacity(0.1),
+              ),
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/images/svgs/bookmark_filled.svg',
+                  color: Color(0xff3D4A5A),
+                  width: 18.0,
+                  height: 18.0,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 10.0,
+            ),
+            _titleBuilder('Saved'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _titleBuilder(final String title) {
     return Text(
-      'Log out',
+      title,
       style: TextStyle(fontSize: 16.0, color: Color(0xff3D4A5A)),
     );
   }

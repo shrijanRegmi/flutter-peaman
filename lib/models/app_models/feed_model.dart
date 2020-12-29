@@ -15,6 +15,7 @@ class Feed {
   final List<String> reactorsPhoto;
   final bool isReacted;
   final bool isFeatured;
+  final bool isSaved;
 
   Feed({
     this.id,
@@ -30,6 +31,7 @@ class Feed {
     this.reactorsPhoto = const [],
     this.isReacted = false,
     this.isFeatured,
+    this.isSaved = false,
   });
 
   Feed copyWith({
@@ -46,6 +48,7 @@ class Feed {
     final List<String> reactorsPhoto,
     final bool isReacted,
     final bool isFeatured,
+    final bool isSaved,
   }) {
     return Feed(
       id: id ?? this.id,
@@ -61,6 +64,7 @@ class Feed {
       reactorsPhoto: reactorsPhoto ?? this.reactorsPhoto,
       isReacted: isReacted ?? this.isReacted,
       isFeatured: isFeatured ?? this.isFeatured,
+      isSaved: isSaved ?? this.isSaved,
     );
   }
 
