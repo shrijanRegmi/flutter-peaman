@@ -74,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen>
                   .setUserActiveStatus(onlineStatus: OnlineStatus.active);
               _appVm.getTimeline(_appUser);
               _appVm.getPostsById(_appUser);
+              _appVm.getMoments(_appUser);
             },
             builder: (context, vm, appVm, appUser) {
               return Scaffold(

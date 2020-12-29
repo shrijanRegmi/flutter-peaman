@@ -42,7 +42,12 @@ class ExploreTab extends HookWidget {
                   SizedBox(
                     height: 5.0,
                   ),
-                  MomentsList(),
+                  MomentsList(
+                    moments: appVm.moments,
+                    createMoment: vm.createMoment,
+                    appUser: appUser,
+                    appVm: appVm,
+                  ),
                   Divider(
                     color: Color(0xff3D4A5A).withOpacity(0.2),
                   ),
