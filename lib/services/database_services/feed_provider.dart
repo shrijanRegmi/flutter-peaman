@@ -245,6 +245,43 @@ class FeedProvider {
     }
   }
 
+  // save post
+  Future savePost() async {
+    try {
+      final _savedPostRef =
+          appUser.appUserRef.collection('saved_posts').document(feed.id);
+
+      final _data = {
+        'post_ref': feed.feedRef,
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      };
+
+      await _savedPostRef.setData(_data);
+      print('Success: Saving feed ${feed.id}');
+      return feed;
+    } catch (e) {
+      print(e);
+      print('Error!!!: Saving feed ${feed.id}');
+      return null;
+    }
+  }
+
+  // remove saved post
+  Future removeSavedPost() async {
+    try {
+      final _savedPostRef =
+          appUser.appUserRef.collection('saved_posts').document(feed.id);
+
+      await _savedPostRef.delete();
+      print('Success: Deleting saved feed ${feed.id}');
+      return feed;
+    } catch (e) {
+      print(e);
+      print('Error!!!: Deleting saved feed ${feed.id}');
+      return null;
+    }
+  }
+
   // get posts by id
   Future<List<Feed>> getPostsById() async {
     try {
@@ -270,12 +307,15 @@ class FeedProvider {
               .collection('reactions')
               .document(appUser.uid);
 
+          final _savedPostRef =
+              appUser.appUserRef.collection('saved_posts').document(_feed.id);
+
           final _reactionSnap = await _reactionsRef.get();
-          if (_reactionSnap.exists) {
-            _feed = _feed.copyWith(isReacted: true);
-          } else {
-            _feed = _feed.copyWith(isReacted: false);
-          }
+          final _savedPostSnap = await _savedPostRef.get();
+
+          _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
+
+          _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
 
           if (_feed.initialReactor == appUser.name &&
               _feed.reactorsPhoto.contains(appUser.photoUrl)) {
@@ -349,12 +389,15 @@ class FeedProvider {
               .collection('reactions')
               .document(appUser.uid);
 
+          final _savedPostRef =
+              appUser.appUserRef.collection('saved_posts').document(_feed.id);
+
           final _reactionSnap = await _reactionsRef.get();
-          if (_reactionSnap.exists) {
-            _feed = _feed.copyWith(isReacted: true);
-          } else {
-            _feed = _feed.copyWith(isReacted: false);
-          }
+          final _savedPostSnap = await _savedPostRef.get();
+
+          _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
+
+          _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
 
           if (_feed.initialReactor == appUser.name &&
               _feed.reactorsPhoto.contains(appUser.photoUrl)) {
@@ -405,12 +448,15 @@ class FeedProvider {
                 .collection('reactions')
                 .document(appUser.uid);
 
+            final _savedPostRef =
+                appUser.appUserRef.collection('saved_posts').document(_feed.id);
+
             final _reactionSnap = await _reactionsRef.get();
-            if (_reactionSnap.exists) {
-              _feed = _feed.copyWith(isReacted: true);
-            } else {
-              _feed = _feed.copyWith(isReacted: false);
-            }
+            final _savedPostSnap = await _savedPostRef.get();
+
+            _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
+
+            _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
 
             if (_feed.initialReactor == appUser.name &&
                 _feed.reactorsPhoto.contains(appUser.photoUrl)) {
@@ -456,12 +502,15 @@ class FeedProvider {
               .collection('reactions')
               .document(appUser.uid);
 
+          final _savedPostRef =
+              appUser.appUserRef.collection('saved_posts').document(_feed.id);
+
           final _reactionSnap = await _reactionsRef.get();
-          if (_reactionSnap.exists) {
-            _feed = _feed.copyWith(isReacted: true);
-          } else {
-            _feed = _feed.copyWith(isReacted: false);
-          }
+          final _savedPostSnap = await _savedPostRef.get();
+
+          _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
+
+          _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
 
           if (_feed.initialReactor == appUser.name &&
               _feed.reactorsPhoto.contains(appUser.photoUrl)) {
@@ -506,12 +555,15 @@ class FeedProvider {
               .collection('reactions')
               .document(appUser.uid);
 
+          final _savedPostRef =
+              appUser.appUserRef.collection('saved_posts').document(_feed.id);
+
           final _reactionSnap = await _reactionsRef.get();
-          if (_reactionSnap.exists) {
-            _feed = _feed.copyWith(isReacted: true);
-          } else {
-            _feed = _feed.copyWith(isReacted: false);
-          }
+          final _savedPostSnap = await _savedPostRef.get();
+
+          _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
+
+          _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
 
           if (_feed.initialReactor == appUser.name &&
               _feed.reactorsPhoto.contains(appUser.photoUrl)) {
@@ -563,12 +615,15 @@ class FeedProvider {
                 .collection('reactions')
                 .document(appUser.uid);
 
+            final _savedPostRef =
+                appUser.appUserRef.collection('saved_posts').document(_feed.id);
+
             final _reactionSnap = await _reactionsRef.get();
-            if (_reactionSnap.exists) {
-              _feed = _feed.copyWith(isReacted: true);
-            } else {
-              _feed = _feed.copyWith(isReacted: false);
-            }
+            final _savedPostSnap = await _savedPostRef.get();
+
+            _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
+
+            _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
 
             if (_feed.initialReactor == appUser.name &&
                 _feed.reactorsPhoto.contains(appUser.photoUrl)) {
@@ -587,6 +642,62 @@ class FeedProvider {
       print('Error!!!: Getting old timeline posts');
       return null;
     }
+  }
+
+  // get saved feeds
+  Future<List<Feed>> getSavedPosts() async {
+    List<Feed> _feeds = [];
+    try {
+      final _savedPostsRef = appUser.appUserRef.collection('saved_posts');
+      final _savedPostsSnap = await _savedPostsRef.getDocuments();
+
+      for (final doc in _savedPostsSnap.documents) {
+        if (doc.exists) {
+          final DocumentReference _feedRef = doc.data['post_ref'];
+          final _feedSnap = await _feedRef.get();
+
+          if (_feedSnap.exists) {
+            final DocumentReference _ownerRef = _feedSnap.data['owner_ref'];
+            final _ownerSnap = await _ownerRef.get();
+
+            if (_ownerSnap.exists) {
+              final _owner = AppUser.fromJson(_ownerSnap.data);
+              Feed _feed = Feed.fromJson(_feedSnap.data, _owner);
+
+              final _reactionsRef = _ref
+                  .collection('posts')
+                  .document(_feed.id)
+                  .collection('reactions')
+                  .document(appUser.uid);
+
+              final _savedPostRef = appUser.appUserRef
+                  .collection('saved_posts')
+                  .document(_feed.id);
+
+              final _reactionSnap = await _reactionsRef.get();
+              final _savedPostSnap = await _savedPostRef.get();
+
+              _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
+
+              _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
+
+              if (_feed.initialReactor == appUser.name &&
+                  _feed.reactorsPhoto.contains(appUser.photoUrl)) {
+                _feed = _feed.copyWith(initialReactor: 'You');
+              }
+
+              _feeds.add(_feed);
+            }
+          }
+        }
+      }
+      print('Success: Getting saved posts');
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting saved posts');
+    }
+
+    return _feeds;
   }
 
   // get comment

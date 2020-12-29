@@ -164,11 +164,13 @@ class FeedsListItem extends StatelessWidget {
             ],
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: () => vm.savePost(appUser),
             child: Container(
               color: Colors.transparent,
               child: SvgPicture.asset(
-                'assets/images/svgs/bookmark_blank.svg',
+                vm.thisFeed.isSaved
+                    ? 'assets/images/svgs/bookmark_filled.svg'
+                    : 'assets/images/svgs/bookmark_blank.svg',
                 width: 24.0,
                 height: 24.0,
                 color: Color(0xff3D4A5A),

@@ -54,6 +54,17 @@ class FeedVm extends ChangeNotifier {
     }
   }
 
+  // save post
+  Future savePost(final AppUser appUser) async {
+    _updateFeed(isSaved: !_thisFeed.isSaved);
+
+    if (!_thisFeed.isSaved) {
+      await FeedProvider(appUser: appUser, feed: _thisFeed).removeSavedPost();
+    } else {
+      await FeedProvider(appUser: appUser, feed: _thisFeed).savePost();
+    }
+  }
+
   // initialize feed
   _initializeFeed(final Feed feed) {
     _thisFeed = feed;
@@ -61,20 +72,24 @@ class FeedVm extends ChangeNotifier {
   }
 
   // update value of feed
-  _updateFeed(
-      {bool isReacted,
-      String initReactor,
-      int reactionCount,
-      List<String> reactorsPhoto}) {
+  _updateFeed({
+    bool isReacted,
+    String initReactor,
+    int reactionCount,
+    List<String> reactorsPhoto,
+    bool isSaved,
+  }) {
     _thisFeed = _thisFeed.copyWith(
       isReacted: isReacted,
       initialReactor: initReactor,
       reactionCount: reactionCount,
       reactorsPhoto: reactorsPhoto,
+      isSaved: isSaved,
     );
     notifyListeners();
   }
 
+  // delete my feed
   deleteMyFeed(final Feed feed, final AppVm vm, final AppUser appUser) async {
     final _myFeeds = vm.myFeeds ?? [];
     final _myFeaturedFeeds = vm.myFeaturedfeeds ?? [];
