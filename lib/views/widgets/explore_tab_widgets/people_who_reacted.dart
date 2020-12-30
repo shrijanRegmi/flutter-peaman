@@ -28,7 +28,7 @@ class PeopleWhoReacted extends StatelessWidget {
               child: Text(
                 feed.reactionCount == 1 || feed.reactionCount == 0
                     ? '${feed.initialReactor}'
-                    : '${feed.initialReactor} and ${feed.reactionCount} others',
+                    : '${feed.initialReactor} and ${feed.reactionCount - 1} others',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12.0,
