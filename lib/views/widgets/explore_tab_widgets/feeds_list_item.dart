@@ -36,10 +36,7 @@ class FeedsListItem extends StatelessWidget {
               SizedBox(
                 height: 10.0,
               ),
-              GestureDetector(
-                onDoubleTap: () => vm.reactPost(appUser),
-                child: FeedImageCarousel(feed.photos),
-              ),
+              FeedImageCarousel(feed.photos, vm.reactPost, appUser),
               SizedBox(
                 height: 15.0,
               ),
