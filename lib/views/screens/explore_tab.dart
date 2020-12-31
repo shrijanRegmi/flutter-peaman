@@ -53,35 +53,90 @@ class ExploreTab extends HookWidget {
                   ),
                   appVm.feeds == null
                       ? FeedLoader()
-                      : appVm.feeds.isEmpty
-                          ? _emptyChat(context, _animationController)
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                FeedsList(appVm.feeds),
-                                if (appVm.isLoadingOldFeeds)
-                                  FeedLoader(
-                                    count: 1,
+                      : Column(
+                          children: [
+                            if (appUser.newFeeds)
+                              Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    !vm.isShowingTopLoader
+                                        ? _loadNewFeedsBuilder(
+                                            vm, appVm, appUser)
+                                        : Container(),
+                                  ],
+                                ),
+                              ),
+                            appVm.feeds.isEmpty
+                                ? _emptyChat(context, _animationController)
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (appVm.isLoadingNewFeeds)
+                                        FeedLoader(
+                                          count: 1,
+                                        ),
+                                      FeedsList(appVm.feeds),
+                                      if (appVm.isLoadingOldFeeds)
+                                        FeedLoader(
+                                          count: 1,
+                                        ),
+                                    ],
                                   ),
-                              ],
-                            ),
+                          ],
+                        ),
                 ],
               ),
             ),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.blue,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => CreatePostScreen(),
-                  ),
-                );
-              },
-              child: Icon(Icons.create),
+            floatingActionButton: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                appUser.newFeeds && vm.isShowingTopLoader
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 40.0, left: 30.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _loadNewFeedsBuilder(vm, appVm, appUser),
+                          ],
+                        ),
+                      )
+                    : Container(),
+                FloatingActionButton(
+                  backgroundColor: Colors.blue,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CreatePostScreen(),
+                      ),
+                    );
+                  },
+                  child: Icon(Icons.create),
+                ),
+              ],
             ),
           );
         });
+  }
+
+  Widget _loadNewFeedsBuilder(
+      final ExploreVm vm, final AppVm appVm, final AppUser appUser) {
+    return Container(
+      width: 30.0,
+      height: 30.0,
+      child: FloatingActionButton(
+        backgroundColor: Colors.blue,
+        onPressed: () => vm.getNewFeeds(appVm, appUser),
+        child: Icon(
+          Icons.replay_outlined,
+          size: 15.0,
+        ),
+      ),
+    );
   }
 
   Widget _topSectionBuilder(BuildContext context) {
@@ -128,12 +183,12 @@ class ExploreTab extends HookWidget {
   Widget _emptyChat(
       BuildContext context, AnimationController _animationController) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Lottie.asset(
           'assets/lottie/chat_empty.json',
-          width: MediaQuery.of(context).size.width - 100.0,
-          height: MediaQuery.of(context).size.width - 100.0,
+          width: MediaQuery.of(context).size.width - 150.0,
+          height: MediaQuery.of(context).size.width - 150.0,
           controller: _animationController,
           onLoaded: (comp) {
             _animationController

@@ -9,12 +9,14 @@ class AppVm extends ChangeNotifier {
   List<Feed> _myFeeds;
   List<Feed> _myFeaturedFeeds;
   bool _isLoadingOldFeeds = false;
+  bool _isLoadingNewFeeds = false;
   List<Moment> _moments = [];
 
   List<Feed> get feeds => _feeds;
   List<Feed> get myFeeds => _myFeeds;
   List<Feed> get myFeaturedfeeds => _myFeaturedFeeds;
   bool get isLoadingOldFeeds => _isLoadingOldFeeds;
+  bool get isLoadingNewFeeds => _isLoadingNewFeeds;
   List<Moment> get moments => _moments;
 
   // get posts
@@ -69,6 +71,12 @@ class AppVm extends ChangeNotifier {
   // update value of is loading old feeds
   updateIsLoadingOldFeeds(final bool newVal) {
     _isLoadingOldFeeds = newVal;
+    notifyListeners();
+  }
+
+  // update value of is loading new feeds
+  updateIsLoadingNewFeeds(final bool newVal) {
+    _isLoadingNewFeeds = newVal;
     notifyListeners();
   }
 

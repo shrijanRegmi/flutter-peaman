@@ -10,6 +10,7 @@ import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/screens/chat_list_tab.dart';
 import 'package:peaman/views/screens/explore_tab.dart';
 import 'package:peaman/views/screens/friend_profile_screen.dart';
+import 'package:peaman/views/screens/notif_tab.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -26,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -84,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen>
                     child: Column(
                       children: <Widget>[
                         _tabViewBuilder(appUser),
-                        _tabsBuilder(),
+                        _tabsBuilder(appUser),
                       ],
                     ),
                   ),
@@ -102,13 +103,14 @@ class _HomeScreenState extends State<HomeScreen>
         children: <Widget>[
           ExploreTab(),
           ChatListTab(),
+          NotificationTab(),
           FriendProfileScreen(appUser),
         ],
       ),
     );
   }
 
-  Widget _tabsBuilder() {
+  Widget _tabsBuilder(final AppUser appUser) {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -124,15 +126,20 @@ class _HomeScreenState extends State<HomeScreen>
       child: TabBar(
         controller: _tabController,
         indicatorColor: Colors.transparent,
-        tabs: _getTab(),
+        tabs: _getTab(appUser),
         onTap: (val) {
           setState(() {});
+          if (val == 2) {
+            AppUserProvider(uid: appUser.uid).updateUserDetail(data: {
+              'notification_count': 0,
+            });
+          }
         },
       ),
     );
   }
 
-  List<Widget> _getTab() {
+  List<Widget> _getTab(final AppUser appUser) {
     List<Tab> _tabsList = [
       Tab(
         child: SvgPicture.asset(
@@ -147,9 +154,42 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
       Tab(
+        child: Stack(
+          overflow: Overflow.visible,
+          children: [
+            SvgPicture.asset(
+              'assets/images/svgs/notification_tab.svg',
+              color: _tabController.index == 2 ? Colors.blue : null,
+            ),
+            if (appUser != null && appUser.notifCount != 0)
+              Positioned(
+                right: -5.0,
+                top: -5.0,
+                child: Container(
+                  padding: const EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrange,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      appUser.notifCount > 9 ? '9+' : '${appUser.notifCount}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 8.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+      Tab(
         child: SvgPicture.asset(
           'assets/images/svgs/profile_tab.svg',
-          color: _tabController.index == 2 ? Colors.blue : null,
+          color: _tabController.index == 3 ? Colors.blue : null,
         ),
       ),
     ];

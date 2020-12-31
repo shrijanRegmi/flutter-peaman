@@ -2,8 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
+import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/auth_services/auth_provider.dart';
+import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:peaman/viewmodels/app_vm.dart';
 import 'package:peaman/viewmodels/friend_profile_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
@@ -53,7 +55,7 @@ class FriendProfileScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               _savedBuilder(context),
-                              _logoutBuilder(appVm),
+                              _logoutBuilder(appVm, appUser),
                             ],
                           ),
                         _userDetailBuilder(context),
@@ -104,10 +106,12 @@ class FriendProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _logoutBuilder(final AppVm vm) {
+  Widget _logoutBuilder(final AppVm vm, final AppUser appUser) {
     return GestureDetector(
       onTap: () {
         vm.updateFeedsList(null);
+        AppUserProvider(uid: appUser.uid)
+            .setUserActiveStatus(onlineStatus: OnlineStatus.away);
         AuthProvider().logOut();
       },
       child: Container(
