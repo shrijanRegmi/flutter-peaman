@@ -18,12 +18,14 @@ class PeopleWhoReacted extends StatelessWidget {
             Container(
               width: feed.reactorsPhoto.length == 3
                   ? 60.0
-                  : feed.reactorsPhoto.length == 2 ? 45.0 : 30.0,
+                  : feed.reactorsPhoto.length == 2
+                      ? 45.0
+                      : 30.0,
               child: Stack(
                 children: _getChildren(),
               ),
             ),
-          if (feed.initialReactor != '')
+          if (feed.initialReactor != '' && feed.reactionCount != null)
             Expanded(
               child: Text(
                 feed.reactionCount == 1 || feed.reactionCount == 0

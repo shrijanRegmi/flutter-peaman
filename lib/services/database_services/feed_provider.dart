@@ -3,6 +3,7 @@ import 'package:peaman/models/app_models/comment_model.dart';
 import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/models/moment_model.dart';
+import 'package:peaman/services/database_services/user_provider.dart';
 
 class FeedProvider {
   final AppUser appUser;
@@ -420,6 +421,9 @@ class FeedProvider {
   // get my timeline
   Future<List<Feed>> getTimeline() async {
     try {
+      AppUserProvider(uid: appUser.uid).updateUserDetail(data: {
+        'new_posts': false,
+      });
       List<Feed> _feeds = [];
 
       final _userRef = appUser.appUserRef;
@@ -640,6 +644,67 @@ class FeedProvider {
     } catch (e) {
       print(e);
       print('Error!!!: Getting old timeline posts');
+      return null;
+    }
+  }
+
+  // get new posts of timeline
+  Future<List<Feed>> getNewTimelinePosts() async {
+    try {
+      List<Feed> _feeds = [];
+
+      final _userRef = appUser.appUserRef;
+
+      final _timelineRef = _userRef
+          .collection('timeline')
+          .orderBy('updated_at', descending: true)
+          .endBefore([feed.updatedAt]).limit(5);
+
+      final _timelineSnap = await _timelineRef.getDocuments();
+
+      if (_timelineSnap.documents.isNotEmpty) {
+        for (final doc in _timelineSnap.documents) {
+          final _data = doc.data;
+          final DocumentReference _postRef = _data['post_ref'];
+          final _postSnap = await _postRef.get();
+
+          if (_postSnap.exists) {
+            final _postData = _postSnap.data;
+            final _owner = await AppUser().fromRef(_postData['owner_ref']);
+
+            Feed _feed = Feed.fromJson(_postData, _owner);
+
+            final _reactionsRef = _ref
+                .collection('posts')
+                .document(_feed.id)
+                .collection('reactions')
+                .document(appUser.uid);
+
+            final _savedPostRef =
+                appUser.appUserRef.collection('saved_posts').document(_feed.id);
+
+            final _reactionSnap = await _reactionsRef.get();
+            final _savedPostSnap = await _savedPostRef.get();
+
+            _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
+
+            _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
+
+            if (_feed.initialReactor == appUser.name &&
+                _feed.reactorsPhoto.contains(appUser.photoUrl)) {
+              _feed = _feed.copyWith(initialReactor: 'You');
+            }
+
+            _feeds.add(_feed);
+            print('Success: Getting single post ${_feed.toJson()}');
+          }
+        }
+      }
+      print('Success: Getting new timeline posts');
+      return _feeds;
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting new timeline posts');
       return null;
     }
   }

@@ -13,6 +13,8 @@ class AppUser {
   final int photos;
   final int followers;
   final int following;
+  final int notifCount;
+  final bool newFeeds;
 
   AppUser({
     this.uid,
@@ -26,6 +28,8 @@ class AppUser {
     this.photos,
     this.followers,
     this.following,
+    this.notifCount,
+    this.newFeeds,
   });
 
   static Map<String, dynamic> toJson(AppUser appUser) {
@@ -54,6 +58,8 @@ class AppUser {
       photos: data['photos'] ?? 0,
       followers: data['followers'] ?? 0,
       following: data['following'] ?? 0,
+      notifCount: data['notification_count'] ?? 0,
+      newFeeds: data['new_posts'] ?? false,
     );
   }
 

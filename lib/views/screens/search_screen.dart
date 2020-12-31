@@ -66,7 +66,8 @@ class _SearchScreenState extends State<SearchScreen> {
           } else {
             _searchedNames = allUsers
                 .where((appUser) =>
-                    appUser.name.contains(val) && appUser.uid != user.uid)
+                    appUser.name.toLowerCase().contains(val.toLowerCase()) &&
+                    appUser.uid != user.uid)
                 .toList();
           }
         });

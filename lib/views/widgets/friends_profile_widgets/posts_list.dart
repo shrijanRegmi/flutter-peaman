@@ -33,7 +33,7 @@ class PostsList extends StatelessWidget {
             color: Color(0xff3D4A5A),
           ),
         ),
-        if (feeds.length > 6)
+        // if (feeds.length > 6)
           GestureDetector(
             onTap: () {
               Navigator.push(

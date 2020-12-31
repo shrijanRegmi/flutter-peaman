@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:peaman/models/app_models/notification_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 
 class FriendProvider {
   final AppUser appUser;
   final AppUser user;
-  FriendProvider({this.appUser, this.user});
+  final Notifications notification;
+  FriendProvider({this.appUser, this.user, this.notification});
 
   // follow friend
   Future follow() async {
@@ -32,7 +34,12 @@ class FriendProvider {
     try {
       final _userRef = appUser.appUserRef;
       final _requestRef = _userRef.collection('requests').document(user.uid);
+      final _notifRef =
+          _userRef.collection('notifications').document(notification.id);
 
+      await _notifRef.updateData({
+        'is_accepted': true,
+      });
       await _requestRef.delete();
       print('Success: Deleting request doc with id ${user.uid}');
 
@@ -51,6 +58,9 @@ class FriendProvider {
     try {
       final _friendRef = user.appUserRef;
       final _userRef = appUser.appUserRef;
+      final _notifRef = appUser.appUserRef
+          .collection('notifications')
+          .document(notification.id);
 
       final _friendFollowersRef =
           _friendRef.collection('followers').document(appUser.uid);
@@ -75,6 +85,8 @@ class FriendProvider {
         'following': FieldValue.increment(1),
       });
 
+      await _notifRef.delete();
+
       print('Success: Following back ${user.uid}');
       return 'Success';
     } catch (e) {
@@ -89,8 +101,11 @@ class FriendProvider {
     try {
       final _userRef = appUser.appUserRef;
       final _requestRef = _userRef.collection('requests').document(user.uid);
+      final _notifRef =
+          _userRef.collection('notifications').document(notification.id);
 
       await _requestRef.delete();
+      await _notifRef.delete();
       print('Success: Deleting request doc with id ${user.uid}');
       return 'Success';
     } catch (e) {

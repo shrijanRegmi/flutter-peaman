@@ -26,7 +26,7 @@ class FeedVm extends ChangeNotifier {
             _thisFeed.initialReactor == '' || _thisFeed.initialReactor == null
                 ? 'You'
                 : null,
-        reactionCount: _thisFeed.reactionCount ?? 0 + 1,
+        reactionCount: (_thisFeed.reactionCount ?? 0) + 1,
         reactorsPhoto: _thisFeed.reactorsPhoto.length < 3
             ? [..._thisFeed.reactorsPhoto, appUser.photoUrl]
             : null,
@@ -79,6 +79,7 @@ class FeedVm extends ChangeNotifier {
     List<String> reactorsPhoto,
     bool isSaved,
   }) {
+    print('The reaction count is::::: $reactionCount');
     _thisFeed = _thisFeed.copyWith(
       isReacted: isReacted,
       initialReactor: initReactor,
