@@ -7,6 +7,7 @@ import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:peaman/viewmodels/app_vm.dart';
 import 'package:peaman/viewmodels/home_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
+import 'package:peaman/views/screens/browser_tab.dart';
 import 'package:peaman/views/screens/chat_list_tab.dart';
 import 'package:peaman/views/screens/explore_tab.dart';
 import 'package:peaman/views/screens/friend_profile_screen.dart';
@@ -27,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -103,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen>
         children: <Widget>[
           ExploreTab(),
           ChatListTab(),
+          BrowserTab(),
           NotificationTab(),
           FriendProfileScreen(appUser),
         ],
@@ -154,12 +156,18 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
       Tab(
+        child: SvgPicture.asset(
+          'assets/images/svgs/browser_tab.svg',
+          color: _tabController.index == 2 ? Colors.blue : null,
+        ),
+      ),
+      Tab(
         child: Stack(
           overflow: Overflow.visible,
           children: [
             SvgPicture.asset(
               'assets/images/svgs/notification_tab.svg',
-              color: _tabController.index == 2 ? Colors.blue : null,
+              color: _tabController.index == 3 ? Colors.blue : null,
             ),
             if (appUser != null && appUser.notifCount != 0)
               Positioned(
@@ -189,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen>
       Tab(
         child: SvgPicture.asset(
           'assets/images/svgs/profile_tab.svg',
-          color: _tabController.index == 3 ? Colors.blue : null,
+          color: _tabController.index == 4 ? Colors.blue : null,
         ),
       ),
     ];
