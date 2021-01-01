@@ -324,7 +324,6 @@ class FeedProvider {
           }
 
           _feeds.add(_feed);
-          print('Success: Getting single post ${_feed.toJson()}');
         }
       }
       print('Success: Getting my posts');
@@ -406,7 +405,6 @@ class FeedProvider {
           }
 
           _feeds.add(_feed);
-          print('Success: Getting single featured post ${_feed.toJson()}');
         }
       }
       print('Success: Getting featured posts');
@@ -468,7 +466,6 @@ class FeedProvider {
             }
 
             _feeds.add(_feed);
-            print('Success: Getting single post ${_feed.toJson()}');
           }
         }
       }
@@ -522,7 +519,6 @@ class FeedProvider {
           }
 
           _feeds.add(_feed);
-          print('Success: Getting single post ${_feed.toJson()}');
         }
       }
       print('Success: Getting my posts');
@@ -575,14 +571,13 @@ class FeedProvider {
           }
 
           _feeds.add(_feed);
-          print('Success: Getting single old post ${_feed.toJson()}');
         }
       }
-      print('Success: Getting my old posts');
+      print('Success: Getting old posts by id');
       return _feeds;
     } catch (e) {
       print(e);
-      print('Error!!!: Getting my old posts');
+      print('Error!!!: Getting old posts by id');
       return null;
     }
   }
@@ -635,7 +630,6 @@ class FeedProvider {
             }
 
             _feeds.add(_feed);
-            print('Success: Getting single post ${_feed.toJson()}');
           }
         }
       }
@@ -696,7 +690,6 @@ class FeedProvider {
             }
 
             _feeds.add(_feed);
-            print('Success: Getting single post ${_feed.toJson()}');
           }
         }
       }
