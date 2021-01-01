@@ -5,16 +5,16 @@ import 'package:peaman/services/database_services/friend_provider.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 
-class NotificationsListItem extends StatelessWidget {
-  final Notifications notification;
-  NotificationsListItem(this.notification);
+class FollowRequestListItem extends StatelessWidget {
+  final Notifications followRequest;
+  FollowRequestListItem(this.followRequest);
 
   @override
   Widget build(BuildContext context) {
-    return ViewmodelProvider<NotificationItemVm>(
-      vm: NotificationItemVm(),
+    return ViewmodelProvider<FollowRequestItemVm>(
+      vm: FollowRequestItemVm(),
       onInit: (vm) {
-        if (notification.isAccepted) {
+        if (followRequest.isAccepted) {
           vm.updateBtnText('Follow back');
         }
       },
@@ -28,7 +28,7 @@ class NotificationsListItem extends StatelessWidget {
   }
 
   Widget _followNotifBuilder(
-      final NotificationItemVm vm, final AppUser appUser) {
+      final FollowRequestItemVm vm, final AppUser appUser) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -36,7 +36,7 @@ class NotificationsListItem extends StatelessWidget {
           children: <Widget>[
             // user image
             AvatarBuilder(
-              imgUrl: notification.sender.photoUrl,
+              imgUrl: followRequest.sender.photoUrl,
               radius: 22.0,
             ),
             SizedBox(
@@ -46,19 +46,11 @@ class NotificationsListItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Follow request",
+                  "${followRequest.sender.name}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16.0,
+                    fontSize: 14.0,
                     color: Color(0xff3D4A5A),
-                  ),
-                ),
-                Text(
-                  "${notification.sender.name}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12.0,
-                    color: Colors.black38,
                   ),
                 ),
               ],
@@ -71,7 +63,7 @@ class NotificationsListItem extends StatelessWidget {
               color: Colors.blue,
               textColor: Colors.white,
               onPressed: () => vm.onClickPositiveBtn(
-                  appUser, notification.sender.uid, notification),
+                  appUser, followRequest.sender.uid, followRequest),
               height: 30.0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
@@ -88,14 +80,14 @@ class NotificationsListItem extends StatelessWidget {
             SizedBox(
               width: 10.0,
             ),
-            if (vm.btnText != 'Follow back' && !notification.isAccepted)
+            if (vm.btnText != 'Follow back' && !followRequest.isAccepted)
               Container(
                 width: 30.0,
                 height: 30.0,
                 child: FloatingActionButton(
                   backgroundColor: Colors.red,
                   onPressed: () => vm.ignoreRequest(
-                      appUser, notification, notification.sender.uid),
+                      appUser, followRequest, followRequest.sender.uid),
                   child: Icon(
                     Icons.close,
                     size: 15.0,
@@ -109,55 +101,55 @@ class NotificationsListItem extends StatelessWidget {
   }
 }
 
-class NotificationItemVm extends ChangeNotifier {
+class FollowRequestItemVm extends ChangeNotifier {
   String _btnText = 'Accept';
 
   String get btnText => _btnText;
 
   // on click positive btn
   onClickPositiveBtn(final AppUser appUser, final String userId,
-      final Notifications notification) {
+      final Notifications followRequest) {
     if (_btnText == 'Accept') {
-      _acceptFollow(appUser, userId, notification);
+      _acceptFollow(appUser, userId, followRequest);
     } else if (_btnText == 'Follow back') {
-      _followBack(appUser, userId, notification);
+      _followBack(appUser, userId, followRequest);
     }
   }
 
   // accept follow
   _acceptFollow(final AppUser appUser, final String userId,
-      final Notifications notification) {
+      final Notifications followRequest) {
     updateBtnText('Follow back');
 
     final _user = AppUser(
       uid: userId,
       appUserRef: AppUser().getUserRef(userId),
     );
-    FriendProvider(appUser: appUser, user: _user, notification: notification)
+    FriendProvider(appUser: appUser, user: _user, notification: followRequest)
         .acceptFollow();
   }
 
   // follow back user
   _followBack(final AppUser appUser, final String userId,
-      final Notifications notification) {
+      final Notifications followRequest) {
     updateBtnText('Following');
 
     final _user = AppUser(
       uid: userId,
       appUserRef: AppUser().getUserRef(userId),
     );
-    FriendProvider(appUser: appUser, user: _user, notification: notification)
+    FriendProvider(appUser: appUser, user: _user, notification: followRequest)
         .followBack();
   }
 
   // ignore request
-  ignoreRequest(final AppUser appUser, final Notifications notification,
+  ignoreRequest(final AppUser appUser, final Notifications followRequest,
       final String userId) {
     final _user = AppUser(
       uid: userId,
       appUserRef: AppUser().getUserRef(userId),
     );
-    FriendProvider(appUser: appUser, notification: notification, user: _user)
+    FriendProvider(appUser: appUser, notification: followRequest, user: _user)
         .cancleFollow();
   }
 
