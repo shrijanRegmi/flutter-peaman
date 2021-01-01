@@ -5,10 +5,12 @@ class AvatarBuilder extends StatelessWidget {
   final String imgUrl;
   final double radius;
   final bool isOnline;
+  final int count;
   AvatarBuilder({
     @required this.imgUrl,
     this.radius = 20.0,
     this.isOnline = false,
+    this.count = 0,
   });
 
   @override
@@ -29,6 +31,11 @@ class AvatarBuilder extends StatelessWidget {
             top: 0.0,
             bottom: 0.0,
             child: _activeStatusBuilder(),
+          ),
+        if (count != 0 && count != 1)
+          Positioned(
+            right: -5.0,
+            child: _countBuilder(),
           ),
       ],
     );
@@ -51,6 +58,26 @@ class AvatarBuilder extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _countBuilder() {
+    return Container(
+      padding: const EdgeInsets.all(4.0),
+      decoration: BoxDecoration(
+        color: Colors.deepOrange,
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          '$count',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 10.0,
+          ),
+        ),
       ),
     );
   }
