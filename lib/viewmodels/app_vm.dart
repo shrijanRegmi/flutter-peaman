@@ -85,4 +85,23 @@ class AppVm extends ChangeNotifier {
     _moments = newMoments;
     notifyListeners();
   }
+
+  // update single feed value
+  updateSingleFeed(final Feed feed) {
+    final _index = _feeds.indexWhere((element) => element.id == feed.id);
+    final _myIndex = _myFeeds.indexWhere((element) => element.id == feed.id);
+    final _myFeaturedIndex =
+        _myFeaturedFeeds.indexWhere((element) => element.id == feed.id);
+
+    if (_index != -1) {
+      _feeds[_index] = feed;
+    }
+    if (_myIndex != -1) {
+      _myFeeds[_myIndex] = feed;
+    }
+    if (_myFeaturedIndex != -1) {
+      _myFeaturedFeeds[_myFeaturedIndex] = feed;
+    }
+    notifyListeners();
+  }
 }

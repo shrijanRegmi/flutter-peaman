@@ -19,7 +19,7 @@ class FeedsListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewmodelProvider<FeedVm>(
-      vm: FeedVm(),
+      vm: FeedVm(context: context),
       onInit: (vm) => vm.onInit(feed),
       builder: (context, vm, appVm, appUser) {
         return Padding(
