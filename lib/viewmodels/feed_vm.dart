@@ -3,6 +3,7 @@ import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/feed_provider.dart';
 import 'package:peaman/viewmodels/app_vm.dart';
+import 'package:provider/provider.dart';
 
 class FeedVm extends ChangeNotifier {
   final BuildContext context;
@@ -79,7 +80,8 @@ class FeedVm extends ChangeNotifier {
     List<String> reactorsPhoto,
     bool isSaved,
   }) {
-    print('The reaction count is::::: $reactionCount');
+    final _appVm = Provider.of<AppVm>(context, listen: false);
+
     _thisFeed = _thisFeed.copyWith(
       isReacted: isReacted,
       initialReactor: initReactor,
@@ -87,6 +89,8 @@ class FeedVm extends ChangeNotifier {
       reactorsPhoto: reactorsPhoto,
       isSaved: isSaved,
     );
+
+    _appVm.updateSingleFeed(_thisFeed);
     notifyListeners();
   }
 
