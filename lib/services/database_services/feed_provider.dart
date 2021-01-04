@@ -7,9 +7,15 @@ import 'package:peaman/services/database_services/user_provider.dart';
 
 class FeedProvider {
   final AppUser appUser;
+  final AppUser user;
   final Feed feed;
   final Moment moment;
-  FeedProvider({this.appUser, this.feed, this.moment});
+  FeedProvider({
+    this.appUser,
+    this.feed,
+    this.moment,
+    this.user,
+  });
 
   final _ref = Firestore.instance;
 
@@ -290,7 +296,7 @@ class FeedProvider {
 
       final _postsRef = _ref
           .collection('posts')
-          .where('owner_id', isEqualTo: appUser.uid)
+          .where('owner_id', isEqualTo: user.uid)
           .orderBy('updated_at', descending: true)
           .limit(6);
 
@@ -324,7 +330,6 @@ class FeedProvider {
           }
 
           _feeds.add(_feed);
-          print('Success: Getting single post ${_feed.toJson()}');
         }
       }
       print('Success: Getting my posts');
@@ -372,7 +377,7 @@ class FeedProvider {
       List<Feed> _feeds = [];
 
       final _featuredPosts =
-          appUser.appUserRef.collection('featured_posts').limit(6);
+          user.appUserRef.collection('featured_posts').limit(6);
 
       final _featuredPostsSnap = await _featuredPosts.getDocuments();
 
@@ -406,7 +411,6 @@ class FeedProvider {
           }
 
           _feeds.add(_feed);
-          print('Success: Getting single featured post ${_feed.toJson()}');
         }
       }
       print('Success: Getting featured posts');
@@ -468,7 +472,6 @@ class FeedProvider {
             }
 
             _feeds.add(_feed);
-            print('Success: Getting single post ${_feed.toJson()}');
           }
         }
       }
@@ -522,7 +525,6 @@ class FeedProvider {
           }
 
           _feeds.add(_feed);
-          print('Success: Getting single post ${_feed.toJson()}');
         }
       }
       print('Success: Getting my posts');
@@ -541,7 +543,7 @@ class FeedProvider {
 
       final _postsRef = _ref
           .collection('posts')
-          .where('owner_id', isEqualTo: appUser.uid)
+          .where('owner_id', isEqualTo: user.uid)
           .orderBy('updated_at', descending: true)
           .startAfter([feed.updatedAt]).limit(5);
 
@@ -575,14 +577,13 @@ class FeedProvider {
           }
 
           _feeds.add(_feed);
-          print('Success: Getting single old post ${_feed.toJson()}');
         }
       }
-      print('Success: Getting my old posts');
+      print('Success: Getting old posts by id');
       return _feeds;
     } catch (e) {
       print(e);
-      print('Error!!!: Getting my old posts');
+      print('Error!!!: Getting old posts by id');
       return null;
     }
   }
@@ -635,7 +636,6 @@ class FeedProvider {
             }
 
             _feeds.add(_feed);
-            print('Success: Getting single post ${_feed.toJson()}');
           }
         }
       }
@@ -696,7 +696,6 @@ class FeedProvider {
             }
 
             _feeds.add(_feed);
-            print('Success: Getting single post ${_feed.toJson()}');
           }
         }
       }

@@ -21,12 +21,14 @@ class AppVm extends ChangeNotifier {
 
   // get posts
   Future getPostsById(final AppUser appUser) async {
-    final _thisFeeds = await FeedProvider(appUser: appUser).getPostsById();
+    final _thisFeeds =
+        await FeedProvider(appUser: appUser, user: appUser).getPostsById();
 
     updateMyFeedsList(_thisFeeds);
 
     final _thisFeaturedFeeds =
-        await FeedProvider(appUser: appUser).getFeaturedPostsById();
+        await FeedProvider(appUser: appUser, user: appUser)
+            .getFeaturedPostsById();
 
     updateMyFeaturedFeedsList(_thisFeaturedFeeds);
   }
@@ -38,7 +40,8 @@ class AppVm extends ChangeNotifier {
     updateFeedsList(_thisFeeds);
 
     final _thisFeaturedFeeds =
-        await FeedProvider(appUser: appUser).getFeaturedPostsById();
+        await FeedProvider(appUser: appUser, user: appUser)
+            .getFeaturedPostsById();
 
     updateMyFeaturedFeedsList(_thisFeaturedFeeds);
   }
@@ -83,6 +86,25 @@ class AppVm extends ChangeNotifier {
   // update value of moments list
   updateMomentsList(final List<Moment> newMoments) {
     _moments = newMoments;
+    notifyListeners();
+  }
+
+  // update single feed value
+  updateSingleFeed(final Feed feed) {
+    final _index = _feeds.indexWhere((element) => element.id == feed.id);
+    final _myIndex = _myFeeds.indexWhere((element) => element.id == feed.id);
+    final _myFeaturedIndex =
+        _myFeaturedFeeds.indexWhere((element) => element.id == feed.id);
+
+    if (_index != -1) {
+      _feeds[_index] = feed;
+    }
+    if (_myIndex != -1) {
+      _myFeeds[_myIndex] = feed;
+    }
+    if (_myFeaturedIndex != -1) {
+      _myFeaturedFeeds[_myFeaturedIndex] = feed;
+    }
     notifyListeners();
   }
 }
