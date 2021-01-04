@@ -12,7 +12,7 @@ class UserFunctions {
       final _jsonUser = AppUser.toJson(_user);
 
       print('Success: Sending user with name ${_user.name} to functions');
-      return _callable.call(_jsonUser);
+      return await _callable.call(_jsonUser);
     } catch (e) {
       print(e);
       print('Error!!!: Sending user with name ${_user.name} to functions');

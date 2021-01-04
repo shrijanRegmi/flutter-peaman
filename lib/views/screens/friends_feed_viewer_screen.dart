@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peaman/models/app_models/feed_model.dart';
+import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/app_vm.dart';
 import 'package:peaman/viewmodels/friend_feed_viewer_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
@@ -16,11 +17,12 @@ class FriendsFeedViewerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _appVm = Provider.of<AppVm>(context);
+    final _appUser = Provider.of<AppUser>(context);
 
     return ViewmodelProvider<FriendFeedViewerVm>(
       vm: FriendFeedViewerVm(),
       onInit: (vm) {
-        vm.onInit(_appVm, feeds[0].owner, feeds);
+        vm.onInit(_appVm, _appUser, feeds, feeds[0].owner);
       },
       builder: (context, vm, appVm, appUser) {
         return Scaffold(
