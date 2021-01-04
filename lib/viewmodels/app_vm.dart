@@ -21,12 +21,14 @@ class AppVm extends ChangeNotifier {
 
   // get posts
   Future getPostsById(final AppUser appUser) async {
-    final _thisFeeds = await FeedProvider(appUser: appUser).getPostsById();
+    final _thisFeeds =
+        await FeedProvider(appUser: appUser, user: appUser).getPostsById();
 
     updateMyFeedsList(_thisFeeds);
 
     final _thisFeaturedFeeds =
-        await FeedProvider(appUser: appUser).getFeaturedPostsById();
+        await FeedProvider(appUser: appUser, user: appUser)
+            .getFeaturedPostsById();
 
     updateMyFeaturedFeedsList(_thisFeaturedFeeds);
   }
@@ -38,7 +40,8 @@ class AppVm extends ChangeNotifier {
     updateFeedsList(_thisFeeds);
 
     final _thisFeaturedFeeds =
-        await FeedProvider(appUser: appUser).getFeaturedPostsById();
+        await FeedProvider(appUser: appUser, user: appUser)
+            .getFeaturedPostsById();
 
     updateMyFeaturedFeedsList(_thisFeaturedFeeds);
   }

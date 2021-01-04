@@ -15,7 +15,6 @@ class AppUser {
   final int following;
   final int notifCount;
   final bool newFeeds;
-  final String searchKey;
 
   AppUser({
     this.uid,
@@ -31,7 +30,6 @@ class AppUser {
     this.following,
     this.notifCount,
     this.newFeeds,
-    this.searchKey,
   });
 
   static Map<String, dynamic> toJson(AppUser appUser) {
@@ -41,7 +39,6 @@ class AppUser {
       'age': appUser.age,
       'name': appUser.name,
       'email': appUser.email,
-      'search_key': appUser.name.substring(0, 1).toUpperCase(),
     };
   }
 
@@ -63,7 +60,6 @@ class AppUser {
       following: data['following'] ?? 0,
       notifCount: data['notification_count'] ?? 0,
       newFeeds: data['new_posts'] ?? false,
-      searchKey: data['search_key'],
     );
   }
 

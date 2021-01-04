@@ -20,7 +20,7 @@ class FriendProfileVm extends ChangeNotifier {
   onInit(final AppUser appUser, final AppUser user, final AppVm appVm) async {
     _updateIsLoading(true);
     if (appUser != user) {
-      await _getPosts(user);
+      await _getPosts(appUser, user);
       await _getInitialBtnText(appUser, user);
     } else {
       _updateFeeds(appVm.myFeeds);
@@ -54,10 +54,11 @@ class FriendProfileVm extends ChangeNotifier {
   }
 
   // get posts
-  Future _getPosts(final AppUser user) async {
-    final _result = await FeedProvider(appUser: user).getPostsById();
+  Future _getPosts(final AppUser appUser, final AppUser user) async {
+    final _result =
+        await FeedProvider(appUser: appUser, user: user).getPostsById();
     final _featuredResult =
-        await FeedProvider(appUser: user).getFeaturedPostsById();
+        await FeedProvider(appUser: appUser, user: user).getFeaturedPostsById();
     _updateFeeds(_result);
     _updateFeaturedFeeds(_featuredResult);
   }

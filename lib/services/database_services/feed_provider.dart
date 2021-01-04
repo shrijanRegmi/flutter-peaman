@@ -7,9 +7,15 @@ import 'package:peaman/services/database_services/user_provider.dart';
 
 class FeedProvider {
   final AppUser appUser;
+  final AppUser user;
   final Feed feed;
   final Moment moment;
-  FeedProvider({this.appUser, this.feed, this.moment});
+  FeedProvider({
+    this.appUser,
+    this.feed,
+    this.moment,
+    this.user,
+  });
 
   final _ref = Firestore.instance;
 
@@ -290,7 +296,7 @@ class FeedProvider {
 
       final _postsRef = _ref
           .collection('posts')
-          .where('owner_id', isEqualTo: appUser.uid)
+          .where('owner_id', isEqualTo: user.uid)
           .orderBy('updated_at', descending: true)
           .limit(6);
 
@@ -371,7 +377,7 @@ class FeedProvider {
       List<Feed> _feeds = [];
 
       final _featuredPosts =
-          appUser.appUserRef.collection('featured_posts').limit(6);
+          user.appUserRef.collection('featured_posts').limit(6);
 
       final _featuredPostsSnap = await _featuredPosts.getDocuments();
 
@@ -537,7 +543,7 @@ class FeedProvider {
 
       final _postsRef = _ref
           .collection('posts')
-          .where('owner_id', isEqualTo: appUser.uid)
+          .where('owner_id', isEqualTo: user.uid)
           .orderBy('updated_at', descending: true)
           .startAfter([feed.updatedAt]).limit(5);
 
