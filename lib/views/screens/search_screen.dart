@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:peaman/viewmodels/search_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
+import 'package:peaman/views/screens/view_all_result_screen.dart';
 import 'package:peaman/views/widgets/search_widgets/users_list_item.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -29,7 +31,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 Navigator.pop(context);
               },
             ),
-            title: _searchField(vm.allUsers, vm.appUser),
+            title: _searchField(),
             backgroundColor: Color(0xffF3F5F8),
           ),
           body: GestureDetector(
@@ -38,10 +40,12 @@ class _SearchScreenState extends State<SearchScreen> {
             },
             child: Container(
               color: Colors.transparent,
-              child: Center(
-                child: _searchedNames.isEmpty && _controller.text != ''
-                    ? _emptySearch(context)
-                    : _usersList(vm.allUsers),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _usersList(appUser),
+                  ],
+                ),
               ),
             ),
           ),
@@ -50,7 +54,7 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _searchField(List<AppUser> allUsers, AppUser user) {
+  Widget _searchField() {
     return TextFormField(
       autofocus: true,
       textCapitalization: TextCapitalization.words,
@@ -60,51 +64,95 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       controller: _controller,
       onChanged: (val) {
-        setState(() {
-          if (val.length == 0) {
-            _searchedNames = [];
-          } else {
-            _searchedNames = allUsers
-                .where((appUser) =>
-                    appUser.name.toLowerCase().contains(val.toLowerCase()) &&
-                    appUser.uid != user.uid)
-                .toList();
-          }
-        });
+        setState(() {});
       },
     );
   }
 
-  Widget _usersList(List<AppUser> allUsers) {
-    return ListView.builder(
-      itemCount: _searchedNames.length,
-      itemBuilder: (context, index) {
-        return UserListItem(
-          friend: _searchedNames[index],
-        );
-      },
-    );
+  Widget _usersList(AppUser appUser) {
+    return _controller.text == ''
+        ? Container()
+        : StreamBuilder<List<AppUser>>(
+            stream: AppUserProvider(searchKey: _controller.text.toUpperCase())
+                .appUserFromKey,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final List<AppUser> _users = (snapshot.data ?? []);
+                _searchedNames = _users;
+
+                return _users.isEmpty
+                    ? _emptySearch(context)
+                    : Column(
+                        children: [
+                          _viewAllResultBuilder(),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: _users.length,
+                            itemBuilder: (context, index) {
+                              return UserListItem(
+                                friend: _users[index],
+                              );
+                            },
+                          ),
+                        ],
+                      );
+              }
+              return Container();
+            },
+          );
   }
 
   Widget _emptySearch(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
-      child: Column(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Lottie.asset(
-            'assets/lottie/search_empty.json',
-            width: MediaQuery.of(context).size.width - 100.0,
-            height: MediaQuery.of(context).size.width - 100.0,
-          ),
-          Text(
-            "User not found !",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0,
-                color: Color(0xff3D4A5A)),
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Lottie.asset(
+                'assets/lottie/search_empty.json',
+                width: MediaQuery.of(context).size.width - 100.0,
+                height: MediaQuery.of(context).size.width - 100.0,
+              ),
+              Text(
+                "User not found !",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0,
+                    color: Color(0xff3D4A5A)),
+              ),
+            ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _viewAllResultBuilder() {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ViewAllResultScreen(
+                _searchedNames, _controller.text.toUpperCase()),
+          ),
+        );
+      },
+      child: Container(
+        color: Colors.black12,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('View all results with ${_controller.text}'),
+            ],
+          ),
+        ),
       ),
     );
   }
