@@ -5,8 +5,15 @@ import 'package:peaman/models/app_models/user_model.dart';
 
 class AppUserProvider {
   final String uid;
+  final String searchKey;
   final DocumentReference userRef;
-  AppUserProvider({this.uid, this.userRef});
+  final AppUser user;
+  AppUserProvider({
+    this.uid,
+    this.userRef,
+    this.searchKey,
+    this.user,
+  });
   final _ref = Firestore.instance;
 
   // set user active status
@@ -17,10 +24,12 @@ class AppUserProvider {
         'active_status': onlineStatus.index,
       };
       await _userRef.updateData(_status);
-      print('Success: Setting activity status of user $uid to ${onlineStatus.index}');
+      print(
+          'Success: Setting activity status of user $uid to ${onlineStatus.index}');
       return 'Success';
     } catch (e) {
-      print('Error!!!: Setting activity status of user $uid to ${onlineStatus.index}');
+      print(
+          'Error!!!: Setting activity status of user $uid to ${onlineStatus.index}');
       print(e);
       return null;
     }
@@ -53,6 +62,34 @@ class AppUserProvider {
     }).toList();
   }
 
+  // get old search results
+  Future<List<AppUser>> getOldSearchResults() async {
+    List<AppUser> _searchResults = [];
+
+    try {
+      final _searchRef = _ref
+          .collection('users')
+          .where('search_key', arrayContains: searchKey)
+          .orderBy('name')
+          .startAfter([user.name]).limit(10);
+      final _searchSnap = await _searchRef.getDocuments();
+      if (_searchSnap.documents.isNotEmpty) {
+        for (final doc in _searchSnap.documents) {
+          final _userData = doc.data;
+          final _appUser = AppUser.fromJson(_userData);
+
+          _searchResults.add(_appUser);
+        }
+      }
+      print('Success: Getting old search results with key $searchKey');
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting old search results with key $searchKey');
+    }
+
+    return _searchResults;
+  }
+
   // stream of appuser;
   Stream<AppUser> get appUser {
     return _ref
@@ -62,12 +99,27 @@ class AppUserProvider {
         .map(_appUserFromFirebase);
   }
 
+  // stream of app user from ref
   Stream<AppUser> get appUserFromRef {
     return userRef?.snapshots()?.map(_appUserFromFirebase);
   }
 
+  // stream of users from search key
+  Stream<List<AppUser>> get appUserFromKey {
+    return _ref
+        .collection('users')
+        .where('search_keys', arrayContains: searchKey)
+        .limit(10)
+        .snapshots()
+        .map(_usersFromFirebase);
+  }
+
   // stream of list of users;
   Stream<List<AppUser>> get allUsers {
-    return _ref.collection('users').limit(10).snapshots().map(_usersFromFirebase);
+    return _ref
+        .collection('users')
+        .limit(10)
+        .snapshots()
+        .map(_usersFromFirebase);
   }
 }
