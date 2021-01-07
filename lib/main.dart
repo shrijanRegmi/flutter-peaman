@@ -26,7 +26,7 @@ class PeamanApp extends StatelessWidget {
         builder: (BuildContext context, AppUser appUser) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: "Peaman",
+            title: "Smart Champ",
             theme: ThemeData(fontFamily: 'Nunito'),
             home: Material(
                 child: Wrapper(
