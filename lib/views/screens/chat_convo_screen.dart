@@ -26,6 +26,8 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
 
   bool _isPinned;
 
+  final _scaffolKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return ViewmodelProvider(
@@ -72,6 +74,7 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
 
         return Scaffold(
           backgroundColor: Color(0xffF3F5F8),
+          key: _scaffolKey,
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(60.0),
             child: SafeArea(
@@ -150,6 +153,7 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                     updateIsTyping: vm.updateTypingValue,
                     isTypingActive: vm.isTyping,
                     focusNode: _focusNode,
+                    scaffoldKey: _scaffolKey,
                   ),
                 )
               : null,
@@ -162,6 +166,7 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                   updateIsTyping: vm.updateTypingValue,
                   isTypingActive: vm.isTyping,
                   focusNode: _focusNode,
+                  scaffoldKey: _scaffolKey,
                 )
               : null,
           floatingActionButtonLocation:
