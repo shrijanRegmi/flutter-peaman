@@ -23,6 +23,7 @@ class ChatComposeArea extends StatefulWidget {
   final Function(bool newIsTypingVal) updateIsTyping;
   final bool isTypingActive;
   final FocusNode focusNode;
+  final GlobalKey<ScaffoldState> scaffoldKey;
   ChatComposeArea({
     this.chatId,
     this.sendMessage,
@@ -31,6 +32,7 @@ class ChatComposeArea extends StatefulWidget {
     this.updateIsTyping,
     this.focusNode,
     this.isTypingActive = false,
+    this.scaffoldKey,
   });
   @override
   _ChatComposeAreaState createState() => _ChatComposeAreaState();
@@ -111,14 +113,17 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
               radius: 50.0,
               icon: 'assets/images/svgs/call_btn.svg',
               onPressed: () async {
-                await _handleCameraAndMic();
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => CallScreen(
-                              channelName: 'shirjan',
-                              role: ClientRole.Broadcaster,
-                            )));
+                // await _handleCameraAndMic();
+                // await Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (_) => CallScreen(
+                //               channelName: 'shirjan',
+                //               role: ClientRole.Broadcaster,
+                //             )));
+
+                widget.scaffoldKey.currentState.showSnackBar(
+                    SnackBar(content: Text('This feature is being developed')));
               },
             ),
           ],
