@@ -25,6 +25,7 @@ class ExploreTab extends HookWidget {
         onInit: (vm) => vm.onInit(_appVm, _appUser),
         builder: (context, vm, appVm, appUser) {
           return Scaffold(
+            key: vm.scaffoldKey,
             backgroundColor: Color(0xffF3F5F8),
             body: SingleChildScrollView(
               controller: vm.scrollController,
