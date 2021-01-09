@@ -14,6 +14,7 @@ class CreatePostScreen extends StatelessWidget {
       vm: CreatePostVm(context),
       builder: (context, vm, appVm, appUser) {
         return Scaffold(
+          key: vm.scaffoldKey,
           backgroundColor: Color(0xffF3F5F8),
           appBar: vm.isLoading
               ? null
