@@ -13,14 +13,14 @@ class FriendProvider {
     try {
       final _friendRef = user.appUserRef;
       final _requestRef =
-          _friendRef.collection('requests').document(appUser.uid);
+          _friendRef.collection('requests').doc(appUser.uid);
 
       final _data = {
         'id': appUser.uid,
         'created_at': DateTime.now().millisecondsSinceEpoch,
       };
 
-      await _requestRef.setData(_data);
+      await _requestRef.set(_data);
       print('Success: Following ${user.uid}');
       return 'Success';
     } catch (e) {
@@ -33,11 +33,11 @@ class FriendProvider {
   Future acceptFollow() async {
     try {
       final _userRef = appUser.appUserRef;
-      final _requestRef = _userRef.collection('requests').document(user.uid);
+      final _requestRef = _userRef.collection('requests').doc(user.uid);
       final _notifRef =
-          _userRef.collection('notifications').document(notification.id);
+          _userRef.collection('notifications').doc(notification.id);
 
-      await _notifRef.updateData({
+      await _notifRef.update({
         'is_accepted': true,
       });
       await _requestRef.delete();
@@ -60,28 +60,28 @@ class FriendProvider {
       final _userRef = appUser.appUserRef;
       final _notifRef = appUser.appUserRef
           .collection('notifications')
-          .document(notification.id);
+          .doc(notification.id);
 
       final _friendFollowersRef =
-          _friendRef.collection('followers').document(appUser.uid);
+          _friendRef.collection('followers').doc(appUser.uid);
       final _userFollowingRef =
-          _userRef.collection('following').document(user.uid);
+          _userRef.collection('following').doc(user.uid);
 
       final _milli = DateTime.now().millisecondsSinceEpoch;
 
-      await _friendFollowersRef.setData({
+      await _friendFollowersRef.set({
         'id': appUser.uid,
         'updated_at': _milli,
       });
-      await _userFollowingRef.setData({
+      await _userFollowingRef.set({
         'id': appUser.uid,
         'updated_at': _milli,
       });
 
-      await _friendRef.updateData({
+      await _friendRef.update({
         'followers': FieldValue.increment(1),
       });
-      await _userRef.updateData({
+      await _userRef.update({
         'following': FieldValue.increment(1),
       });
 
@@ -100,9 +100,9 @@ class FriendProvider {
   Future cancleFollow() async {
     try {
       final _userRef = appUser.appUserRef;
-      final _requestRef = _userRef.collection('requests').document(user.uid);
+      final _requestRef = _userRef.collection('requests').doc(user.uid);
       final _notifRef =
-          _userRef.collection('notifications').document(notification.id);
+          _userRef.collection('notifications').doc(notification.id);
 
       await _requestRef.delete();
       await _notifRef.delete();
@@ -122,25 +122,25 @@ class FriendProvider {
       final _friendRef = user.appUserRef;
 
       final _userFollowersRef =
-          _userRef.collection('followers').document(user.uid);
+          _userRef.collection('followers').doc(user.uid);
       final _friendFollowingRef =
-          _friendRef.collection('following').document(appUser.uid);
+          _friendRef.collection('following').doc(appUser.uid);
 
       final _milli = DateTime.now().millisecondsSinceEpoch;
 
-      await _userFollowersRef.setData({
+      await _userFollowersRef.set({
         'id': user.uid,
         'updated_at': _milli,
       });
-      await _friendFollowingRef.setData({
+      await _friendFollowingRef.set({
         'id': appUser.uid,
         'updated_at': _milli,
       });
 
-      await _userRef.updateData({
+      await _userRef.update({
         'followers': FieldValue.increment(1),
       });
-      await _friendRef.updateData({
+      await _friendRef.update({
         'following': FieldValue.increment(1),
       });
 

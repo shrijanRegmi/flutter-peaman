@@ -14,16 +14,16 @@ class AppUserProvider {
     this.searchKey,
     this.user,
   });
-  final _ref = Firestore.instance;
+  final _ref = FirebaseFirestore.instance;
 
   // set user active status
   Future setUserActiveStatus({@required OnlineStatus onlineStatus}) async {
     try {
-      final _userRef = _ref.collection('users').document(uid);
+      final _userRef = _ref.collection('users').doc(uid);
       final _status = {
         'active_status': onlineStatus.index,
       };
-      await _userRef.updateData(_status);
+      await _userRef.update(_status);
       print(
           'Success: Setting activity status of user $uid to ${onlineStatus.index}');
       return 'Success';
@@ -38,8 +38,8 @@ class AppUserProvider {
   // update user details
   Future updateUserDetail({@required final Map<String, dynamic> data}) async {
     try {
-      final _userRef = _ref.collection('users').document(uid);
-      await _userRef.updateData(data);
+      final _userRef = _ref.collection('users').doc(uid);
+      await _userRef.update(data);
 
       print('Success: Updating personal info of user $uid');
       return 'Success';
@@ -52,13 +52,13 @@ class AppUserProvider {
 
   // appuser from firebase;
   AppUser _appUserFromFirebase(DocumentSnapshot snap) {
-    return AppUser.fromJson(snap.data);
+    return AppUser.fromJson(snap.data());
   }
 
   // list of users;
   List<AppUser> _usersFromFirebase(QuerySnapshot snap) {
-    return snap.documents.map((doc) {
-      return AppUser.fromJson(doc.data);
+    return snap.docs.map((doc) {
+      return AppUser.fromJson(doc.data());
     }).toList();
   }
 
@@ -72,10 +72,10 @@ class AppUserProvider {
           .where('search_key', arrayContains: searchKey)
           .orderBy('name')
           .startAfter([user.name]).limit(10);
-      final _searchSnap = await _searchRef.getDocuments();
-      if (_searchSnap.documents.isNotEmpty) {
-        for (final doc in _searchSnap.documents) {
-          final _userData = doc.data;
+      final _searchSnap = await _searchRef.get();
+      if (_searchSnap.docs.isNotEmpty) {
+        for (final doc in _searchSnap.docs) {
+          final _userData = doc.data();
           final _appUser = AppUser.fromJson(_userData);
 
           _searchResults.add(_appUser);
@@ -94,7 +94,7 @@ class AppUserProvider {
   Stream<AppUser> get appUser {
     return _ref
         .collection('users')
-        .document(uid)
+        .doc(uid)
         .snapshots()
         .map(_appUserFromFirebase);
   }

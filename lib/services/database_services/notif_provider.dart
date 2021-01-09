@@ -6,12 +6,12 @@ class NotificationProvider {
   final AppUser appUser;
   NotificationProvider({this.appUser});
 
-  final _ref = Firestore.instance;
+  final _ref = FirebaseFirestore.instance;
 
   // get notification from firebase
   List<Notifications> notificationFromFirebase(QuerySnapshot colSnap) {
-    return colSnap.documents
-        .map((doc) => Notifications.fromJson(doc.data, doc.documentID))
+    return colSnap.docs
+        .map((doc) => Notifications.fromJson(doc.data(), doc.id))
         .toList();
   }
 
@@ -19,7 +19,7 @@ class NotificationProvider {
   Stream<List<Notifications>> get notificationsList {
     return _ref
         .collection('users')
-        .document(appUser.uid)
+        .doc(appUser.uid)
         .collection('notifications')
         .snapshots()
         .map(notificationFromFirebase);

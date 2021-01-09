@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:peaman/models/app_models/user_model.dart';
-import 'package:peaman/models/moment_model.dart';
 import 'package:peaman/services/database_services/feed_provider.dart';
 import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:peaman/viewmodels/app_vm.dart';
