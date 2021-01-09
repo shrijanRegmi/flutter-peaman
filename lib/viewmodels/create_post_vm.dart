@@ -16,11 +16,13 @@ class CreatePostVm extends ChangeNotifier {
   TextEditingController _captionController = TextEditingController();
   bool _isLoading = false;
   bool _isFeatured = false;
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<File> get photos => _photos;
   TextEditingController get captionController => _captionController;
   bool get isLoading => _isLoading;
   bool get isFeatured => _isFeatured;
+  GlobalKey<ScaffoldState> get scaffoldKey => _scaffoldKey;
 
   // create post
   createPost(final AppUser _appUser, final AppVm appVm) async {
@@ -67,13 +69,23 @@ class CreatePostVm extends ChangeNotifier {
 
   // upload photo
   uploadPhoto() async {
-    final _pickedImg =
-        await ImagePicker().getImage(source: ImageSource.gallery);
-    final _img = _pickedImg != null ? File(_pickedImg.path) : null;
-    if (_img != null) {
-      _photos.add(_img);
+    if (_photos.length < 5) {
+      final _pickedImg =
+          await ImagePicker().getImage(source: ImageSource.gallery);
+      final _img = _pickedImg != null ? File(_pickedImg.path) : null;
+      if (_img != null) {
+        _photos.add(_img);
+      }
+      notifyListeners();
+    } else {
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text(
+            'You can only upload maximum of 5 images',
+          ),
+        ),
+      );
     }
-    notifyListeners();
   }
 
   // remove photo
