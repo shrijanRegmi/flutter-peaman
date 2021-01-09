@@ -13,8 +13,8 @@ class FeedStorage {
       for (final photo in photos) {
         final _path = 'feed_imgs/$uid/${DateTime.now().millisecondsSinceEpoch}';
         final _ref = FirebaseStorage.instance.ref().child(_path);
-        StorageUploadTask _uploadTask = _ref.putFile(photo);
-        await _uploadTask.onComplete;
+        final _uploadTask = _ref.putFile(photo);
+        await _uploadTask.whenComplete(() => null);
         print('Upload Completed!!!');
         final _downloadUrl = await _ref.getDownloadURL();
         _downloadUrls.add(_downloadUrl);

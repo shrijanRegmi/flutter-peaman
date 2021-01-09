@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,10 +9,8 @@ import 'package:peaman/models/app_models/temporary_img_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/storage_services/chat_storage_service.dart';
 import 'package:peaman/viewmodels/temp_img_vm.dart';
-import 'package:peaman/views/screens/call_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/single_icon_btn.dart';
 import 'package:provider/provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class ChatComposeArea extends StatefulWidget {
   final String chatId;
@@ -218,9 +215,5 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
         ],
       ),
     );
-  }
-
-  Future<void> _handleCameraAndMic() async {
-    await [Permission.camera, Permission.microphone].request();
   }
 }

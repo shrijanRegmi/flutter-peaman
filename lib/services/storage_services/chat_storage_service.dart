@@ -20,9 +20,9 @@ class ChatStorage {
       final _path =
           'chat_imgs/$chatId/${DateTime.now().millisecondsSinceEpoch}_${_uniqueId.v1()}_${message.senderId}';
 
-      StorageReference _ref = FirebaseStorage.instance.ref().child(_path);
-      StorageUploadTask _uploadTask = _ref.putFile(imgFile);
-      await _uploadTask.onComplete;
+      final _ref = FirebaseStorage.instance.ref().child(_path);
+      final _uploadTask = _ref.putFile(imgFile);
+      await _uploadTask.whenComplete(() => null);
       print('Upload completed!!!!');
       final _downloadUrl = await _ref.getDownloadURL();
       print('Success: Uploading image to firebase storage');

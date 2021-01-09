@@ -6,7 +6,7 @@
 //   final AppUser appUser;
 //   FirebaseMessagingProvider({this.appUser});
 
-//   final _ref = Firestore.instance;
+//   final _ref = FirebaseFirestore.instance;
 //   final _firebaseMessaging = FirebaseMessaging();
 
 //   // save device to firestore
@@ -21,7 +21,7 @@
 
 //       final _token = await _firebaseMessaging.getToken();
 //       print('Success: saving device info to firestore');
-//       await _deviceRef.setData({'token': _token});
+//       await _deviceRef.set({'token': _token});
 //       return 'Success';
 //     } catch (e) {
 //       print(e);

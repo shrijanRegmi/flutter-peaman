@@ -11,11 +11,11 @@ class ChatVm extends ChangeNotifier {
   List<Chat> get chats => Provider.of<List<Chat>>(context);
   AppUser get appUser => Provider.of<AppUser>(context);
 
-  final _ref = Firestore.instance;
+  final _ref = FirebaseFirestore.instance;
 
   // filter chats list to get otherChats list
   List<Chat> get otherChats {
-    final _appUserRef = _ref.collection('users').document(appUser.uid);
+    final _appUserRef = _ref.collection('users').doc(appUser.uid);
     return chats.where((chat) {
       if (_appUserRef?.path == chat.firstUserRef?.path) {
         return !chat.firstUserPinnedSecondUser;
@@ -27,7 +27,7 @@ class ChatVm extends ChangeNotifier {
 
   // filter chat list to get pinnedChats list
   List<Chat> get pinnedChats {
-    final _appUserRef = _ref.collection('users').document(appUser.uid);
+    final _appUserRef = _ref.collection('users').doc(appUser.uid);
     return chats.where((chat) {
       if (_appUserRef?.path == chat.firstUserRef?.path) {
         return chat.firstUserPinnedSecondUser;

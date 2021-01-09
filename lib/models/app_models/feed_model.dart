@@ -69,10 +69,10 @@ class Feed {
   }
 
   static Feed fromJson(final Map<String, dynamic> data, final AppUser owner) {
-    final _ref = Firestore.instance;
+    final _ref = FirebaseFirestore.instance;
     return Feed(
       id: data['id'],
-      feedRef: _ref.collection('posts').document(data['id']),
+      feedRef: _ref.collection('posts').doc(data['id']),
       ownerId: data['owner_id'],
       updatedAt: data['updated_at'] ?? DateTime.now().millisecondsSinceEpoch,
       caption: data['caption'] ?? '',

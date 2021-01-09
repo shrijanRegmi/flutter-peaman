@@ -70,13 +70,13 @@ class FriendProfileVm extends ChangeNotifier {
       final _userRef = appUser.appUserRef;
 
       final _friendRequestsRef =
-          _friendRef.collection('requests').document(appUser.uid);
+          _friendRef.collection('requests').doc(appUser.uid);
       final _userRequestsRef =
-          _userRef.collection('requests').document(user.uid);
+          _userRef.collection('requests').doc(user.uid);
       final _friendFollowersRef =
-          _friendRef.collection('followers').document(appUser.uid);
+          _friendRef.collection('followers').doc(appUser.uid);
       final _userFollowersRef =
-          _userRef.collection('followers').document(user.uid);
+          _userRef.collection('followers').doc(user.uid);
 
       final _friendRequestsSnap = await _friendRequestsRef.get();
       final _userRequestsSnap = await _userRequestsRef.get();

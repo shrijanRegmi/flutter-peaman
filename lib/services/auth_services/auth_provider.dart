@@ -63,12 +63,12 @@ class AuthProvider {
   }
 
   // user from firebase
-  AppUser _userFromFirebase(FirebaseUser user) {
+  AppUser _userFromFirebase(User user) {
     return user != null ? AppUser(uid: user.uid) : null;
   }
 
   // stream of user
   Stream<AppUser> get user {
-    return _auth.onAuthStateChanged.map(_userFromFirebase);
+    return _auth.authStateChanges().map(_userFromFirebase);
   }
 }

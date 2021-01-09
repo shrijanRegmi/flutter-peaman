@@ -20,8 +20,8 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _ref = Firestore.instance;
-    final _appUserRef = _ref.collection('users').document(appUser.uid);
+    final _ref = FirebaseFirestore.instance;
+    final _appUserRef = _ref.collection('users').doc(appUser.uid);
 
     DocumentReference _requiredRef;
     if (_appUserRef?.path == chat.firstUserRef?.path) {
