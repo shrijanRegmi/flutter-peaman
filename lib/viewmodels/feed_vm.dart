@@ -10,8 +10,10 @@ class FeedVm extends ChangeNotifier {
   FeedVm({this.context});
 
   Feed _thisFeed;
+  bool _showFullDesc = false;
 
   Feed get thisFeed => _thisFeed;
+  bool get showFullDesc => _showFullDesc;
 
   // init function
   onInit(final Feed _feed) {
@@ -116,5 +118,11 @@ class FeedVm extends ChangeNotifier {
     if (_result != null) {
       Navigator.pop(context);
     }
+  }
+
+  // update value of full description
+  updateFullDesc(final bool newVal) {
+    _showFullDesc = newVal;
+    notifyListeners();
   }
 }
