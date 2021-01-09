@@ -17,32 +17,29 @@ class PeamanApp extends StatelessWidget {
     return FutureBuilder(
       future: Firebase.initializeApp(),
       builder: (context, snap) {
-        if (snap.connectionState == ConnectionState.done) {
-          return MultiProvider(
-            providers: [
-              ChangeNotifierProvider<AppVm>(
-                create: (_) => AppVm(),
-              ),
-              StreamProvider<AppUser>.value(
-                value: AuthProvider().user,
-              ),
-            ],
-            child: WrapperBuilder(
-              builder: (BuildContext context, AppUser appUser) {
-                return MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  title: "Peaman",
-                  theme: ThemeData(fontFamily: 'Nunito'),
-                  home: Material(
-                      child: Wrapper(
-                    appUser: appUser,
-                  )),
-                );
-              },
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider<AppVm>(
+              create: (_) => AppVm(),
             ),
-          );
-        }
-        return Container();
+            StreamProvider<AppUser>.value(
+              value: AuthProvider().user,
+            ),
+          ],
+          child: WrapperBuilder(
+            builder: (BuildContext context, AppUser appUser) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                title: "Peaman",
+                theme: ThemeData(fontFamily: 'Nunito'),
+                home: Material(
+                    child: Wrapper(
+                  appUser: appUser,
+                )),
+              );
+            },
+          ),
+        );
       },
     );
   }
