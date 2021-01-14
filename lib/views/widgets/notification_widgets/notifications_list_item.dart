@@ -1,9 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:peaman/enums/notification_type.dart';
 import 'package:peaman/models/app_models/notification_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/friend_provider.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
+import 'package:peaman/views/widgets/common_widgets/multi_avatar_builder.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class NotificationsListItem extends StatelessWidget {
   final Notifications notification;
@@ -14,14 +18,29 @@ class NotificationsListItem extends StatelessWidget {
     return ViewmodelProvider<NotificationItemVm>(
       vm: NotificationItemVm(),
       onInit: (vm) {
-        if (notification.isAccepted) {
-          vm.updateBtnText('Follow back');
-        }
+        // if (notification.isAccepted) {
+        //   vm.updateBtnText('Follow back');
+        // }
       },
       builder: (context, vm, appVm, appUser) {
+        Widget _widget;
+        switch (notification.type) {
+          case NotificationType.followRequest:
+            _widget = _followNotifBuilder(vm, appUser);
+            break;
+          case NotificationType.reaction:
+            _widget = _reactNotifBuilder(vm, appUser);
+            break;
+          case NotificationType.comment:
+            _widget = _commentNotifBuilder(vm, appUser);
+            break;
+          default:
+            _widget = Container();
+        }
+
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: _followNotifBuilder(vm, appUser),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          child: _widget,
         );
       },
     );
@@ -103,6 +122,162 @@ class NotificationsListItem extends StatelessWidget {
                 ),
               ),
           ],
+        ),
+      ],
+    );
+  }
+
+  Widget _reactNotifBuilder(
+      final NotificationItemVm vm, final AppUser appUser) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Row(
+            children: <Widget>[
+              // user image
+              MultiAvatarBuilder(
+                users: notification.reactedBy,
+              ),
+              SizedBox(
+                width: 20.0,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black,
+                          fontFamily: 'Nunito',
+                        ),
+                        children: [
+                          TextSpan(
+                            text: notification.reactedBy.length >= 2
+                                ? '${notification.reactedBy[0].name} and ${notification.reactedBy.length - 1} others '
+                                : '${notification.reactedBy[0].name}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' recently reacted to your post.',
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      timeago.format(DateTime.fromMillisecondsSinceEpoch(
+                          notification.updatedAt)),
+                      style: TextStyle(
+                        fontSize: 10.0,
+                        color: Colors.black38,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: 10.0,
+        ),
+        Container(
+          height: 50.0,
+          width: 50.0,
+          constraints: BoxConstraints(
+            maxWidth: 50.0,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5.0),
+            image: DecorationImage(
+              image: CachedNetworkImageProvider(
+                notification.feed.photos[0],
+              ),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _commentNotifBuilder(
+      final NotificationItemVm vm, final AppUser appUser) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Row(
+            children: <Widget>[
+              // user image
+              MultiAvatarBuilder(
+                users: notification.commentedBy,
+              ),
+              SizedBox(
+                width: 20.0,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black,
+                          fontFamily: 'Nunito',
+                        ),
+                        children: [
+                          TextSpan(
+                            text: notification.commentedBy.length >= 2
+                                ? '${notification.commentedBy[0].name} and ${notification.commentedBy.length - 1} others '
+                                : '${notification.commentedBy[0].name}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' recently commented on your post.',
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      timeago.format(DateTime.fromMillisecondsSinceEpoch(
+                          notification.updatedAt)),
+                      style: TextStyle(
+                        fontSize: 10.0,
+                        color: Colors.black38,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: 10.0,
+        ),
+        Container(
+          height: 50.0,
+          width: 50.0,
+          constraints: BoxConstraints(
+            maxWidth: 50.0,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5.0),
+            image: DecorationImage(
+              image: CachedNetworkImageProvider(
+                notification.feed.photos[0],
+              ),
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
       ],
     );
