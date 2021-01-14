@@ -21,6 +21,7 @@ class NotificationProvider {
         .collection('users')
         .doc(appUser.uid)
         .collection('notifications')
+        .orderBy('updated_at', descending: true)
         .snapshots()
         .map(notificationFromFirebase);
   }
