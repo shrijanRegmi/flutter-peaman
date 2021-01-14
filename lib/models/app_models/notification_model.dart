@@ -26,14 +26,6 @@ class Notifications {
   static Notifications fromJson(
       final Map<String, dynamic> data, final String id) {
     final _type = data['type'];
-    if (_type == 0) {
-      return FollowNotification(
-        id: id,
-        sender: AppUser.fromJson(data['sender']),
-        updatedAt: data['updated_at'],
-        isAccepted: data['is_accepted'] ?? false,
-      );
-    }
     if (_type == 1) {
       final _reactedBy = List<AppUser>.from(
         List<Map>.from(data['reacted_by']).map((e) => AppUser.fromJson(e)),
@@ -97,25 +89,5 @@ class CommentNotification extends Notifications {
           type: NotificationType.comment,
           updatedAt: updatedAt,
           feed: feed,
-        );
-}
-
-class FollowNotification extends Notifications {
-  final String id;
-  final AppUser sender;
-  final int updatedAt;
-  final bool isAccepted;
-
-  FollowNotification({
-    this.id,
-    this.sender,
-    this.updatedAt,
-    this.isAccepted,
-  }) : super(
-          id: id,
-          sender: sender,
-          type: NotificationType.followRequest,
-          updatedAt: updatedAt,
-          isAccepted: isAccepted,
         );
 }
