@@ -33,7 +33,7 @@ class Notifications {
       return ReactNotification(
         id: id,
         reactedBy: List<AppUser>.from(_reactedBy.reversed),
-        feed: Feed.fromJson(data['post_data'], AppUser()),
+        feed: Feed.fromJson(data['post_data']),
         updatedAt: data['updated_at'],
       );
     }
@@ -45,7 +45,7 @@ class Notifications {
       return CommentNotification(
         id: id,
         commentedBy: List<AppUser>.from(_commentedBy.reversed),
-        feed: Feed.fromJson(data['post_data'], AppUser()),
+        feed: Feed.fromJson(data['post_data']),
         updatedAt: data['updated_at'],
       );
     }

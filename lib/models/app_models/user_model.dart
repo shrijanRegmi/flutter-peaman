@@ -42,6 +42,15 @@ class AppUser {
     };
   }
 
+  Map<String, dynamic> toFeedUser() {
+    return {
+      'uid': uid,
+      'photoUrl': photoUrl,
+      'name': name,
+      'email': email,
+    };
+  }
+
   static AppUser fromJson(Map<String, dynamic> data) {
     final _ref = FirebaseFirestore.instance;
 
