@@ -27,75 +27,86 @@ class ExploreTab extends HookWidget {
           return Scaffold(
             key: vm.scaffoldKey,
             backgroundColor: Color(0xffF3F5F8),
-            body: SingleChildScrollView(
-              controller: vm.scrollController,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 15.0,
-                  ),
-                  _topSectionBuilder(context),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Divider(),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  MomentsList(
-                    moments: appVm.moments,
-                    createMoment: vm.createMoment,
-                    appUser: appUser,
-                    appVm: appVm,
-                  ),
-                  Divider(
-                    color: Color(0xff3D4A5A).withOpacity(0.2),
-                  ),
-                  appVm.feeds == null
-                      ? FeedLoader()
-                      : Column(
-                          children: [
-                            if (appUser.newFeeds)
-                              Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    !vm.isShowingTopLoader
-                                        ? _loadNewFeedsBuilder(
-                                            vm, appVm, appUser)
-                                        : Container(),
-                                  ],
-                                ),
-                              ),
-                            appVm.feeds.isEmpty
-                                ? _emptyChat(context, _animationController)
-                                : Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+            body: RefreshIndicator(
+              onRefresh: () async {
+                if (!vm.isShowingTopLoader && appVm.feeds != null) {
+                  vm.getNewFeeds(appVm, appUser);
+                }
+              },
+              backgroundColor: Colors.blue,
+              color: Colors.white,
+              child: SingleChildScrollView(
+                controller: vm.scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 15.0,
+                    ),
+                    _topSectionBuilder(context),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Divider(),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    MomentsList(
+                      moments: appVm.moments,
+                      createMoment: vm.createMoment,
+                      appUser: appUser,
+                      appVm: appVm,
+                    ),
+                    Divider(
+                      color: Color(0xff3D4A5A).withOpacity(0.2),
+                    ),
+                    appVm.feeds == null
+                        ? FeedLoader()
+                        : Column(
+                            children: [
+                              if (appUser.newFeeds)
+                                Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      if (appVm.isLoadingNewFeeds)
-                                        FeedLoader(
-                                          count: 1,
-                                        ),
-                                      FeedsList(appVm.feeds),
-                                      if (appVm.isLoadingOldFeeds)
-                                        FeedLoader(
-                                          count: 1,
-                                        ),
+                                      !vm.isShowingTopLoader
+                                          ? _loadNewFeedsBuilder(
+                                              vm, appVm, appUser)
+                                          : Container(
+                                              height: 40.0,
+                                            ),
                                     ],
                                   ),
-                          ],
-                        ),
-                ],
+                                ),
+                              appVm.feeds.isEmpty
+                                  ? _emptyChat(context, _animationController)
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (appVm.isLoadingNewFeeds)
+                                          FeedLoader(
+                                            count: 1,
+                                          ),
+                                        FeedsList(appVm.feeds),
+                                        if (appVm.isLoadingOldFeeds)
+                                          FeedLoader(
+                                            count: 1,
+                                          ),
+                                      ],
+                                    ),
+                            ],
+                          ),
+                  ],
+                ),
               ),
             ),
             floatingActionButton: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                appUser.newFeeds && vm.isShowingTopLoader
+                appUser.newFeeds && !vm.isShowingTopLoader
                     ? Padding(
                         padding: const EdgeInsets.only(top: 40.0, left: 30.0),
                         child: Row(
@@ -126,15 +137,40 @@ class ExploreTab extends HookWidget {
 
   Widget _loadNewFeedsBuilder(
       final ExploreVm vm, final AppVm appVm, final AppUser appUser) {
-    return Container(
-      width: 30.0,
-      height: 30.0,
-      child: FloatingActionButton(
-        backgroundColor: Colors.blue,
-        onPressed: () => vm.getNewFeeds(appVm, appUser),
-        child: Icon(
-          Icons.replay_outlined,
-          size: 15.0,
+    return GestureDetector(
+      onTap: () => vm.getNewFeeds(appVm, appUser),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(50.0),
+        ),
+        // child: FloatingActionButton(
+        //   backgroundColor: Colors.blue,
+        //   onPressed: () => ,
+        //   child: Icon(
+        //     Icons.replay_outlined,
+        //     size: 15.0,
+        //   ),
+        // ),
+        child: Row(
+          children: [
+            Text(
+              'New post',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(
+              width: 5.0,
+            ),
+            Icon(
+              Icons.replay_outlined,
+              size: 15.0,
+              color: Colors.white,
+            ),
+          ],
         ),
       ),
     );
