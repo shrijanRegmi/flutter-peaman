@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/models/moment_model.dart';
 import 'package:peaman/views/screens/moment_view_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
@@ -6,7 +7,12 @@ import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 class MomentsListItem extends StatelessWidget {
   final Moment moment;
   final List<Moment> moments;
-  MomentsListItem(this.moment, this.moments);
+  final AppUser appUser;
+  MomentsListItem(
+    this.moment,
+    this.moments,
+    this.appUser,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +54,9 @@ class MomentsListItem extends StatelessWidget {
                 height: 5.0,
               ),
               Text(
-                moment.owner.name.split(' ').first,
+                moment.owner.uid == appUser.uid
+                    ? 'You'
+                    : moment.owner.name.split(' ').first,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12.0,

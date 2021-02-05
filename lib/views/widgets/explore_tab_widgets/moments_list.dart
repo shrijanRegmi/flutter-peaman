@@ -60,7 +60,11 @@ class MomentsList extends StatelessWidget {
             if (_moment == null) {
               return _addMomentBuilder();
             }
-            return MomentsListItem(_moment, moments);
+            return MomentsListItem(
+              _moment,
+              moments,
+              appUser,
+            );
           },
         ),
       ),
