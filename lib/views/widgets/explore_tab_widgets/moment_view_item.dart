@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:peaman/models/moment_model.dart';
@@ -24,7 +26,9 @@ class _MomentViewItemState extends State<MomentViewItem>
   @override
   void initState() {
     super.initState();
-    _img = CachedNetworkImageProvider(widget.moment.photo);
+    _img = CachedNetworkImageProvider(
+      widget.moment.photo.contains('firebase') ? widget.moment.photo : '',
+    );
     _handleAnimation();
   }
 
@@ -71,34 +75,15 @@ class _MomentViewItemState extends State<MomentViewItem>
       onVerticalDragEnd: (details) {
         _animation.forward();
       },
-      // onHorizontalDragStart: (details) {
-      //   setState(() {
-      //     _isDragging = true;
-      //   });
-
-      //   _animation.forward();
-      // },
-      // onHorizontalDragEnd: (details) {
-      //   setState(() {
-      //     _isDragging = false;
-      //   });
-
-
-      //   if (!_isLongTap) {
-      //     if (details.primaryVelocity < 0) {
-      //       widget.changePage(true);
-      //     } else {
-      //       widget.changePage(false);
-      //     }
-      //   }
-      // },
       child: Container(
         color: Colors.transparent,
         child: Stack(
           children: [
             Positioned.fill(
               child: Image(
-                image: _img,
+                image: widget.moment.photo.contains('.com')
+                    ? _img
+                    : FileImage(File(widget.moment.photo)),
               ),
             ),
             _headerSectionBuilder(),
@@ -175,11 +160,15 @@ class _MomentViewItemState extends State<MomentViewItem>
         duration: Duration(milliseconds: 5000), vsync: this);
 
     // play animation only when the image is fully loaded
-    _img.resolve(new ImageConfiguration()).addListener(
-      ImageStreamListener((info, call) {
-        _animation.forward();
-      }),
-    );
+    if (widget.moment.photo.contains('.com')) {
+      _img.resolve(new ImageConfiguration()).addListener(
+        ImageStreamListener((info, call) {
+          _animation.forward();
+        }),
+      );
+    } else {
+      _animation.forward();
+    }
     //
 
     _animation.addListener(() {
