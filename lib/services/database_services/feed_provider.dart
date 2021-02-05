@@ -120,10 +120,7 @@ class FeedProvider {
   Future reactPost() async {
     try {
       final _postRef = _ref.collection('posts').doc(feed.id);
-      final _reactionsRef =
-          _postRef.collection('reactions').doc(appUser.uid);
-
-      final _reactionSnap = await _reactionsRef.get();
+      final _reactionsRef = _postRef.collection('reactions').doc(appUser.uid);
 
       final _reactionData = {
         'uid': appUser.uid,
@@ -132,27 +129,22 @@ class FeedProvider {
 
       await _reactionsRef.set(_reactionData);
 
-      final _postSnap = await _postRef.get();
-      final _postData = _postSnap.data();
-      final _thisFeed = Feed.fromJson(_postData, null);
+      final _data = {
+        'reaction_count': FieldValue.increment(1),
+        'init_reactor': appUser.toFeedUser(),
+        'reactors_photo': FieldValue.arrayUnion([appUser.photoUrl]),
+      };
 
-      if (!_reactionSnap.exists) {
-        final _data = {
-          'reaction_count': FieldValue.increment(1),
-          'init_reactor': appUser.name,
-          'reactors_photo': FieldValue.arrayUnion([appUser.photoUrl]),
-        };
-
-        if (_thisFeed.initialReactor != '') {
-          _data.removeWhere((key, value) => key == 'init_reactor');
-        }
-
-        if (_thisFeed.reactorsPhoto.length >= 3) {
-          _data.removeWhere((key, value) => key == 'reactors_photo');
-        }
-
-        await _postRef.update(_data);
+      if (feed.initialReactor != null &&
+          feed.initialReactor.uid != appUser.uid) {
+        _data.removeWhere((key, value) => key == 'init_reactor');
       }
+
+      if (feed.reactorsPhoto.length >= 3) {
+        _data.removeWhere((key, value) => key == 'reactors_photo');
+      }
+
+      await _postRef.update(_data);
 
       print('Success: Reacting to post ${feed.id}');
       return 'Success';
@@ -167,24 +159,20 @@ class FeedProvider {
   Future unReactPost() async {
     try {
       final _postRef = _ref.collection('posts').doc(feed.id);
-      final _reactionsRef =
-          _postRef.collection('reactions').doc(appUser.uid);
+      final _reactionsRef = _postRef.collection('reactions').doc(appUser.uid);
 
-      await _reactionsRef.delete();
+      await _reactionsRef.update({
+        'unreacted': true,
+      });
 
       Map<String, dynamic> _data = {
         'reaction_count': FieldValue.increment(-1),
-        'init_reactor': appUser.name,
+        'init_reactor': appUser.toFeedUser(),
         'reactors_photo': FieldValue.arrayRemove([appUser.photoUrl]),
       };
 
-      final _postSnap = await _postRef.get();
-      final _postData = _postSnap.data();
-      final _thisFeed = Feed.fromJson(_postData, null);
-
-      if (_thisFeed.initialReactor == appUser.name &&
-          _thisFeed.reactorsPhoto.contains(appUser.photoUrl)) {
-        _data['init_reactor'] = '';
+      if (feed.initialReactor.uid == appUser.uid) {
+        _data['init_reactor'] = null;
       } else {
         _data.removeWhere((key, value) => key == 'init_reactor');
       }
@@ -302,36 +290,8 @@ class FeedProvider {
 
       final _postSnap = await _postsRef.get();
 
-      if (_postSnap.docs.isNotEmpty) {
-        for (final doc in _postSnap.docs) {
-          final _data = doc.data();
-          final _owner = await AppUser().fromRef(_data['owner_ref']);
-          Feed _feed = Feed.fromJson(doc.data(), _owner);
+      _feeds = await _getFeedsList(_postSnap);
 
-          final _reactionsRef = _ref
-              .collection('posts')
-              .doc(_feed.id)
-              .collection('reactions')
-              .doc(appUser.uid);
-
-          final _savedPostRef =
-              appUser.appUserRef.collection('saved_posts').doc(_feed.id);
-
-          final _reactionSnap = await _reactionsRef.get();
-          final _savedPostSnap = await _savedPostRef.get();
-
-          _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
-
-          _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
-
-          if (_feed.initialReactor == appUser.name &&
-              _feed.reactorsPhoto.contains(appUser.photoUrl)) {
-            _feed = _feed.copyWith(initialReactor: 'You');
-          }
-
-          _feeds.add(_feed);
-        }
-      }
       print('Success: Getting my posts');
       return _feeds;
     } catch (e) {
@@ -339,6 +299,63 @@ class FeedProvider {
       print('Error!!!: Getting my posts');
       return null;
     }
+  }
+
+  // get list of feeds
+  Future<List<Feed>> _getFeedsList(final QuerySnapshot postsSnap) async {
+    final _feeds = <Feed>[];
+
+    try {
+      if (postsSnap.docs.isNotEmpty) {
+        for (final doc in postsSnap.docs) {
+          if (doc.exists) {
+            final _data = doc.data();
+            final _postRef = _data['post_ref'] as DocumentReference;
+            final _postSnap = await _postRef.get();
+
+            if (_postSnap.exists) {
+              final _postData = _postSnap.data();
+              Feed _feed = Feed.fromJson(_postData);
+
+              final _reactionsRef = _ref
+                  .collection('posts')
+                  .doc(_feed.id)
+                  .collection('reactions')
+                  .doc(appUser.uid);
+
+              final _savedPostRef =
+                  appUser.appUserRef.collection('saved_posts').doc(_feed.id);
+
+              final _reactionSnap = await _reactionsRef.get();
+              final _savedPostSnap = await _savedPostRef.get();
+
+              if (_reactionSnap.exists) {
+                final _reactionData = _reactionSnap.data();
+                final _isUnreacted = _reactionData['unreacted'] ?? false;
+
+                _feed = _feed.copyWith(isReacted: !_isUnreacted);
+              } else {
+                _feed = _feed.copyWith(isReacted: false);
+              }
+
+              _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
+
+              if (_feed.initialReactor != null &&
+                  _feed.initialReactor.uid == appUser.uid &&
+                  _feed.reactorsPhoto.contains(appUser.photoUrl)) {
+                _feed = _feed.copyWith(initialReactor: appUser);
+              }
+
+              _feeds.add(_feed);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting feeds list');
+    }
+    return _feeds;
   }
 
   // get moments
@@ -378,41 +395,10 @@ class FeedProvider {
 
       final _featuredPosts =
           user.appUserRef.collection('featured_posts').limit(6);
-
       final _featuredPostsSnap = await _featuredPosts.get();
 
-      if (_featuredPostsSnap.docs.isNotEmpty) {
-        for (final doc in _featuredPostsSnap.docs) {
-          final DocumentReference _postRef = doc.data()['post_ref'];
-          final _postSnap = await _postRef.get();
-          final _data = _postSnap.data();
-          final _owner = await AppUser().fromRef(_data['owner_ref']);
-          Feed _feed = Feed.fromJson(_data, _owner);
+      _feeds = await _getFeedsList(_featuredPostsSnap);
 
-          final _reactionsRef = _ref
-              .collection('posts')
-              .doc(_feed.id)
-              .collection('reactions')
-              .doc(appUser.uid);
-
-          final _savedPostRef =
-              appUser.appUserRef.collection('saved_posts').doc(_feed.id);
-
-          final _reactionSnap = await _reactionsRef.get();
-          final _savedPostSnap = await _savedPostRef.get();
-
-          _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
-
-          _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
-
-          if (_feed.initialReactor == appUser.name &&
-              _feed.reactorsPhoto.contains(appUser.photoUrl)) {
-            _feed = _feed.copyWith(initialReactor: 'You');
-          }
-
-          _feeds.add(_feed);
-        }
-      }
       print('Success: Getting featured posts');
       return _feeds;
     } catch (e) {
@@ -438,43 +424,8 @@ class FeedProvider {
 
       final _timelineSnap = await _timelineRef.get();
 
-      if (_timelineSnap.docs.isNotEmpty) {
-        for (final doc in _timelineSnap.docs) {
-          final _data = doc.data();
-          final DocumentReference _postRef = _data['post_ref'];
-          final _postSnap = await _postRef.get();
+      _feeds = await _getFeedsList(_timelineSnap);
 
-          if (_postSnap.exists) {
-            final _postData = _postSnap.data();
-            final _owner = await AppUser().fromRef(_postData['owner_ref']);
-
-            Feed _feed = Feed.fromJson(_postData, _owner);
-
-            final _reactionsRef = _ref
-                .collection('posts')
-                .doc(_feed.id)
-                .collection('reactions')
-                .doc(appUser.uid);
-
-            final _savedPostRef =
-                appUser.appUserRef.collection('saved_posts').doc(_feed.id);
-
-            final _reactionSnap = await _reactionsRef.get();
-            final _savedPostSnap = await _savedPostRef.get();
-
-            _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
-
-            _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
-
-            if (_feed.initialReactor == appUser.name &&
-                _feed.reactorsPhoto.contains(appUser.photoUrl)) {
-              _feed = _feed.copyWith(initialReactor: 'You');
-            }
-
-            _feeds.add(_feed);
-          }
-        }
-      }
       print('Success: Getting my posts');
       return _feeds;
     } catch (e) {
@@ -497,36 +448,8 @@ class FeedProvider {
 
       final _postSnap = await _postsRef.get();
 
-      if (_postSnap.docs.isNotEmpty) {
-        for (final doc in _postSnap.docs) {
-          final _data = doc.data();
-          final _owner = await AppUser().fromRef(_data['owner_ref']);
-          Feed _feed = Feed.fromJson(doc.data(), _owner);
+      _feeds = await _getFeedsList(_postSnap);
 
-          final _reactionsRef = _ref
-              .collection('posts')
-              .doc(_feed.id)
-              .collection('reactions')
-              .doc(appUser.uid);
-
-          final _savedPostRef =
-              appUser.appUserRef.collection('saved_posts').doc(_feed.id);
-
-          final _reactionSnap = await _reactionsRef.get();
-          final _savedPostSnap = await _savedPostRef.get();
-
-          _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
-
-          _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
-
-          if (_feed.initialReactor == appUser.name &&
-              _feed.reactorsPhoto.contains(appUser.photoUrl)) {
-            _feed = _feed.copyWith(initialReactor: 'You');
-          }
-
-          _feeds.add(_feed);
-        }
-      }
       print('Success: Getting my posts');
       return _feeds;
     } catch (e) {
@@ -549,36 +472,8 @@ class FeedProvider {
 
       final _postSnap = await _postsRef.get();
 
-      if (_postSnap.docs.isNotEmpty) {
-        for (final doc in _postSnap.docs) {
-          final _data = doc.data();
-          final _owner = await AppUser().fromRef(_data['owner_ref']);
-          Feed _feed = Feed.fromJson(doc.data(), _owner);
+      _feeds = await _getFeedsList(_postSnap);
 
-          final _reactionsRef = _ref
-              .collection('posts')
-              .doc(_feed.id)
-              .collection('reactions')
-              .doc(appUser.uid);
-
-          final _savedPostRef =
-              appUser.appUserRef.collection('saved_posts').doc(_feed.id);
-
-          final _reactionSnap = await _reactionsRef.get();
-          final _savedPostSnap = await _savedPostRef.get();
-
-          _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
-
-          _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
-
-          if (_feed.initialReactor == appUser.name &&
-              _feed.reactorsPhoto.contains(appUser.photoUrl)) {
-            _feed = _feed.copyWith(initialReactor: 'You');
-          }
-
-          _feeds.add(_feed);
-        }
-      }
       print('Success: Getting old posts by id');
       return _feeds;
     } catch (e) {
@@ -599,46 +494,10 @@ class FeedProvider {
           .collection('timeline')
           .orderBy('updated_at', descending: true)
           .startAfter([feed.updatedAt]).limit(5);
-
       final _timelineSnap = await _timelineRef.get();
 
-      if (_timelineSnap.docs.isNotEmpty) {
-        for (final doc in _timelineSnap.docs) {
-          final _data = doc.data();
-          final DocumentReference _postRef = _data['post_ref'];
-          final _postSnap = await _postRef.get();
+      _feeds = await _getFeedsList(_timelineSnap);
 
-          if (_postSnap.exists) {
-            final _postData = _postSnap.data();
-            final _owner = await AppUser().fromRef(_postData['owner_ref']);
-
-            Feed _feed = Feed.fromJson(_postData, _owner);
-
-            final _reactionsRef = _ref
-                .collection('posts')
-                .doc(_feed.id)
-                .collection('reactions')
-                .doc(appUser.uid);
-
-            final _savedPostRef =
-                appUser.appUserRef.collection('saved_posts').doc(_feed.id);
-
-            final _reactionSnap = await _reactionsRef.get();
-            final _savedPostSnap = await _savedPostRef.get();
-
-            _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
-
-            _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
-
-            if (_feed.initialReactor == appUser.name &&
-                _feed.reactorsPhoto.contains(appUser.photoUrl)) {
-              _feed = _feed.copyWith(initialReactor: 'You');
-            }
-
-            _feeds.add(_feed);
-          }
-        }
-      }
       print('Success: Getting old timeline posts');
       return _feeds;
     } catch (e) {
@@ -659,46 +518,10 @@ class FeedProvider {
           .collection('timeline')
           .orderBy('updated_at', descending: true)
           .endBefore([feed.updatedAt]).limit(5);
-
       final _timelineSnap = await _timelineRef.get();
 
-      if (_timelineSnap.docs.isNotEmpty) {
-        for (final doc in _timelineSnap.docs) {
-          final _data = doc.data();
-          final DocumentReference _postRef = _data['post_ref'];
-          final _postSnap = await _postRef.get();
+      _feeds = await _getFeedsList(_timelineSnap);
 
-          if (_postSnap.exists) {
-            final _postData = _postSnap.data();
-            final _owner = await AppUser().fromRef(_postData['owner_ref']);
-
-            Feed _feed = Feed.fromJson(_postData, _owner);
-
-            final _reactionsRef = _ref
-                .collection('posts')
-                .doc(_feed.id)
-                .collection('reactions')
-                .doc(appUser.uid);
-
-            final _savedPostRef =
-                appUser.appUserRef.collection('saved_posts').doc(_feed.id);
-
-            final _reactionSnap = await _reactionsRef.get();
-            final _savedPostSnap = await _savedPostRef.get();
-
-            _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
-
-            _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
-
-            if (_feed.initialReactor == appUser.name &&
-                _feed.reactorsPhoto.contains(appUser.photoUrl)) {
-              _feed = _feed.copyWith(initialReactor: 'You');
-            }
-
-            _feeds.add(_feed);
-          }
-        }
-      }
       print('Success: Getting new timeline posts');
       return _feeds;
     } catch (e) {
@@ -715,46 +538,8 @@ class FeedProvider {
       final _savedPostsRef = appUser.appUserRef.collection('saved_posts');
       final _savedPostsSnap = await _savedPostsRef.get();
 
-      for (final doc in _savedPostsSnap.docs) {
-        if (doc.exists) {
-          final DocumentReference _feedRef = doc.data()['post_ref'];
-          final _feedSnap = await _feedRef.get();
+      _feeds = await _getFeedsList(_savedPostsSnap);
 
-          if (_feedSnap.exists) {
-            final DocumentReference _ownerRef = _feedSnap.data()['owner_ref'];
-            final _ownerSnap = await _ownerRef.get();
-
-            if (_ownerSnap.exists) {
-              final _owner = AppUser.fromJson(_ownerSnap.data());
-              Feed _feed = Feed.fromJson(_feedSnap.data(), _owner);
-
-              final _reactionsRef = _ref
-                  .collection('posts')
-                  .doc(_feed.id)
-                  .collection('reactions')
-                  .doc(appUser.uid);
-
-              final _savedPostRef = appUser.appUserRef
-                  .collection('saved_posts')
-                  .doc(_feed.id);
-
-              final _reactionSnap = await _reactionsRef.get();
-              final _savedPostSnap = await _savedPostRef.get();
-
-              _feed = _feed.copyWith(isReacted: _reactionSnap.exists);
-
-              _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
-
-              if (_feed.initialReactor == appUser.name &&
-                  _feed.reactorsPhoto.contains(appUser.photoUrl)) {
-                _feed = _feed.copyWith(initialReactor: 'You');
-              }
-
-              _feeds.add(_feed);
-            }
-          }
-        }
-      }
       print('Success: Getting saved posts');
     } catch (e) {
       print(e);

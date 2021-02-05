@@ -9,7 +9,7 @@ class PeopleWhoReacted extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: feed.reactorsPhoto.isNotEmpty && feed.initialReactor != ''
+      height: feed.reactorsPhoto.isNotEmpty && feed.initialReactor != null
           ? 28.0
           : 0.0,
       child: Row(
@@ -25,12 +25,12 @@ class PeopleWhoReacted extends StatelessWidget {
                 children: _getChildren(),
               ),
             ),
-          if (feed.initialReactor != '' && feed.reactionCount != null)
+          if (feed.initialReactor != null && feed.reactionCount != null)
             Expanded(
               child: Text(
                 feed.reactionCount == 1 || feed.reactionCount == 0
-                    ? '${feed.initialReactor}'
-                    : '${feed.initialReactor} and ${feed.reactionCount - 1} others',
+                    ? '${feed.initialReactor.name}'
+                    : '${feed.initialReactor.name} and ${feed.reactionCount - 1} others',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12.0,

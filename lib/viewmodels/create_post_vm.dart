@@ -39,6 +39,7 @@ class CreatePostVm extends ChangeNotifier {
           caption: _captionController.text.trim(),
           updatedAt: DateTime.now().millisecondsSinceEpoch,
           isFeatured: _isFeatured,
+          owner: _appUser,
         );
 
         final _result =

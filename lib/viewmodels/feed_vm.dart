@@ -25,10 +25,7 @@ class FeedVm extends ChangeNotifier {
     if (!_thisFeed.isReacted) {
       _updateFeed(
         isReacted: true,
-        initReactor:
-            _thisFeed.initialReactor == '' || _thisFeed.initialReactor == null
-                ? 'You'
-                : null,
+        initReactor: _thisFeed.initialReactor == null ? appUser : null,
         reactionCount: (_thisFeed.reactionCount ?? 0) + 1,
         reactorsPhoto: _thisFeed.reactorsPhoto.length < 3
             ? [..._thisFeed.reactorsPhoto, appUser.photoUrl]
@@ -43,10 +40,7 @@ class FeedVm extends ChangeNotifier {
     if (_thisFeed.isReacted) {
       _updateFeed(
         isReacted: false,
-        initReactor: _thisFeed.initialReactor == appUser.name &&
-                _thisFeed.reactorsPhoto.contains(appUser.photoUrl)
-            ? ''
-            : null,
+        initReactor: null,
         reactionCount: _thisFeed.reactionCount - 1,
         reactorsPhoto: _thisFeed.reactorsPhoto
             .where((photo) => photo != appUser.photoUrl)
@@ -77,7 +71,7 @@ class FeedVm extends ChangeNotifier {
   // update value of feed
   _updateFeed({
     bool isReacted,
-    String initReactor,
+    AppUser initReactor,
     int reactionCount,
     List<String> reactorsPhoto,
     bool isSaved,
