@@ -8,6 +8,7 @@ class Moment {
   final String ownerId;
   final DocumentReference ownerRef;
   final int updatedAt;
+  final int expiresAt;
 
   Moment({
     this.id,
@@ -16,6 +17,7 @@ class Moment {
     this.ownerId,
     this.ownerRef,
     this.updatedAt,
+    this.expiresAt,
   });
 
   Moment copyWith({
@@ -33,6 +35,7 @@ class Moment {
       ownerId: ownerId ?? this.ownerId,
       ownerRef: ownerRef ?? this.ownerRef,
       updatedAt: updatedAt ?? this.updatedAt,
+      expiresAt: expiresAt ?? this.expiresAt,
     );
   }
 
@@ -43,6 +46,7 @@ class Moment {
       ownerId: data['owner_id'],
       ownerRef: data['owner_ref'],
       updatedAt: data['updated_at'],
+      expiresAt: data['expires_at'],
     );
   }
 
@@ -52,6 +56,9 @@ class Moment {
       'owner_id': ownerId,
       'owner_ref': ownerRef,
       'updated_at': updatedAt,
+      'expires_at': DateTime.fromMillisecondsSinceEpoch(updatedAt)
+          .add(Duration(minutes: 1440))
+          .millisecondsSinceEpoch,
     };
   }
 }
