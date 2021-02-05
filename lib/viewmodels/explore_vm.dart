@@ -92,23 +92,27 @@ class ExploreVm extends ChangeNotifier {
     }
 
     if (_fileImage != null) {
+      final _moment = Moment(
+        photo: _fileImage.path,
+        ownerId: appUser.uid,
+        owner: appUser,
+        ownerRef: appUser.appUserRef,
+        updatedAt: DateTime.now().millisecondsSinceEpoch,
+      );
+
+      final _existingMoments = appVm.moments;
+      _existingMoments.insert(0, _moment);
+      appVm.updateMomentsList(_existingMoments);
+
       final _momentImage =
           await FeedStorage(uid: appUser.uid).uploadMomentImage(_fileImage);
 
       if (_momentImage != null) {
-        final _moment = Moment(
+        final _momentWithImg = _moment.copyWith(
           photo: _momentImage,
-          ownerId: appUser.uid,
-          owner: appUser,
-          ownerRef: appUser.appUserRef,
-          updatedAt: DateTime.now().millisecondsSinceEpoch,
         );
 
-        final _result = await FeedProvider(moment: _moment).createMoment();
-
-        final _existingMoments = appVm.moments;
-        _existingMoments.insert(0, _result);
-        appVm.updateMomentsList(_existingMoments);
+        await FeedProvider(moment: _momentWithImg).createMoment();
       }
     }
   }

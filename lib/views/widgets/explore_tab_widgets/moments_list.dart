@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/helpers/dialogue_provider.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/models/moment_model.dart';
 import 'package:peaman/viewmodels/app_vm.dart';
@@ -58,7 +59,7 @@ class MomentsList extends StatelessWidget {
             final _moment = _list[index];
 
             if (_moment == null) {
-              return _addMomentBuilder();
+              return _addMomentBuilder(context);
             }
             return MomentsListItem(
               _moment,
@@ -71,10 +72,17 @@ class MomentsList extends StatelessWidget {
     );
   }
 
-  Widget _addMomentBuilder() {
+  Widget _addMomentBuilder(final BuildContext context) {
     return GestureDetector(
       onTap: () {
-        createMoment(appUser, appVm);
+        final _myMoment = appVm.moments.firstWhere(
+            (element) => element.ownerId == appUser.uid,
+            orElse: () => null);
+        if (_myMoment == null) {
+          createMoment(appUser, appVm);
+        } else {
+          DialogProvider(context).showLimitedMomentDialog();
+        }
       },
       child: Container(
         color: Colors.transparent,

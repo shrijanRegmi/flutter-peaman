@@ -31,6 +31,7 @@ class ExploreTab extends HookWidget {
               onRefresh: () async {
                 if (!vm.isShowingTopLoader && appVm.feeds != null) {
                   vm.getNewFeeds(appVm, appUser);
+                  appVm.getMoments(appUser);
                 }
               },
               backgroundColor: Colors.blue,
