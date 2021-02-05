@@ -55,6 +55,25 @@ class AppUserProvider {
     return AppUser.fromJson(snap.data());
   }
 
+  // get appuser by id
+  Future<AppUser> getUserById() async {
+    AppUser _appUser;
+
+    try {
+      final _appUserRef = _ref.collection('users').doc(uid);
+      final _appUserSnap = await _appUserRef.get();
+      if (_appUserSnap.exists) {
+        final _appUserData = _appUserSnap.data();
+        _appUser = AppUser.fromJson(_appUserData);
+      }
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting user from id $uid');
+    }
+
+    return _appUser;
+  }
+
   // list of users;
   List<AppUser> _usersFromFirebase(QuerySnapshot snap) {
     return snap.docs.map((doc) {
