@@ -49,6 +49,7 @@ class Notifications {
         updatedAt: data['updated_at'],
       );
     }
+    return null;
   }
 }
 
