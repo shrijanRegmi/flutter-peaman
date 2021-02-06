@@ -44,7 +44,10 @@ class FeedsListItem extends StatelessWidget {
               SizedBox(
                 height: 15.0,
               ),
-              PeopleWhoReacted(vm.thisFeed),
+              PeopleWhoReacted(
+                vm.thisFeed,
+                appUser,
+              ),
               if (vm.thisFeed.caption != '')
                 SizedBox(
                   height: 10.0,
@@ -189,7 +192,7 @@ class FeedsListItem extends StatelessWidget {
               // fontWeight: FontWeight.bold,
               fontFamily: 'Nunito',
               fontSize: 12.0,
-              color: Colors.black45,
+              color: Colors.grey,
             ),
             children: [
               TextSpan(
