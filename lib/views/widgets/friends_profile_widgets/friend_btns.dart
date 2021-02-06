@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:peaman/models/app_models/chat_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/friend_profile_vm.dart';
 import 'package:peaman/views/screens/chat_convo_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/single_icon_btn.dart';
+import 'package:provider/provider.dart';
 
 class FriendBtns extends StatelessWidget {
   final FriendProfileVm vm;
@@ -52,12 +54,20 @@ class FriendBtns extends StatelessWidget {
           icon: 'assets/images/svgs/chat_tab.svg',
           color: Colors.blue.withOpacity(0.7),
           onPressed: () {
+            final _chats =
+                Provider.of<List<Chat>>(context, listen: false) ?? [];
+            final _thisChat = _chats.firstWhere(
+                (chat) =>
+                    chat.secondUserRef == user.appUserRef ||
+                    chat.firstUserRef == user.appUserRef,
+                orElse: () => null);
+
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (_) => ChatConvoScreen(
-                  fromSearch: true,
                   friend: user,
+                  chat: _thisChat,
                 ),
               ),
             );
