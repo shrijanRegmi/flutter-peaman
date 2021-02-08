@@ -50,6 +50,7 @@ class AppVm extends ChangeNotifier {
 
   // get moments
   Future getMoments(final AppUser appUser) async {
+    await Future.delayed(Duration(milliseconds: 50));
     updateIsLoadingMoments(true);
     final _myMoments = await FeedProvider(appUser: appUser).getMyMoments();
     final _othersMoments = await FeedProvider(appUser: appUser).getMoments();
