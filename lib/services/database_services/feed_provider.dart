@@ -278,6 +278,26 @@ class FeedProvider {
     }
   }
 
+  // see moment
+  Future viewMoment() async {
+    try {
+      final _momentRef = _ref.collection('moments').doc(moment.id);
+      final _seenUsersRef =
+          _momentRef.collection('seen_users').doc(appUser.uid);
+
+      await _seenUsersRef.set({
+        'uid': appUser.uid,
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      });
+      print('Success: Viewing moment ${moment.id}');
+      return 'Success';
+    } catch (e) {
+      print(e);
+      print('Error!!!: Viewing moment ${moment.id}');
+      return null;
+    }
+  }
+
   // get posts by id
   Future<List<Feed>> getPostsById() async {
     try {
@@ -366,8 +386,8 @@ class FeedProvider {
     return _feeds;
   }
 
-  // get moments
-  Future<List<Moment>> getMoments() async {
+  // get my moments
+  Future<List<Moment>> getMyMoments() async {
     final _moments = <Moment>[];
     try {
       final _momentsRef =
@@ -376,12 +396,42 @@ class FeedProvider {
       if (_momentsSnap.docs.isNotEmpty) {
         for (var doc in _momentsSnap.docs) {
           if (doc.exists) {
-            final DocumentReference _ownerRef = doc['owner_ref'];
-            final _ownerSnap = await _ownerRef.get();
-            if (_ownerSnap.exists) {
-              final _owner = AppUser.fromJson(_ownerSnap.data());
-              final _moment = Moment.fromJson(doc.data(), _owner);
+            final _moment = Moment.fromJson(doc.data());
+            _moments.add(_moment);
+          }
+        }
+      }
+      print('Success: Getting my moments');
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting my moments');
+    }
 
+    return _moments;
+  }
+
+  // get moments
+  Future<List<Moment>> getMoments() async {
+    final _moments = <Moment>[];
+    try {
+      final _momentsRef = appUser.appUserRef.collection('moments');
+      final _momentsSnap = await _momentsRef.get();
+      if (_momentsSnap.docs.isNotEmpty) {
+        for (var doc in _momentsSnap.docs) {
+          if (doc.exists) {
+            final DocumentReference _momentRef = doc['moment_ref'];
+            final _momentSnap = await _momentRef.get();
+            if (_momentSnap.exists) {
+              final _momentData = _momentSnap.data();
+              Moment _moment = Moment.fromJson(_momentData);
+
+              final _seenRef =
+                  _momentRef.collection('seen_users').doc(appUser.uid);
+              final _seenSnap = await _seenRef.get();
+
+              _moment = _moment.copyWith(
+                isSeen: _seenSnap.exists,
+              );
               _moments.add(_moment);
             }
           }

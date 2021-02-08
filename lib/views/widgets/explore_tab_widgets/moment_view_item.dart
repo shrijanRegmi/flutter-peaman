@@ -2,8 +2,13 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/models/moment_model.dart';
+import 'package:peaman/viewmodels/app_vm.dart';
+import 'package:peaman/viewmodels/moment_vm.dart';
+import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class MomentViewItem extends StatefulWidget {
@@ -43,53 +48,61 @@ class _MomentViewItemState extends State<MomentViewItem>
   @override
   Widget build(BuildContext context) {
     final _width = MediaQuery.of(context).size.width;
-    return GestureDetector(
-      onLongPressStart: (details) {
-        setState(() {
-          _isLongTap = true;
-        });
-      },
-      onLongPressEnd: (details) {
-        _animation.forward();
-        setState(() {
-          _isLongTap = false;
-        });
-      },
-      onTapDown: (details) {
-        _animation.stop();
-      },
-      onTapUp: (details) {
-        _animation.forward();
+    final _appUser = Provider.of<AppUser>(context);
+    final _appVm = Provider.of<AppVm>(context);
+    return ViewmodelProvider<MomentVm>(
+      vm: MomentVm(),
+      onInit: (vm) => vm.onInit(_appUser, _appVm, widget.moment),
+      builder: (context, vm, appVm, appUser) {
+        return GestureDetector(
+          onLongPressStart: (details) {
+            setState(() {
+              _isLongTap = true;
+            });
+          },
+          onLongPressEnd: (details) {
+            _animation.forward();
+            setState(() {
+              _isLongTap = false;
+            });
+          },
+          onTapDown: (details) {
+            _animation.stop();
+          },
+          onTapUp: (details) {
+            _animation.forward();
 
-        final _leftTapPos = 20 / 100 * _width;
-        final _rightTapPos = 80 / 100 * _width;
+            final _leftTapPos = 20 / 100 * _width;
+            final _rightTapPos = 80 / 100 * _width;
 
-        if (!_isLongTap && !_isDragging) {
-          if (details.globalPosition.dx >= _rightTapPos) {
-            widget.changePage(true);
-          } else if (details.globalPosition.dx <= _leftTapPos) {
-            widget.changePage(false);
-          }
-        }
-      },
-      onVerticalDragEnd: (details) {
-        _animation.forward();
-      },
-      child: Container(
-        color: Colors.transparent,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image(
-                image: widget.moment.photo.contains('.com')
-                    ? _img
-                    : FileImage(File(widget.moment.photo)),
-              ),
+            if (!_isLongTap && !_isDragging) {
+              if (details.globalPosition.dx >= _rightTapPos) {
+                widget.changePage(true);
+              } else if (details.globalPosition.dx <= _leftTapPos) {
+                widget.changePage(false);
+              }
+            }
+          },
+          onVerticalDragEnd: (details) {
+            _animation.forward();
+          },
+          child: Container(
+            color: Colors.transparent,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image(
+                    image: widget.moment.photo.contains('.com')
+                        ? _img
+                        : FileImage(File(widget.moment.photo)),
+                  ),
+                ),
+                _headerSectionBuilder(),
+              ],
             ),
-            _headerSectionBuilder(),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
