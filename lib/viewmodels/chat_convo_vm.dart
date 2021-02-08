@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peaman/helpers/chat_helper.dart';
+import 'package:peaman/models/app_models/chat_model.dart';
 import 'package:peaman/models/app_models/message_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/message_provider.dart';
@@ -10,6 +11,7 @@ class ChatConvoVm extends ChangeNotifier {
   ChatConvoVm({@required this.context});
 
   AppUser get appUser => Provider.of<AppUser>(context);
+  List<Chat> get chats => Provider.of<List<Chat>>(context) ?? [];
 
   bool _isTyping = false;
   bool get isTyping => _isTyping;
@@ -47,5 +49,9 @@ class ChatConvoVm extends ChangeNotifier {
       }
     });
     return await MessageProvider(chatId: chatId).updateChatData(data);
+  }
+
+  Future readMessages(final String chatId) async {
+    return await MessageProvider(chatId: chatId).readChatMessage();
   }
 }

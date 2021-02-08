@@ -44,26 +44,31 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
       },
       builder: (context, vm, appVm, appUser) {
         final _appUser = vm.appUser;
-
         final bool _isAppUserFirstUser = ChatHelper().isAppUserFirstUser(
             myId: vm.appUser.uid, friendId: widget.friend.uid);
 
-        Map<String, dynamic> _data = {};
-        int _unreadMessagesCount;
+        final _thisChat = vm.chats.firstWhere(
+            (element) => element.id == widget.chat?.id,
+            orElse: () => null);
 
-        if (_isAppUserFirstUser) {
-          _unreadMessagesCount = widget.chat?.firstUserUnreadMessagesCount;
-          _data.addAll({
-            'first_user_unread_messages_count': 0,
-          });
-        } else {
-          _unreadMessagesCount = widget.chat?.secondUserUnreadMessagesCount;
-          _data.addAll({
-            'second_user_unread_messages_count': 0,
-          });
+        if (_thisChat != null) {
+          Map<String, dynamic> _data = {};
+          int _unreadMessagesCount;
+
+          if (_isAppUserFirstUser) {
+            _unreadMessagesCount = _thisChat.firstUserUnreadMessagesCount;
+            _data.addAll({
+              'first_user_unread_messages_count': 0,
+            });
+          } else {
+            _unreadMessagesCount = _thisChat.secondUserUnreadMessagesCount;
+            _data.addAll({
+              'second_user_unread_messages_count': 0,
+            });
+          }
 
           if (_unreadMessagesCount != 0) {
-            vm.updateChatData(_data, widget.chat?.id);
+            vm.updateChatData(_data, _thisChat.id);
           }
         }
 

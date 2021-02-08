@@ -156,6 +156,18 @@ class MessageProvider {
     }
   }
 
+  // read chat message
+  Future readChatMessage() async {
+    try {
+      final _chatRef = _ref.collection('chats').doc(chatId);
+      await _chatRef.update({});
+      print('Success: Reading message by user');
+    } catch (e) {
+      print(e);
+      print('Error: Reading message by user');
+    }
+  }
+
   // message from firebase
   List<Message> _messageFromFirebase(QuerySnapshot snap) {
     return snap.docs.map((doc) {

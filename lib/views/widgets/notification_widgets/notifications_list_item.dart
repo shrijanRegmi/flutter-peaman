@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:peaman/enums/notification_type.dart';
 import 'package:peaman/models/app_models/notification_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/services/database_services/notif_provider.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/common_widgets/multi_avatar_builder.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -14,7 +15,7 @@ class NotificationsListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewmodelProvider<NotificationItemVm>(
-      vm: NotificationItemVm(),
+      vm: NotificationItemVm(context),
       builder: (context, vm, appVm, appUser) {
         Widget _widget;
         switch (notification.type) {
@@ -28,9 +29,13 @@ class NotificationsListItem extends StatelessWidget {
             _widget = Container();
         }
 
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          child: _widget,
+        return InkWell(
+          onTap: () => vm.onPressedNotifItem(notification),
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            child: _widget,
+          ),
         );
       },
     );
@@ -65,7 +70,7 @@ class NotificationsListItem extends StatelessWidget {
                         children: [
                           TextSpan(
                             text: notification.reactedBy.length >= 2
-                                ? '${notification.reactedBy[0].name} and ${notification.reactedBy.length - 1} others'
+                                ? '${notification.reactedBy[0].name} and ${notification.reactedBy.length - 1} ${notification.reactedBy.length - 1 > 1 ? 'others' : 'other'}'
                                 : '${notification.reactedBy[0].name}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -143,7 +148,7 @@ class NotificationsListItem extends StatelessWidget {
                         children: [
                           TextSpan(
                             text: notification.commentedBy.length >= 2
-                                ? '${notification.commentedBy[0].name} and ${notification.commentedBy.length - 1} others '
+                                ? '${notification.commentedBy[0].name} and ${notification.commentedBy.length - 1} ${notification.commentedBy.length - 1 > 1 ? 'others' : 'other'} '
                                 : '${notification.commentedBy[0].name}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -193,4 +198,13 @@ class NotificationsListItem extends StatelessWidget {
   }
 }
 
-class NotificationItemVm extends ChangeNotifier {}
+class NotificationItemVm extends ChangeNotifier {
+  final BuildContext context;
+  NotificationItemVm(this.context);
+
+  // on pressed notification item
+  onPressedNotifItem(final Notifications notification) {
+    NotificationProvider(context: context, notification: notification)
+        .navigateToFeed();
+  }
+}

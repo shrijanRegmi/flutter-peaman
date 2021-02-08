@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:lottie/lottie.dart';
 import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/comment_vm.dart';
@@ -38,7 +39,16 @@ class FeedCommentScreen extends StatelessWidget {
           ),
           body: SafeArea(
             child: vm.comments == null
-                ? Container()
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 120.0),
+                      child: Lottie.asset(
+                        'assets/lottie/chat_loader.json',
+                        width: MediaQuery.of(context).size.width - 200.0,
+                        height: MediaQuery.of(context).size.width - 200.0,
+                      ),
+                    ),
+                  )
                 : ListView.separated(
                     // reverse: true,
                     itemCount: vm.comments.length,

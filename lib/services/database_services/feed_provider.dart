@@ -124,6 +124,7 @@ class FeedProvider {
 
       final _reactionData = {
         'uid': appUser.uid,
+        'unreacted': false,
         'updated_at': DateTime.now().millisecondsSinceEpoch,
       };
 
@@ -527,7 +528,7 @@ class FeedProvider {
           .endBefore([feed.updatedAt]).limit(5);
       final _timelineSnap = await _timelineRef.get();
 
-      _feeds = await _getFeedsList(_timelineSnap);
+      _feeds = await _getFeedsList(_timelineSnap, isTimelinePosts: true);
 
       print('Success: Getting new timeline posts');
       return _feeds;
