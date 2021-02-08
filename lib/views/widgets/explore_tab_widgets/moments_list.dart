@@ -47,7 +47,7 @@ class MomentsList extends StatelessWidget {
   }
 
   Widget _momentsListBuilder() {
-    final _list = [null, ...moments];
+    final _list = moments == null ? [null] : [null, ...moments];
 
     return Container(
       height: 100.0,

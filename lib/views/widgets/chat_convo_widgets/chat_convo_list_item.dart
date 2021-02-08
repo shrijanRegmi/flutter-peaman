@@ -7,6 +7,7 @@ import 'package:peaman/models/app_models/message_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/temp_img_vm.dart';
 import 'package:peaman/views/screens/friend_profile_screen.dart';
+import 'package:peaman/views/screens/photo_viewer_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -97,23 +98,31 @@ class ChatConvoListItem extends StatelessWidget {
 
   Widget _imgMessageBuilder(BuildContext context) {
     final _size = MediaQuery.of(context).size.width / 3;
-    return Align(
-      alignment: alignment,
-      child: LimitedBox(
-        maxWidth: _size - 100,
-        maxHeight: _size + 100,
-        child: Stack(
-          children: <Widget>[
-            Positioned(
-              bottom: 5.0,
-              right: 5.0,
-              child: CircularProgressIndicator(),
-            ),
-            CachedNetworkImage(
-              imageUrl: message.text,
-              fit: BoxFit.cover,
-            ),
-          ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PhotoViewerScreen(message.text),
+        ),
+      ),
+      child: Align(
+        alignment: alignment,
+        child: LimitedBox(
+          maxWidth: _size - 100,
+          maxHeight: _size + 100,
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                bottom: 5.0,
+                right: 5.0,
+                child: CircularProgressIndicator(),
+              ),
+              CachedNetworkImage(
+                imageUrl: message.text,
+                fit: BoxFit.cover,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -121,51 +130,58 @@ class ChatConvoListItem extends StatelessWidget {
 
   Widget _userBuilder(final BuildContext context, {final bool isTemp = false}) {
     return alignment == Alignment.centerLeft
-        ? GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => FriendProfileScreen(friend),
-                ),
-              );
-            },
-            child: Container(
-              color: Colors.transparent,
-              child: Row(
-                children: <Widget>[
-                  AvatarBuilder(
-                    imgUrl: friend.photoUrl,
-                    isOnline: false,
-                    radius: 17.0,
-                  ),
-                  SizedBox(
-                    width: 10.0,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        ? Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FriendProfileScreen(friend),
+                    ),
+                  );
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Text(
-                        friend.name,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14.0,
-                          color: Color(0xff3D4A5A),
-                        ),
+                      AvatarBuilder(
+                        imgUrl: friend.photoUrl,
+                        isOnline: false,
+                        radius: 17.0,
                       ),
-                      Text(
-                        isTemp ? 'Just now' : _getTime(message.milliseconds),
-                        style: TextStyle(
-                          fontSize: 10.0,
-                          color: Colors.black26,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      SizedBox(
+                        width: 10.0,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            friend.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0,
+                              color: Color(0xff3D4A5A),
+                            ),
+                          ),
+                          Text(
+                            isTemp
+                                ? 'Just now'
+                                : _getTime(message.milliseconds),
+                            style: TextStyle(
+                              fontSize: 10.0,
+                              color: Colors.black26,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           )
         : Row(
             mainAxisAlignment: MainAxisAlignment.end,

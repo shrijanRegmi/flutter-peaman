@@ -128,7 +128,7 @@ class ChatListItem extends StatelessWidget {
                       maxLines: 1,
                       style: TextStyle(
                         fontSize: 12.0,
-                        color: Colors.black38,
+                        color: Colors.grey,
                       ),
                     ),
                     Padding(

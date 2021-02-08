@@ -127,9 +127,10 @@ class FriendProfileScreen extends StatelessWidget {
 
   Widget _logoutBuilder(final AppVm vm, final AppUser appUser) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         vm.updateFeedsList(null);
-        AppUserProvider(uid: appUser.uid)
+        vm.updateMomentsList(null);
+        await AppUserProvider(uid: appUser.uid)
             .setUserActiveStatus(onlineStatus: OnlineStatus.away);
         AuthProvider().logOut();
       },

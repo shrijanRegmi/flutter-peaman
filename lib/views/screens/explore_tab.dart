@@ -107,7 +107,7 @@ class ExploreTab extends HookWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                appUser.newFeeds && !vm.isShowingTopLoader
+                appUser.newFeeds && vm.isShowingTopLoader
                     ? Padding(
                         padding: const EdgeInsets.only(top: 40.0, left: 30.0),
                         child: Row(

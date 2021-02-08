@@ -41,6 +41,7 @@ dependencies:
   image_picker: ^0.6.7+4
   lottie: ^0.4.1
   permission_handler: ^5.0.1+1
+  photo_view: ^0.10.3
   provider: ^4.3.1
   shimmer: ^1.1.1
   timeago: ^2.0.26
