@@ -10,6 +10,7 @@ class AppVm extends ChangeNotifier {
   List<Feed> _myFeaturedFeeds;
   bool _isLoadingOldFeeds = false;
   bool _isLoadingNewFeeds = false;
+  bool _isLoadingMoments = false;
   List<Moment> _moments = [];
 
   List<Feed> get feeds => _feeds;
@@ -17,6 +18,7 @@ class AppVm extends ChangeNotifier {
   List<Feed> get myFeaturedfeeds => _myFeaturedFeeds;
   bool get isLoadingOldFeeds => _isLoadingOldFeeds;
   bool get isLoadingNewFeeds => _isLoadingNewFeeds;
+  bool get isLoadingMoments => _isLoadingMoments;
   List<Moment> get moments => _moments;
 
   // get posts
@@ -48,9 +50,14 @@ class AppVm extends ChangeNotifier {
 
   // get moments
   Future getMoments(final AppUser appUser) async {
-    final _thisMoments = await FeedProvider(appUser: appUser).getMoments();
-    _moments = _thisMoments;
+    updateIsLoadingMoments(true);
+    final _myMoments = await FeedProvider(appUser: appUser).getMyMoments();
+    final _othersMoments = await FeedProvider(appUser: appUser).getMoments();
+    _othersMoments.shuffle();
+    _othersMoments.sort((a, b) => a.isSeen ? 1 : -1);
+    _moments = [..._myMoments, ..._othersMoments];
     notifyListeners();
+    updateIsLoadingMoments(false);
   }
 
   // update value of feeds list
@@ -83,6 +90,12 @@ class AppVm extends ChangeNotifier {
     notifyListeners();
   }
 
+  // update value of is loading moments
+  updateIsLoadingMoments(final bool newVal) {
+    _isLoadingMoments = newVal;
+    notifyListeners();
+  }
+
   // update value of moments list
   updateMomentsList(final List<Moment> newMoments) {
     _moments = newMoments;
@@ -106,5 +119,15 @@ class AppVm extends ChangeNotifier {
       _myFeaturedFeeds[_myFeaturedIndex] = feed;
     }
     notifyListeners();
+  }
+
+  // update single moment value
+  updateSingleMoment(final Moment moment) {
+    final _index = _moments.indexWhere((element) => element.id == moment.id);
+
+    if (_index != -1) {
+      _moments[_index] = moment;
+      notifyListeners();
+    }
   }
 }

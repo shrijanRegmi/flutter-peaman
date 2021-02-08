@@ -53,7 +53,7 @@ class ExploreTab extends HookWidget {
                       height: 5.0,
                     ),
                     MomentsList(
-                      moments: appVm.moments,
+                      moments: appVm.isLoadingMoments ? [] : appVm.moments,
                       createMoment: vm.createMoment,
                       appUser: appUser,
                       appVm: appVm,

@@ -38,7 +38,9 @@ class MomentsListItem extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     maxRadius: 31.0,
-                    backgroundColor: Colors.pink,
+                    backgroundColor: (moment.isSeen ?? false)
+                        ? Colors.grey[400]
+                        : Colors.pink,
                   ),
                   Positioned.fill(
                     child: Center(
@@ -60,7 +62,9 @@ class MomentsListItem extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12.0,
-                  color: Color(0xff3D4A5A),
+                  color: (moment.isSeen ?? false)
+                      ? Colors.grey
+                      : Color(0xff3D4A5A),
                 ),
               ),
             ],
