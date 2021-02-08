@@ -30,8 +30,9 @@ class NotificationsListItem extends StatelessWidget {
         }
 
         return InkWell(
-          onTap: () => vm.onPressedNotifItem(notification),
+          onTap: () => vm.onPressedNotifItem(notification, appUser),
           child: Container(
+            color: notification.isRead ? Colors.transparent : Colors.grey[300],
             padding:
                 const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
             child: _widget,
@@ -203,7 +204,9 @@ class NotificationItemVm extends ChangeNotifier {
   NotificationItemVm(this.context);
 
   // on pressed notification item
-  onPressedNotifItem(final Notifications notification) {
+  onPressedNotifItem(final Notifications notification, final AppUser appUser) {
+    NotificationProvider(appUser: appUser, notification: notification)
+        .readNotification();
     NotificationProvider(context: context, notification: notification)
         .navigateToFeed();
   }

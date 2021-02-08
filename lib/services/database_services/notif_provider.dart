@@ -23,6 +23,22 @@ class NotificationProvider {
 
   final _ref = FirebaseFirestore.instance;
 
+  Future readNotification() async {
+    try {
+      final _notifRef =
+          appUser.appUserRef.collection('notifications').doc(notification.id);
+      await _notifRef.update({
+        'is_read': true,
+      });
+      print('Success: Reading notification ${notification.id}');
+      return 'Success';
+    } catch (e) {
+      print(e);
+      print('Error!!!: Reading notification ${notification.id}');
+      return null;
+    }
+  }
+
   // navigate to feed
   void navigateToFeed() async {
     try {
