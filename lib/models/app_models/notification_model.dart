@@ -11,6 +11,7 @@ class Notifications {
   final NotificationType type;
   final int updatedAt;
   final bool isAccepted;
+  final bool isRead;
 
   Notifications({
     this.id,
@@ -21,6 +22,7 @@ class Notifications {
     this.reactedBy,
     this.commentedBy,
     this.feed,
+    this.isRead,
   });
 
   static Notifications fromJson(
@@ -35,6 +37,7 @@ class Notifications {
         reactedBy: List<AppUser>.from(_reactedBy.reversed),
         feed: Feed.fromJson(data['post_data']),
         updatedAt: data['updated_at'],
+        isRead: data['is_read'] ?? false,
       );
     }
     if (_type == 2) {
@@ -47,6 +50,7 @@ class Notifications {
         commentedBy: List<AppUser>.from(_commentedBy.reversed),
         feed: Feed.fromJson(data['post_data']),
         updatedAt: data['updated_at'],
+        isRead: data['is_read'] ?? false,
       );
     }
     return null;
@@ -58,18 +62,21 @@ class ReactNotification extends Notifications {
   final List<AppUser> reactedBy;
   final Feed feed;
   final int updatedAt;
+  final bool isRead;
 
   ReactNotification({
     this.id,
     this.reactedBy,
     this.updatedAt,
     this.feed,
+    this.isRead,
   }) : super(
           id: id,
           reactedBy: reactedBy,
           type: NotificationType.reaction,
           updatedAt: updatedAt,
           feed: feed,
+          isRead: isRead,
         );
 }
 
@@ -78,17 +85,20 @@ class CommentNotification extends Notifications {
   final List<AppUser> commentedBy;
   final Feed feed;
   final int updatedAt;
+  final bool isRead;
 
   CommentNotification({
     this.id,
     this.commentedBy,
     this.feed,
     this.updatedAt,
+    this.isRead,
   }) : super(
           id: id,
           commentedBy: commentedBy,
           type: NotificationType.comment,
           updatedAt: updatedAt,
           feed: feed,
+          isRead: isRead,
         );
 }
