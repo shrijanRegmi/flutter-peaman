@@ -10,6 +10,7 @@ import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/storage_services/chat_storage_service.dart';
 import 'package:peaman/viewmodels/temp_img_vm.dart';
 import 'package:peaman/views/widgets/common_widgets/single_icon_btn.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class ChatComposeArea extends StatefulWidget {
@@ -110,15 +111,17 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
               radius: 50.0,
               icon: 'assets/images/svgs/call_btn.svg',
               onPressed: () async {
-                // await _handleCameraAndMic();
+                await _handleCameraAndMic();
                 // await Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (_) => CallScreen(
-                //               channelName: 'shirjan',
-                //               role: ClientRole.Broadcaster,
-                //             )));
-
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (_) => VideoCallScreen(
+                //       friend: widget.friend,
+                //       channelId: widget.chatId,
+                //       role: ClientRole.Broadcaster,
+                //     ),
+                //   ),
+                // );
                 widget.scaffoldKey.currentState.showSnackBar(
                     SnackBar(content: Text('This feature is being developed')));
               },
@@ -127,6 +130,10 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleCameraAndMic() async {
+    await [Permission.camera, Permission.microphone].request();
   }
 
   Widget _typingInputBuilder() {
