@@ -32,7 +32,9 @@ class NotificationsListItem extends StatelessWidget {
         return InkWell(
           onTap: () => vm.onPressedNotifItem(notification, appUser),
           child: Container(
-            color: notification.isRead ? Colors.transparent : Colors.grey[300],
+            color: notification.isRead
+                ? Colors.transparent
+                : Color(0xff3D4A5A).withOpacity(0.1),
             padding:
                 const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
             child: _widget,
@@ -108,6 +110,7 @@ class NotificationsListItem extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5.0),
+            color: Colors.grey[350],
             image: DecorationImage(
               image: CachedNetworkImageProvider(
                 notification.feed.photos[0],
@@ -185,6 +188,7 @@ class NotificationsListItem extends StatelessWidget {
             maxWidth: 50.0,
           ),
           decoration: BoxDecoration(
+            color: Colors.grey[350],
             borderRadius: BorderRadius.circular(5.0),
             image: DecorationImage(
               image: CachedNetworkImageProvider(

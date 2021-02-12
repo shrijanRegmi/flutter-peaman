@@ -76,8 +76,8 @@ class _HomeScreenState extends State<HomeScreen>
               AppUserProvider(uid: _appUser.uid)
                   .setUserActiveStatus(onlineStatus: OnlineStatus.active);
               _appVm.getTimeline(_appUser);
-              _appVm.getPostsById(_appUser);
               _appVm.getMoments(_appUser);
+              _appVm.getPostsById(_appUser);
 
               _tabController.addListener(() {
                 setState(() {});

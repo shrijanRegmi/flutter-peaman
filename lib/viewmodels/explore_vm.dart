@@ -41,7 +41,7 @@ class ExploreVm extends ChangeNotifier {
         }
 
         if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent - 50.0) {
+            _scrollController.position.maxScrollExtent / 2) {
           if (!appVm.isLoadingOldFeeds) {
             appVm.updateIsLoadingOldFeeds(true);
             final _oldFeeds =
