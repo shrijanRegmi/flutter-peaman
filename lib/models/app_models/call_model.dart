@@ -6,6 +6,7 @@ class Call {
   final AppUser receiver;
   final bool hasExpired;
   final int updatedAt;
+  final bool isPicked;
 
   Call({
     this.id,
@@ -13,6 +14,7 @@ class Call {
     this.receiver,
     this.hasExpired,
     this.updatedAt,
+    this.isPicked,
   });
 
   Call copyWith({
@@ -21,6 +23,7 @@ class Call {
     final AppUser receiver,
     final bool hasExpired,
     final int updatedAt,
+    final bool isPicked,
   }) {
     return Call(
       id: id ?? this.id,
@@ -28,6 +31,7 @@ class Call {
       receiver: receiver ?? this.receiver,
       hasExpired: hasExpired ?? this.hasExpired,
       updatedAt: updatedAt ?? this.updatedAt,
+      isPicked: isPicked ?? this.isPicked,
     );
   }
 
@@ -38,6 +42,7 @@ class Call {
       'receiver': receiver.toFeedUser(),
       'has_expired': hasExpired,
       'updated_at': updatedAt,
+      'is_picked': isPicked,
     };
   }
 
@@ -48,6 +53,7 @@ class Call {
       receiver: AppUser.fromJson(data['receiver']),
       hasExpired: data['has_expired'] ?? false,
       updatedAt: data['updated_at'],
+      isPicked: data['is_picked'] ?? false,
     );
   }
 }

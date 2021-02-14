@@ -5,6 +5,9 @@ import 'package:peaman/models/moment_model.dart';
 import 'package:peaman/services/database_services/feed_provider.dart';
 
 class AppVm extends ChangeNotifier {
+  final BuildContext context;
+  AppVm(this.context);
+
   List<Feed> _feeds;
   List<Feed> _myFeeds;
   List<Feed> _myFeaturedFeeds;

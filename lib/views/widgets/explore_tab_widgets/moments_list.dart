@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:peaman/helpers/dialogue_provider.dart';
+import 'package:peaman/helpers/dialog_provider.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/models/moment_model.dart';
 import 'package:peaman/viewmodels/app_vm.dart';

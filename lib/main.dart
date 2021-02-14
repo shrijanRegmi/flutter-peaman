@@ -20,7 +20,7 @@ class PeamanApp extends StatelessWidget {
         return MultiProvider(
           providers: [
             ChangeNotifierProvider<AppVm>(
-              create: (_) => AppVm(),
+              create: (_) => AppVm(context),
             ),
             StreamProvider<AppUser>.value(
               value: AuthProvider().user,

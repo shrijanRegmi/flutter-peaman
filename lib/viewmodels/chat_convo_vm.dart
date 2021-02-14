@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peaman/helpers/chat_helper.dart';
+import 'package:peaman/models/app_models/call_model.dart';
 import 'package:peaman/models/app_models/chat_model.dart';
 import 'package:peaman/models/app_models/message_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
@@ -12,6 +13,7 @@ class ChatConvoVm extends ChangeNotifier {
 
   AppUser get appUser => Provider.of<AppUser>(context);
   List<Chat> get chats => Provider.of<List<Chat>>(context) ?? [];
+  Call get receivingCall => Provider.of<Call>(context);
 
   bool _isTyping = false;
   bool get isTyping => _isTyping;
