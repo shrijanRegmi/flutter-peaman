@@ -6,6 +6,7 @@ import 'package:peaman/models/app_models/chat_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/chat_convo_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
+import 'package:peaman/views/screens/call_overlay_screen.dart';
 import 'package:peaman/views/widgets/chat_convo_widgets/chat_compose_area.dart';
 import 'package:peaman/views/widgets/chat_convo_widgets/chat_convo_list.dart';
 import 'package:peaman/views/widgets/common_widgets/appbar.dart';
@@ -70,6 +71,14 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
           if (_unreadMessagesCount != 0) {
             vm.updateChatData(_data, _thisChat.id);
           }
+        }
+
+        if (vm.receivingCall != null) {
+          return CallOverlayScreen(
+            vm.receivingCall.caller,
+            isReceiving: true,
+            call: vm.receivingCall,
+          );
         }
 
         return Scaffold(

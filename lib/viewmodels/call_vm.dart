@@ -7,6 +7,7 @@ import 'package:peaman/models/app_models/call_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/call_provider.dart';
 import 'package:peaman/utils/agora_settings.dart';
+import 'package:peaman/views/screens/video_call_screen.dart';
 
 class CallVm extends ChangeNotifier {
   final BuildContext context;
@@ -18,6 +19,7 @@ class CallVm extends ChangeNotifier {
   int _counter = 0;
   bool _isBtnsHidden = false;
   Call _thisCall;
+  bool _isChannelLeft = false;
 
   bool get isCameraOff => _isCameraOff;
   bool get isMuted => _isMuted;
@@ -25,12 +27,12 @@ class CallVm extends ChangeNotifier {
   int get counter => _counter;
   bool get isBtnsHidden => _isBtnsHidden;
   Call get thisCall => _thisCall;
+  bool get isChannelLeft => _isChannelLeft;
 
   // init function
   onInit(final AppUser appUser, final AppUser friend, final String channelName,
       final ClientRole role) {
     _initializeAgora(role, channelName, appUser.uid.hashCode);
-    _callFriend(appUser, friend);
     _durationTimer = Timer.periodic(Duration(milliseconds: 1000), (timer) {
       if (_durationTimer.isActive) {
         _updateCounter(timer.tick);
@@ -38,16 +40,20 @@ class CallVm extends ChangeNotifier {
     });
   }
 
-  // dispose function
-  onDis(final AppUser appUser, final AppUser friend) async {
+  // dispose function video call screen
+  onDisVideoCall(final AppUser appUser, final AppUser friend) {
+    _deleteCall(appUser, friend);
     _durationTimer?.cancel();
     _destroyAgora();
-    await CallProvider(appUser: appUser, friend: friend, call: _thisCall)
-        .endCall();
+  }
+
+  // dispose function for call overlay screen
+  onDisCallOverlay(final AppUser appUser, final AppUser friend) {
+    _deleteCall(appUser, friend);
   }
 
   // call friend
-  _callFriend(final AppUser appUser, final AppUser friend) async {
+  callFriend(final AppUser appUser, final AppUser friend) async {
     final _call = Call(
       id: ChatHelper().getChatId(myId: appUser.uid, friendId: friend.uid),
       caller: appUser,
@@ -56,16 +62,70 @@ class CallVm extends ChangeNotifier {
       updatedAt: DateTime.now().millisecondsSinceEpoch,
     );
 
-    await CallProvider(appUser: appUser, friend: friend, call: _call)
-        .callFriend();
-
     _thisCall = _call;
     notifyListeners();
+
+    await CallProvider(appUser: appUser, friend: friend, call: _call)
+        .callFriend();
   }
 
   // cancel call
-  cancelCall() {
-    Navigator.pop(context);
+  cancelCall(final AppUser appUser, final AppUser friend,
+      final bool isReceiving, final bool fromAgora) async {
+    if (!isReceiving) {
+      Navigator.pop(context);
+    }
+
+    if (fromAgora && isReceiving) {
+      Navigator.pop(context);
+    }
+
+    if (isReceiving) {
+      final _call = Call(
+        id: ChatHelper().getChatId(myId: appUser.uid, friendId: friend.uid),
+        caller: friend,
+        receiver: appUser,
+        hasExpired: false,
+        updatedAt: DateTime.now().millisecondsSinceEpoch,
+      );
+      await CallProvider(appUser: friend, friend: appUser, call: _call)
+          .endCall();
+    } else {
+      final _call = Call(
+        id: ChatHelper().getChatId(myId: appUser.uid, friendId: friend.uid),
+        caller: appUser,
+        receiver: friend,
+        hasExpired: false,
+        updatedAt: DateTime.now().millisecondsSinceEpoch,
+      );
+      await CallProvider(appUser: appUser, friend: friend, call: _call)
+          .endCall();
+    }
+  }
+
+  // pick call
+  pickCall(final AppUser appUser, final AppUser friend) async {
+    final _call = Call(
+      id: ChatHelper().getChatId(myId: appUser.uid, friendId: friend.uid),
+      caller: friend,
+      receiver: appUser,
+      hasExpired: false,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => VideoCallScreen(
+          friend: friend,
+          channelId: _call.id,
+          role: ClientRole.Broadcaster,
+          isReceiving: true,
+        ),
+      ),
+    );
+    await CallProvider(appUser: friend, friend: appUser, call: _call)
+        .pickCall();
   }
 
   // on press mic
@@ -76,7 +136,13 @@ class CallVm extends ChangeNotifier {
 
   // on press camera
   onPressedCamera() {
+    AgoraRtcEngine.muteLocalVideoStream(!_isCameraOff);
     _updateIsCameraOff(!_isCameraOff);
+  }
+
+  // on press camera
+  onPressedFlip() {
+    AgoraRtcEngine.switchCamera();
   }
 
   // initialize agora
@@ -97,7 +163,7 @@ class CallVm extends ChangeNotifier {
   }
 
   // agora events handler
-  _agoraEventsHandler() {
+  _agoraEventsHandler() async {
     AgoraRtcEngine.onError = (dynamic code) {
       print('INFO: The error is ::: $code');
     };
@@ -112,6 +178,7 @@ class CallVm extends ChangeNotifier {
 
     AgoraRtcEngine.onLeaveChannel = () {
       print('INFO: Channel was left');
+      _updateIsChannelLeft(true);
     };
 
     AgoraRtcEngine.onUserJoined = (int uid, int elapsed) {
@@ -120,6 +187,7 @@ class CallVm extends ChangeNotifier {
 
     AgoraRtcEngine.onUserOffline = (int uid, int reason) {
       print('INFO: User $uid is offline');
+      _updateIsChannelLeft(true);
     };
   }
 
@@ -127,6 +195,19 @@ class CallVm extends ChangeNotifier {
   _destroyAgora() {
     AgoraRtcEngine.leaveChannel();
     AgoraRtcEngine.destroy();
+  }
+
+  // delete call
+  _deleteCall(final AppUser appUser, final AppUser friend) async {
+    final _call = Call(
+      id: ChatHelper().getChatId(myId: appUser.uid, friendId: friend.uid),
+      caller: appUser,
+      receiver: friend,
+      hasExpired: false,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
+    );
+    await CallProvider(appUser: appUser, friend: friend, call: _call)
+        .deleteCall();
   }
 
   // update value of is muted
@@ -150,6 +231,12 @@ class CallVm extends ChangeNotifier {
   // update value of btns hidden
   updateIsBtnsHidden(final bool newVal) {
     _isBtnsHidden = newVal;
+    notifyListeners();
+  }
+
+  // update value of is channel left hidden
+  _updateIsChannelLeft(final bool newVal) {
+    _isChannelLeft = newVal;
     notifyListeners();
   }
 }

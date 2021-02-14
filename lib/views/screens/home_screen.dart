@@ -8,6 +8,7 @@ import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:peaman/viewmodels/app_vm.dart';
 import 'package:peaman/viewmodels/home_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
+import 'package:peaman/views/screens/call_overlay_screen.dart';
 import 'package:peaman/views/screens/chat_list_tab.dart';
 import 'package:peaman/views/screens/explore_tab.dart';
 import 'package:peaman/views/screens/friend_profile_screen.dart';
@@ -84,6 +85,13 @@ class _HomeScreenState extends State<HomeScreen>
               });
             },
             builder: (context, vm, appVm, appUser) {
+              if (vm.receivingCall != null) {
+                return CallOverlayScreen(
+                  vm.receivingCall.caller,
+                  isReceiving: true,
+                  call: vm.receivingCall,
+                );
+              }
               return Scaffold(
                 backgroundColor: Color(0xffF3F5F8),
                 body: SafeArea(
