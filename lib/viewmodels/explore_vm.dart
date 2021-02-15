@@ -41,15 +41,14 @@ class ExploreVm extends ChangeNotifier {
         }
 
         if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent / 2) {
+            _scrollController.position.maxScrollExtent - 100.0) {
           if (!appVm.isLoadingOldFeeds) {
             appVm.updateIsLoadingOldFeeds(true);
             final _oldFeeds =
                 await FeedProvider(appUser: appUser, feed: appVm.feeds.last)
-                    .getOldTimelinePosts();
+                    .getOldTimelinePosts(appVm);
 
             if (_oldFeeds != null) {
-              appVm.updateFeedsList([...appVm.feeds, ..._oldFeeds]);
               appVm.updateIsLoadingOldFeeds(false);
             }
           }
