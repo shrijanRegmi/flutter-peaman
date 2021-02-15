@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +28,9 @@ class CallOverlayScreen extends StatefulWidget {
 
 class _CallOverlayScreenState extends State<CallOverlayScreen> {
   String _callState = 'Calling...';
-  int _watingTime = 15000; // 15 secs
+  int _waitingTime = 15000; // 15 secs
+
+  Timer _waitingTimer;
 
   @override
   void initState() {
@@ -34,13 +38,19 @@ class _CallOverlayScreenState extends State<CallOverlayScreen> {
     if (widget.isReceiving)
       setState(() => _callState = 'Incoming Call');
     else
-      Future.delayed(Duration(milliseconds: _watingTime), () {
+      _waitingTimer = Timer(Duration(milliseconds: _waitingTime), () {
         setState(() => _callState = 'Not Reachable');
         Future.delayed(
           Duration(milliseconds: 2000),
           () => Navigator.pop(context),
         );
       });
+  }
+
+  @override
+  void dispose() {
+    _waitingTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -72,6 +82,7 @@ class _CallOverlayScreenState extends State<CallOverlayScreen> {
                   Navigator.pop(context);
                 } else if (_call.isPicked) {
                   _callState = 'Call Ended';
+                  _waitingTimer.cancel();
                   return VideoCallScreen(
                     friend: widget.friend,
                     channelId:
