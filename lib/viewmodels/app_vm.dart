@@ -134,4 +134,11 @@ class AppVm extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // add feed to feeds list
+  addToFeedList(final Feed feed) {
+    _feeds.add(feed);
+
+    notifyListeners();
+  }
 }

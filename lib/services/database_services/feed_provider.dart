@@ -4,6 +4,7 @@ import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/models/moment_model.dart';
 import 'package:peaman/services/database_services/user_provider.dart';
+import 'package:peaman/viewmodels/app_vm.dart';
 
 class FeedProvider {
   final AppUser appUser;
@@ -324,7 +325,7 @@ class FeedProvider {
 
   // get list of feeds
   Future<List<Feed>> _getFeedsList(final QuerySnapshot postsSnap,
-      {bool isTimelinePosts = true}) async {
+      {bool isTimelinePosts = true, AppVm appVm}) async {
     final _feeds = <Feed>[];
 
     try {
@@ -376,6 +377,10 @@ class FeedProvider {
             }
 
             _feeds.add(_feed);
+            
+            if (appVm != null) {
+              appVm.addToFeedList(_feed);
+            }
           }
         }
       }
@@ -542,7 +547,7 @@ class FeedProvider {
   }
 
   // get old posts of timeline
-  Future<List<Feed>> getOldTimelinePosts() async {
+  Future<List<Feed>> getOldTimelinePosts(final AppVm appVm) async {
     try {
       List<Feed> _feeds = [];
 
@@ -554,7 +559,7 @@ class FeedProvider {
           .startAfter([feed.updatedAt]).limit(5);
       final _timelineSnap = await _timelineRef.get();
 
-      _feeds = await _getFeedsList(_timelineSnap);
+      _feeds = await _getFeedsList(_timelineSnap, appVm: appVm);
 
       print('Success: Getting old timeline posts');
       return _feeds;
