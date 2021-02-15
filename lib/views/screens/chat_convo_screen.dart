@@ -10,6 +10,7 @@ import 'package:peaman/views/screens/call_overlay_screen.dart';
 import 'package:peaman/views/widgets/chat_convo_widgets/chat_compose_area.dart';
 import 'package:peaman/views/widgets/chat_convo_widgets/chat_convo_list.dart';
 import 'package:peaman/views/widgets/common_widgets/appbar.dart';
+import 'package:provider/provider.dart';
 
 class ChatConvoScreen extends StatefulWidget {
   final AppUser friend;
@@ -30,6 +31,7 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _appUser = Provider.of<AppUser>(context);
     return ViewmodelProvider<ChatConvoVm>(
       vm: ChatConvoVm(
         context: context,
@@ -43,6 +45,14 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
           _isPinned = widget.chat?.secondUserPinnedFirstUser;
         }
       },
+      onDispose: (vm) {
+        vm.updateChatTyping(
+          false,
+          widget.chat.id,
+          _appUser,
+          widget.friend,
+        );
+      },
       builder: (context, vm, appVm, appUser) {
         final _appUser = vm.appUser;
         final bool _isAppUserFirstUser = ChatHelper().isAppUserFirstUser(
@@ -52,17 +62,27 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
             (element) => element.id == widget.chat?.id,
             orElse: () => null);
 
+        bool _isSeen = false;
+        bool _isTyping = false;
+        bool _isCurrentUserTyping = false;
+
         if (_thisChat != null) {
           Map<String, dynamic> _data = {};
           int _unreadMessagesCount;
 
           if (_isAppUserFirstUser) {
             _unreadMessagesCount = _thisChat.firstUserUnreadMessagesCount;
+            _isSeen = _thisChat.secondUserUnreadMessagesCount == 0;
+            _isTyping = _thisChat.secondUserTyping;
+            _isCurrentUserTyping = _thisChat.firstUserTyping;
             _data.addAll({
               'first_user_unread_messages_count': 0,
             });
           } else {
             _unreadMessagesCount = _thisChat.secondUserUnreadMessagesCount;
+            _isSeen = _thisChat.firstUserUnreadMessagesCount == 0;
+            _isTyping = _thisChat.firstUserTyping;
+            _isCurrentUserTyping = _thisChat.secondUserTyping;
             _data.addAll({
               'second_user_unread_messages_count': 0,
             });
@@ -165,6 +185,8 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                     isTypingActive: vm.isTyping,
                     focusNode: _focusNode,
                     scaffoldKey: _scaffolKey,
+                    updateChatTyping: vm.updateChatTyping,
+                    isCurrentUserTyping: _isCurrentUserTyping,
                   ),
                 )
               : null,
@@ -178,6 +200,8 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                   isTypingActive: vm.isTyping,
                   focusNode: _focusNode,
                   scaffoldKey: _scaffolKey,
+                  updateChatTyping: vm.updateChatTyping,
+                  isCurrentUserTyping: _isCurrentUserTyping,
                 )
               : null,
           floatingActionButtonLocation:
@@ -186,6 +210,7 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
             child: GestureDetector(
               onTap: () {
                 _focusNode.unfocus();
+                vm.updateTypingValue(false);
               },
               child: Container(
                 color: Color(0xffF3F5F8),
@@ -197,6 +222,8 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                           isTypingActive: vm.isTyping,
                           friend: widget.friend,
                           appUser: vm.appUser,
+                          isSeen: _isSeen,
+                          isTyping: _isTyping,
                         ),
                       ),
                     ],

@@ -16,6 +16,7 @@ class ChatConvoVm extends ChangeNotifier {
   Call get receivingCall => Provider.of<Call>(context);
 
   bool _isTyping = false;
+
   bool get isTyping => _isTyping;
 
   // send message to friend
@@ -55,5 +56,27 @@ class ChatConvoVm extends ChangeNotifier {
 
   Future readMessages(final String chatId) async {
     return await MessageProvider(chatId: chatId).readChatMessage();
+  }
+
+  // update typing state of the chat
+  Future updateChatTyping(final bool typingVal, final String chatId,
+      final AppUser appUser, final AppUser friend) async {
+    final bool _isAppUserFirstUser = ChatHelper()
+        .isAppUserFirstUser(myId: appUser.uid, friendId: friend.uid);
+
+    Map<String, dynamic> _data;
+    if (_isAppUserFirstUser) {
+      _data = {
+        'first_user_typing': typingVal,
+      };
+    } else {
+      _data = {
+        'second_user_typing': typingVal,
+      };
+    }
+
+    if (_data != null) {
+      await MessageProvider(chatId: chatId).updateChatData(_data);
+    }
   }
 }

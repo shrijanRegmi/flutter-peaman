@@ -25,8 +25,6 @@ class MessageProvider {
       if (_messagesDocs.docs.length == 0) {
         await _chatRef.set({'id': chatId});
       }
-      final _lastMsgRef = await _messagesRef.add(_message);
-
       final bool _isAppUserFirstUser = ChatHelper().isAppUserFirstUser(
           myId: message.senderId, friendId: message.receiverId);
 
@@ -54,6 +52,8 @@ class MessageProvider {
           },
         );
       }
+
+      final _lastMsgRef = await _messagesRef.add(_message);
 
       _chatRef.update({'last_updated': DateTime.now()});
       _chatRef.update({'last_msg_ref': _lastMsgRef});
