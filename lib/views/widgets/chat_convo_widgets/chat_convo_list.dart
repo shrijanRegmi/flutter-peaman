@@ -10,7 +10,15 @@ class ChatConvoList extends StatelessWidget {
   final AppUser appUser;
   final AppUser friend;
   final bool isTypingActive;
-  ChatConvoList({this.friend, this.appUser, this.isTypingActive});
+  final bool isSeen;
+  final bool isTyping;
+  ChatConvoList({
+    this.friend,
+    this.appUser,
+    this.isTypingActive,
+    this.isSeen = false,
+    this.isTyping = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +38,49 @@ class ChatConvoList extends StatelessWidget {
                   if (index == 0) {
                     return Padding(
                       padding: EdgeInsets.only(
-                          bottom: isTypingActive ? 20.0 : 120.0),
-                      child: ChatConvoListItem(
-                        chatId: _chatId,
-                        message: messagesSnap.data[index],
-                        friend: appUser,
-                        alignment: Alignment.centerRight,
-                        isLast: true,
+                          bottom: isTypingActive ? 20.0 : 130.0),
+                      child: Column(
+                        children: [
+                          Stack(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: isTyping ? 25.0 : 0.0,
+                                ),
+                                child: ChatConvoListItem(
+                                  chatId: _chatId,
+                                  message: messagesSnap.data[index],
+                                  friend: appUser,
+                                  alignment: Alignment.centerRight,
+                                  isLast: true,
+                                ),
+                              ),
+                              if (isTyping)
+                                Positioned(
+                                  top: 90.0,
+                                  right: 0.0,
+                                  left: 0.0,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Lottie.asset(
+                                        'assets/lottie/typing_indicator.json',
+                                        height: 150.0,
+                                      ),
+                                    ],
+                                  ),
+                                )
+                            ],
+                          ),
+                          if (!isTyping && isSeen)
+                            Text(
+                              'Seen',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                color: Colors.black26,
+                              ),
+                            ),
+                        ],
                       ),
                     );
                   }
@@ -51,12 +95,36 @@ class ChatConvoList extends StatelessWidget {
                     return Padding(
                       padding: EdgeInsets.only(
                           bottom: isTypingActive ? 20.0 : 120.0),
-                      child: ChatConvoListItem(
-                        chatId: _chatId,
-                        message: messagesSnap.data[index],
-                        friend: friend,
-                        alignment: Alignment.centerLeft,
-                        isLast: true,
+                      child: Stack(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                              bottom: isTyping ? 25.0 : 0.0,
+                            ),
+                            child: ChatConvoListItem(
+                              chatId: _chatId,
+                              message: messagesSnap.data[index],
+                              friend: friend,
+                              alignment: Alignment.centerLeft,
+                              isLast: true,
+                            ),
+                          ),
+                          if (isTyping)
+                            Positioned(
+                              top: 90.0,
+                              right: 0.0,
+                              left: 0.0,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Lottie.asset(
+                                    'assets/lottie/typing_indicator.json',
+                                    height: 150.0,
+                                  ),
+                                ],
+                              ),
+                            )
+                        ],
                       ),
                     );
                   }
