@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -51,6 +51,10 @@ class _HomeScreenState extends State<HomeScreen>
       case AppLifecycleState.resumed:
         await AppUserProvider(uid: widget.uid)
             .setUserActiveStatus(onlineStatus: OnlineStatus.active);
+        break;
+      case AppLifecycleState.inactive:
+        await AppUserProvider(uid: widget.uid)
+            .setUserActiveStatus(onlineStatus: OnlineStatus.away);
         break;
       default:
         return null;
