@@ -299,6 +299,55 @@ class FeedProvider {
     }
   }
 
+  // get single post by id
+  Future<Feed> getSinglePostById(final String id) async {
+    Feed _feed;
+    try {
+      final _feedRef = _ref.collection('posts').doc(id);
+      final _feedSnap = await _feedRef.get();
+
+      if (_feedSnap.exists) {
+        final _feedData = _feedSnap.data();
+
+        _feed = Feed.fromJson(_feedData);
+
+        final _reactionsRef = _ref
+            .collection('posts')
+            .doc(_feed.id)
+            .collection('reactions')
+            .doc(appUser.uid);
+
+        final _savedPostRef =
+            appUser.appUserRef.collection('saved_posts').doc(_feed.id);
+
+        final _reactionSnap = await _reactionsRef.get();
+        final _savedPostSnap = await _savedPostRef.get();
+
+        if (_reactionSnap.exists) {
+          final _reactionData = _reactionSnap.data();
+          final _isUnreacted = _reactionData['unreacted'] ?? false;
+
+          _feed = _feed.copyWith(isReacted: !_isUnreacted);
+        } else {
+          _feed = _feed.copyWith(isReacted: false);
+        }
+
+        _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
+
+        if (_feed.initialReactor != null &&
+            _feed.initialReactor.uid == appUser.uid &&
+            _feed.reactorsPhoto.contains(appUser.photoUrl)) {
+          _feed = _feed.copyWith(initialReactor: appUser);
+        }
+        print('Success: Getting single post by id $id');
+      }
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting single post by id $id');
+    }
+    return _feed;
+  }
+
   // get posts by id
   Future<List<Feed>> getPostsById() async {
     try {
@@ -377,7 +426,7 @@ class FeedProvider {
             }
 
             _feeds.add(_feed);
-            
+
             if (appVm != null) {
               appVm.addToFeedList(_feed);
             }

@@ -84,6 +84,45 @@ class DialogProvider {
     );
   }
 
+  // show this when friend that user is trying to call is not online
+  showFriendNotOnlineDialog(final AppUser friend) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 20.0,
+            ),
+            _userDetailsBuilder(friend),
+            SizedBox(
+              height: 20.0,
+            ),
+            Text(
+              'Oops! It seems like ${friend.name} is not online. Try calling later when you see them online.',
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: Text(
+              'Got it!',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ],
+      ),
+    );
+  }
+
   Widget _addMomentBuilder() {
     return Container(
       color: Colors.transparent,

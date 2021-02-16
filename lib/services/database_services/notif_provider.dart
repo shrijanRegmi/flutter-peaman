@@ -76,6 +76,29 @@ class NotificationProvider {
             ),
           );
         }
+      } else {
+        if (notification.type == NotificationType.reaction) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ViewFeedScreen(
+                'View Post',
+                _feed,
+                feedId: notification.feed.id,
+              ),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => FeedCommentScreen(
+                _feed,
+                feedId: notification.feed.id,
+              ),
+            ),
+          );
+        }
       }
     } catch (e) {
       print(e);

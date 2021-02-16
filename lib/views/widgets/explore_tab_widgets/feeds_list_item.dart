@@ -10,6 +10,7 @@ import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feed_comments_list.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feed_img_carousel.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/people_who_reacted.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class FeedsListItem extends StatelessWidget {
@@ -18,9 +19,11 @@ class FeedsListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _appUser = Provider.of<AppUser>(context);
+    
     return ViewmodelProvider<FeedVm>(
       vm: FeedVm(context: context),
-      onInit: (vm) => vm.onInit(feed),
+      onInit: (vm) => vm.onInit(_appUser, feed, null),
       builder: (context, vm, appVm, appUser) {
         return Padding(
           padding: const EdgeInsets.only(
