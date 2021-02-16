@@ -11,13 +11,23 @@ class FeedVm extends ChangeNotifier {
 
   Feed _thisFeed;
   bool _showFullDesc = false;
+  bool _isLoading = false;
 
   Feed get thisFeed => _thisFeed;
   bool get showFullDesc => _showFullDesc;
+  bool get isLoading => _isLoading;
 
   // init function
-  onInit(final Feed _feed) {
-    _initializeFeed(_feed);
+  onInit(final AppUser appUser, final Feed _feed, final String feedId) async {
+    if (_feed == null && feedId != null) {
+      _updateIsLoading(true);
+      final _singleFeed =
+          await FeedProvider(appUser: appUser).getSinglePostById(feedId);
+      _updateIsLoading(false);
+      _initializeFeed(_singleFeed);
+    } else {
+      _initializeFeed(_feed);
+    }
   }
 
   // react to post
@@ -117,6 +127,13 @@ class FeedVm extends ChangeNotifier {
   // update value of full description
   updateFullDesc(final bool newVal) {
     _showFullDesc = newVal;
+    notifyListeners();
+  }
+
+  // update value of is loading
+  _updateIsLoading(final bool newVal) {
+    _isLoading = newVal;
+
     notifyListeners();
   }
 }

@@ -12,8 +12,14 @@ class CommentVm extends ChangeNotifier {
   List<Comment> get comments => _comments;
 
   // init function
-  onInit(final Feed feed) {
-    _getCommentList(feed);
+  onInit(final AppUser appUser, final Feed feed, final String feedId) async {
+    if (feed == null && feedId != null) {
+      final _singleFeed =
+          await FeedProvider(appUser: appUser).getSinglePostById(feedId);
+      _getCommentList(_singleFeed);
+    } else {
+      _getCommentList(feed);
+    }
   }
 
   // send comment

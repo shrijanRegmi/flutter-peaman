@@ -7,16 +7,20 @@ import 'package:peaman/viewmodels/comment_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/common_widgets/appbar.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feed_comment_item.dart';
+import 'package:provider/provider.dart';
 
 class FeedCommentScreen extends StatelessWidget {
   final Feed feed;
-  FeedCommentScreen(this.feed);
+  final String feedId;
+  FeedCommentScreen(this.feed, {this.feedId});
 
   @override
   Widget build(BuildContext context) {
+    final _appUser = Provider.of<AppUser>(context);
+
     return ViewmodelProvider<CommentVm>(
       vm: CommentVm(),
-      onInit: (vm) => vm.onInit(feed),
+      onInit: (vm) => vm.onInit(_appUser, feed, feedId),
       builder: (context, vm, appVm, appUser) {
         return Scaffold(
           backgroundColor: Color(0xffF3F5F8),

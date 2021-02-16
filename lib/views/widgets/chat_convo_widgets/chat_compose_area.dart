@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:peaman/enums/message_types.dart';
+import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/helpers/dialog_provider.dart';
 import 'package:peaman/models/app_models/message_model.dart';
 import 'package:peaman/models/app_models/temporary_img_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/call_provider.dart';
+import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:peaman/services/storage_services/chat_storage_service.dart';
 import 'package:peaman/viewmodels/temp_img_vm.dart';
 import 'package:peaman/views/screens/call_overlay_screen.dart';
@@ -224,8 +226,6 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
 
     final _pickedImg = await ImagePicker().getImage(
       source: ImageSource.gallery,
-      maxWidth: 640.0,
-      maxHeight: 640.0,
     );
 
     final _imgFile = _pickedImg != null ? File(_pickedImg.path) : null;
@@ -256,18 +256,25 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
 
   _onPressedCall() async {
     await _handleCameraAndMic();
-    final _alreadyInCall =
-        await CallProvider(friend: widget.friend).checkAlreadyInCall() ?? false;
+    final _friend = await AppUserProvider(uid: widget.friend.uid).getUserById();
 
-    if (_alreadyInCall) {
-      DialogProvider(context).showAlreadyInCallDialog(widget.friend);
+    if (_friend.onlineStatus == OnlineStatus.active) {
+      final _alreadyInCall =
+          await CallProvider(friend: widget.friend).checkAlreadyInCall() ??
+              false;
+
+      if (_alreadyInCall) {
+        DialogProvider(context).showAlreadyInCallDialog(widget.friend);
+      } else {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => CallOverlayScreen(widget.friend),
+          ),
+        );
+      }
     } else {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => CallOverlayScreen(widget.friend),
-        ),
-      );
+      DialogProvider(context).showFriendNotOnlineDialog(widget.friend);
     }
   }
 
