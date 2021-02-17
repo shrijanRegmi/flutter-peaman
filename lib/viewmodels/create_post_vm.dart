@@ -25,7 +25,8 @@ class CreatePostVm extends ChangeNotifier {
   GlobalKey<ScaffoldState> get scaffoldKey => _scaffoldKey;
 
   // create post
-  createPost(final AppUser _appUser, final AppVm appVm) async {
+  createPost(final AppUser _appUser, final AppVm appVm,
+      final TabController tabController) async {
     if (_photos.isNotEmpty) {
       _updateIsLoading(true);
 
@@ -58,7 +59,7 @@ class CreatePostVm extends ChangeNotifier {
           }
 
           Navigator.pop(context);
-
+          tabController.animateTo(3, duration: Duration(milliseconds: 1000));
           await FeedProvider(feed: _result, appUser: _appUser)
               .sendToTimelines();
         } else {

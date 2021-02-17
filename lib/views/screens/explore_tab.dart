@@ -14,6 +14,9 @@ import 'package:peaman/views/widgets/explore_tab_widgets/moments_list.dart';
 import 'package:provider/provider.dart';
 
 class ExploreTab extends HookWidget {
+  final TabController tabController;
+  ExploreTab(this.tabController);
+
   @override
   Widget build(BuildContext context) {
     final _appVm = Provider.of<AppVm>(context);
@@ -124,7 +127,7 @@ class ExploreTab extends HookWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => CreatePostScreen(),
+                        builder: (_) => CreatePostScreen(tabController),
                       ),
                     );
                   },
