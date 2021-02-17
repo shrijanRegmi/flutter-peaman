@@ -61,7 +61,7 @@ class ExploreTab extends HookWidget {
                     Divider(
                       color: Color(0xff3D4A5A).withOpacity(0.2),
                     ),
-                    appVm.feeds == null
+                    appVm.feeds == null || appVm.isLoadingFeeds
                         ? FeedLoader()
                         : Column(
                             children: [
@@ -146,14 +146,6 @@ class ExploreTab extends HookWidget {
           color: Colors.blue,
           borderRadius: BorderRadius.circular(50.0),
         ),
-        // child: FloatingActionButton(
-        //   backgroundColor: Colors.blue,
-        //   onPressed: () => ,
-        //   child: Icon(
-        //     Icons.replay_outlined,
-        //     size: 15.0,
-        //   ),
-        // ),
         child: Row(
           children: [
             Text(
