@@ -10,7 +10,7 @@ class Feed {
   final int updatedAt;
   final String caption;
   final List<String> photos;
-  final String initialReactor;
+  final AppUser initialReactor;
   final int reactionCount;
   final List<String> reactorsPhoto;
   final bool isReacted;
@@ -43,7 +43,7 @@ class Feed {
     final int updatedAt,
     final String caption,
     final List<String> photos,
-    final String initialReactor,
+    final AppUser initialReactor,
     final int reactionCount,
     final List<String> reactorsPhoto,
     final bool isReacted,
@@ -68,18 +68,20 @@ class Feed {
     );
   }
 
-  static Feed fromJson(final Map<String, dynamic> data, final AppUser owner) {
-    final _ref = Firestore.instance;
+  static Feed fromJson(final Map<String, dynamic> data) {
+    final _ref = FirebaseFirestore.instance;
     return Feed(
       id: data['id'],
-      feedRef: _ref.collection('posts').document(data['id']),
+      feedRef: _ref.collection('posts').doc(data['id']),
       ownerId: data['owner_id'],
       updatedAt: data['updated_at'] ?? DateTime.now().millisecondsSinceEpoch,
       caption: data['caption'] ?? '',
       photos: List<String>.from(data['photos'] ?? []),
       ownerRef: data['owner_ref'],
-      owner: owner,
-      initialReactor: data['init_reactor'] ?? '',
+      owner: data['owner'] == null ? null : AppUser.fromJson(data['owner']),
+      initialReactor: data['init_reactor'] == null
+          ? null
+          : AppUser.fromJson(data['init_reactor']),
       reactionCount: data['reaction_count'] ?? 0,
       reactorsPhoto: List<String>.from(data['reactors_photo'] ?? []),
       isReacted: data['is_reacted'] ?? false,
@@ -96,6 +98,7 @@ class Feed {
       'caption': caption,
       'photos': photos,
       'is_featured': isFeatured,
+      'owner': owner.toFeedUser()
     };
   }
 }

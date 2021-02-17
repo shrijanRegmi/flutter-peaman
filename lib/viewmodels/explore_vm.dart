@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/models/moment_model.dart';
 import 'package:peaman/services/database_services/feed_provider.dart';
 import 'package:peaman/services/database_services/user_provider.dart';
+import 'package:peaman/services/storage_services/feed_storage_service.dart';
 import 'package:peaman/viewmodels/app_vm.dart';
 
 class ExploreVm extends ChangeNotifier {
@@ -37,15 +41,14 @@ class ExploreVm extends ChangeNotifier {
         }
 
         if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent - 50.0) {
+            _scrollController.position.maxScrollExtent - 100.0) {
           if (!appVm.isLoadingOldFeeds) {
             appVm.updateIsLoadingOldFeeds(true);
             final _oldFeeds =
                 await FeedProvider(appUser: appUser, feed: appVm.feeds.last)
-                    .getOldTimelinePosts();
+                    .getOldTimelinePosts(appVm);
 
             if (_oldFeeds != null) {
-              appVm.updateFeedsList([...appVm.feeds, ..._oldFeeds]);
               appVm.updateIsLoadingOldFeeds(false);
             }
           }
@@ -79,22 +82,38 @@ class ExploreVm extends ChangeNotifier {
 
   // post moments
   createMoment(final AppUser appUser, final AppVm appVm) async {
-    // final _moment = Moment(
-    //   photo:
-    //       'https://lh3.googleusercontent.com/proxy/Ygf_jIE9ShY0IdkQZ99UMSeaag_KJQzRiNDvBkFg4t-BBsqHY0jcSgP0b6oIO1vO5fMK9rJ1vn6_G9CvR-qpvAfMVJbEyLC-HqlFxuHWGVn8FoXiey0y53TeL_nsbw',
-    //   ownerId: appUser.uid,
-    //   owner: appUser,
-    //   ownerRef: appUser.appUserRef,
-    //   updatedAt: DateTime.now().millisecondsSinceEpoch,
-    // );
+    final _pickedImage =
+        await ImagePicker().getImage(source: ImageSource.gallery);
+    File _fileImage;
 
-    // final _result = await FeedProvider(moment: _moment).createMoment();
+    if (_pickedImage != null) {
+      _fileImage = File(_pickedImage.path);
+    }
 
-    // final _existingMoments = appVm.moments;
-    // _existingMoments.insert(0, _result);
-    // appVm.updateMomentsList(_existingMoments);
-    _scaffoldKey.currentState.showSnackBar(
-        SnackBar(content: Text('This feature is being developed')));
+    if (_fileImage != null) {
+      final _moment = Moment(
+        photo: _fileImage.path,
+        ownerId: appUser.uid,
+        owner: appUser,
+        ownerRef: appUser.appUserRef,
+        updatedAt: DateTime.now().millisecondsSinceEpoch,
+      );
+
+      final _existingMoments = appVm.moments;
+      _existingMoments.insert(0, _moment);
+      appVm.updateMomentsList(_existingMoments);
+
+      final _momentImage =
+          await FeedStorage(uid: appUser.uid).uploadMomentImage(_fileImage);
+
+      if (_momentImage != null) {
+        final _momentWithImg = _moment.copyWith(
+          photo: _momentImage,
+        );
+
+        await FeedProvider(moment: _momentWithImg).createMoment();
+      }
+    }
   }
 
   // update value of top loader

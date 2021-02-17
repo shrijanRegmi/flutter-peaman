@@ -113,7 +113,7 @@ class ChatListTab extends HookWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Text(
-            'Tap the "search" icon in top right corner to search a user and start chatting',
+            'Tap the "search" icon in top right corner of explore tab to search a user and start chatting.',
             style: TextStyle(
               fontSize: 14.0,
               color: Color(0xff3D4A5A),

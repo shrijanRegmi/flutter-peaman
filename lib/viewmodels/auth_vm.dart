@@ -6,6 +6,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:peaman/enums/age.dart';
 import 'package:peaman/services/auth_services/auth_provider.dart';
+import 'package:peaman/services/firebase_messaging_services/firebase_messaging_provider.dart';
 import 'package:peaman/services/storage_services/user_storage_service.dart';
 
 class AuthVm extends ChangeNotifier {
@@ -64,6 +65,8 @@ class AuthVm extends ChangeNotifier {
     }
     if (_result == null) {
       _updateLoader(false);
+    } else {
+      FirebaseMessagingProvider(uid: _result.user.uid).saveDevice();
     }
     return _result;
   }
@@ -93,6 +96,8 @@ class AuthVm extends ChangeNotifier {
     }
     if (_result == null) {
       _updateLoader(false);
+    } else {
+      FirebaseMessagingProvider(uid: _result.user.uid).saveDevice();
     }
     return _result;
   }

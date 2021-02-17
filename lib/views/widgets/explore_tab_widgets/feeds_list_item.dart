@@ -10,6 +10,7 @@ import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feed_comments_list.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feed_img_carousel.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/people_who_reacted.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class FeedsListItem extends StatelessWidget {
@@ -18,9 +19,11 @@ class FeedsListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _appUser = Provider.of<AppUser>(context);
+    
     return ViewmodelProvider<FeedVm>(
       vm: FeedVm(context: context),
-      onInit: (vm) => vm.onInit(feed),
+      onInit: (vm) => vm.onInit(_appUser, feed, null),
       builder: (context, vm, appVm, appUser) {
         return Padding(
           padding: const EdgeInsets.only(
@@ -44,12 +47,15 @@ class FeedsListItem extends StatelessWidget {
               SizedBox(
                 height: 15.0,
               ),
-              PeopleWhoReacted(vm.thisFeed),
+              PeopleWhoReacted(
+                vm.thisFeed,
+                appUser,
+              ),
               if (vm.thisFeed.caption != '')
                 SizedBox(
                   height: 10.0,
                 ),
-              if (vm.thisFeed.caption != '') _descriptionBuilder(),
+              if (vm.thisFeed.caption != '') _descriptionBuilder(vm),
             ],
           ),
         );
@@ -179,28 +185,70 @@ class FeedsListItem extends StatelessWidget {
     );
   }
 
-  Widget _descriptionBuilder() {
-    return RichText(
-      text: TextSpan(
-        style: TextStyle(
-          // fontWeight: FontWeight.bold,
-          fontFamily: 'Nunito',
-          fontSize: 12.0,
-          color: Colors.black45,
-        ),
-        children: [
-          TextSpan(
-            text: '${feed.owner.name} ',
+  Widget _descriptionBuilder(final FeedVm vm) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Color(0xff3D4A5A),
+              // fontWeight: FontWeight.bold,
+              fontFamily: 'Nunito',
+              fontSize: 12.0,
+              color: Colors.grey,
+            ),
+            children: [
+              TextSpan(
+                text: '${feed.owner.name} ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff3D4A5A),
+                ),
+              ),
+              TextSpan(
+                text: vm.showFullDesc
+                    ? feed.caption
+                    : feed.caption.length > 150
+                        ? '${feed.caption.substring(0, 150)}...'
+                        : feed.caption,
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 5.0,
+        ),
+        if (feed.caption.length > 150)
+          GestureDetector(
+            onTap: () => vm.updateFullDesc(!vm.showFullDesc),
+            child: Container(
+              color: Colors.transparent,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    vm.showFullDesc ? 'Read Less' : 'Read More',
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 3.0,
+                  ),
+                  Icon(
+                    vm.showFullDesc
+                        ? Icons.arrow_upward_sharp
+                        : Icons.arrow_downward_sharp,
+                    color: Colors.blue,
+                    size: 15.0,
+                  )
+                ],
+              ),
             ),
           ),
-          TextSpan(
-            text: '${feed.caption}',
-          ),
-        ],
-      ),
+      ],
     );
   }
 }

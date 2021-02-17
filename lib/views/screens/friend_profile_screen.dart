@@ -30,7 +30,8 @@ class FriendProfileScreen extends StatelessWidget {
       vm: FriendProfileVm(),
       onInit: (vm) => vm.onInit(_appUser, user, _appVm),
       builder: (context, vm, appVm, appUser) {
-        bool _isAppUser = user == appUser;
+        bool _isAppUser = user.uid == appUser.uid;
+        final AppUser _user = _isAppUser ? appUser : vm.thisUser;
         return Scaffold(
           backgroundColor: Color(0xffF3F5F8),
           body: SafeArea(
@@ -71,26 +72,44 @@ class FriendProfileScreen extends StatelessWidget {
                                 FriendBtns(
                                   vm: vm,
                                   appUser: appUser,
-                                  user: user,
+                                  user: _user,
                                   fromSearch: fromSearch,
                                 ),
                               SizedBox(
                                 height: !_isAppUser ? 40.0 : 30.0,
                               ),
-                              FriendStatus(user),
+                              FriendStatus(_user),
                               SizedBox(
                                 height: 50.0,
                               ),
-                              if (vm.feeds != null && vm.feeds.isEmpty)
-                                _emptyBuilder(),
-                              if (vm.feeds != null && vm.feeds.isNotEmpty)
-                                PostsList(vm.feeds),
-                              SizedBox(
-                                height: 50.0,
-                              ),
-                              if (vm.featuredFeeds != null &&
-                                  vm.featuredFeeds.isNotEmpty)
-                                FeaturedPostList(vm.featuredFeeds),
+                              vm.isLoadingFeeds
+                                  ? Center(
+                                      child: Lottie.asset(
+                                        'assets/lottie/loader.json',
+                                        width:
+                                            MediaQuery.of(context).size.width -
+                                                100.0,
+                                        height:
+                                            MediaQuery.of(context).size.width -
+                                                100.0,
+                                      ),
+                                    )
+                                  : Column(
+                                      children: [
+                                        if (vm.feeds != null &&
+                                            vm.feeds.isEmpty)
+                                          _emptyBuilder(_isAppUser),
+                                        if (vm.feeds != null &&
+                                            vm.feeds.isNotEmpty)
+                                          PostsList(vm.feeds),
+                                        SizedBox(
+                                          height: 50.0,
+                                        ),
+                                        if (vm.featuredFeeds != null &&
+                                            vm.featuredFeeds.isNotEmpty)
+                                          FeaturedPostList(vm.featuredFeeds),
+                                      ],
+                                    ),
                               SizedBox(
                                 height: 100.0,
                               ),
@@ -108,9 +127,10 @@ class FriendProfileScreen extends StatelessWidget {
 
   Widget _logoutBuilder(final AppVm vm, final AppUser appUser) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         vm.updateFeedsList(null);
-        AppUserProvider(uid: appUser.uid)
+        vm.updateMomentsList(null);
+        await AppUserProvider(uid: appUser.uid)
             .setUserActiveStatus(onlineStatus: OnlineStatus.away);
         AuthProvider().logOut();
       },
@@ -200,12 +220,14 @@ class FriendProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _emptyBuilder() {
+  Widget _emptyBuilder(final bool isAppUser) {
     return Container(
       height: 100.0,
       child: Center(
         child: Text(
-          "${user.name} hasn't posted in a while",
+          isAppUser
+              ? "You haven't posted in a while"
+              : "${user.name} hasn't posted in a while",
           style: TextStyle(
             // fontWeight: FontWeight.bold,
             fontSize: 14.0,

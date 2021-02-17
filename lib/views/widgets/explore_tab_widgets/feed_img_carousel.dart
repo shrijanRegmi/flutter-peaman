@@ -31,7 +31,10 @@ class _FeedImageCarouselState extends State<FeedImageCarousel>
       initialPage: widget.photos.length ~/ 3,
       viewportFraction: widget.photos.length != 1 ? 0.8 : 1.0,
     );
-    _animationController = AnimationController(vsync: this);
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 1300),
+    );
 
     _animationController.addListener(() {
       if (_animationController.isCompleted) {
@@ -40,6 +43,12 @@ class _FeedImageCarouselState extends State<FeedImageCarousel>
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override

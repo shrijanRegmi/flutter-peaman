@@ -3,30 +3,38 @@ import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/feed_provider.dart';
 import 'package:peaman/services/database_services/friend_provider.dart';
+import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:peaman/viewmodels/app_vm.dart';
 
 class FriendProfileVm extends ChangeNotifier {
   List<Feed> _feeds;
   List<Feed> _featuredFeeds;
   bool _isLoading = false;
+  bool _isLoadingFeeds = false;
   String _btnText = 'Follow';
+  AppUser _thisUser;
 
   List<Feed> get feeds => _feeds;
   List<Feed> get featuredFeeds => _featuredFeeds;
   bool get isLoading => _isLoading;
+  bool get isLoadingFeeds => _isLoadingFeeds;
   String get btnText => _btnText;
+  AppUser get thisUser => _thisUser;
 
   // init function
   onInit(final AppUser appUser, final AppUser user, final AppVm appVm) async {
-    _updateIsLoading(true);
-    if (appUser != user) {
-      await _getPosts(appUser, user);
+    _updateIsLoading(true, true);
+    if (appUser.uid != user.uid) {
+      final _appUser = await AppUserProvider(uid: user.uid).getUserById();
+      _updateThisUser(_appUser);
       await _getInitialBtnText(appUser, user);
+      _updateIsLoading(false, true);
+      await _getPosts(appUser, user);
     } else {
       _updateFeeds(appVm.myFeeds);
       _updateFeaturedFeeds(appVm.myFeaturedfeeds);
     }
-    _updateIsLoading(false);
+    _updateIsLoading(false, false);
   }
 
   // follow user
@@ -70,13 +78,11 @@ class FriendProfileVm extends ChangeNotifier {
       final _userRef = appUser.appUserRef;
 
       final _friendRequestsRef =
-          _friendRef.collection('requests').document(appUser.uid);
-      final _userRequestsRef =
-          _userRef.collection('requests').document(user.uid);
+          _friendRef.collection('requests').doc(appUser.uid);
+      final _userRequestsRef = _userRef.collection('requests').doc(user.uid);
       final _friendFollowersRef =
-          _friendRef.collection('followers').document(appUser.uid);
-      final _userFollowersRef =
-          _userRef.collection('followers').document(user.uid);
+          _friendRef.collection('followers').doc(appUser.uid);
+      final _userFollowersRef = _userRef.collection('followers').doc(user.uid);
 
       final _friendRequestsSnap = await _friendRequestsRef.get();
       final _userRequestsSnap = await _userRequestsRef.get();
@@ -118,14 +124,21 @@ class FriendProfileVm extends ChangeNotifier {
   }
 
   // update value of is loading
-  _updateIsLoading(final bool newVal) {
-    _isLoading = newVal;
+  _updateIsLoading(final bool isLoading, final bool isLoadingFeeds) {
+    _isLoading = isLoading;
+    _isLoadingFeeds = isLoadingFeeds;
     notifyListeners();
   }
 
   // update value of btn text
   _updateBtnText(final String newBtnText) {
     _btnText = newBtnText;
+    notifyListeners();
+  }
+
+  // update value of this user
+  _updateThisUser(final AppUser newAppUser) {
+    _thisUser = newAppUser;
     notifyListeners();
   }
 }

@@ -1,19 +1,22 @@
 import 'dart:io';
 
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:peaman/enums/message_types.dart';
+import 'package:peaman/enums/online_status.dart';
+import 'package:peaman/helpers/dialog_provider.dart';
 import 'package:peaman/models/app_models/message_model.dart';
 import 'package:peaman/models/app_models/temporary_img_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/services/database_services/call_provider.dart';
+import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:peaman/services/storage_services/chat_storage_service.dart';
 import 'package:peaman/viewmodels/temp_img_vm.dart';
-import 'package:peaman/views/screens/call_screen.dart';
+import 'package:peaman/views/screens/call_overlay_screen.dart';
 import 'package:peaman/views/widgets/common_widgets/single_icon_btn.dart';
-import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 class ChatComposeArea extends StatefulWidget {
   final String chatId;
@@ -21,7 +24,10 @@ class ChatComposeArea extends StatefulWidget {
   final AppUser friend;
   final Function sendMessage;
   final Function(bool newIsTypingVal) updateIsTyping;
+  final Function updateChatTyping;
+  final Function updateIsSeen;
   final bool isTypingActive;
+  final bool isCurrentUserTyping;
   final FocusNode focusNode;
   final GlobalKey<ScaffoldState> scaffoldKey;
   ChatComposeArea({
@@ -30,8 +36,11 @@ class ChatComposeArea extends StatefulWidget {
     this.appUser,
     this.friend,
     this.updateIsTyping,
+    this.updateIsSeen,
+    this.updateChatTyping,
     this.focusNode,
     this.isTypingActive = false,
+    this.isCurrentUserTyping = false,
     this.scaffoldKey,
   });
   @override
@@ -58,42 +67,7 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
             SingleIconBtn(
               radius: 50.0,
               icon: 'assets/images/svgs/send_image_btn.svg',
-              onPressed: () async {
-                final _chatConvoVmProvider =
-                    Provider.of<TempImgVm>(context, listen: false);
-
-                final _pickedImg = await ImagePicker().getImage(
-                  source: ImageSource.gallery,
-                  maxWidth: 640.0,
-                  maxHeight: 640.0,
-                );
-
-                final _imgFile =
-                    _pickedImg != null ? File(_pickedImg.path) : null;
-
-                final _message = TextMessage(
-                  senderId: widget.appUser.uid,
-                  receiverId: widget.friend.uid,
-                  milliseconds: DateTime.now().millisecondsSinceEpoch,
-                  type: MessageType.Image,
-                );
-
-                if (_imgFile != null) {
-                  final _tempImg = TempImage(
-                    chatId: widget.chatId,
-                    imgFile: _imgFile,
-                  );
-
-                  _chatConvoVmProvider.addItemToTempImagesList(_tempImg);
-                  await ChatStorage(
-                    chatId: widget.chatId,
-                    message: _message,
-                    sendMsgCallback: widget.sendMessage,
-                  ).uploadChatImage(imgFile: _imgFile);
-
-                  _chatConvoVmProvider.removeItemToTempImagesList(_tempImg);
-                }
-              },
+              onPressed: _onPressedImage,
             ),
             SizedBox(
               width: 20.0,
@@ -112,19 +86,7 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
             SingleIconBtn(
               radius: 50.0,
               icon: 'assets/images/svgs/call_btn.svg',
-              onPressed: () async {
-                // await _handleCameraAndMic();
-                // await Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (_) => CallScreen(
-                //               channelName: 'shirjan',
-                //               role: ClientRole.Broadcaster,
-                //             )));
-
-                widget.scaffoldKey.currentState.showSnackBar(
-                    SnackBar(content: Text('This feature is being developed')));
-              },
+              onPressed: _onPressedCall,
             ),
           ],
         ),
@@ -155,11 +117,38 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
                   ),
                   maxLines: 3,
                   minLines: 1,
+                  onChanged: (val) {
+                    if (val != '') {
+                      if (!widget.isCurrentUserTyping) {
+                        widget.updateChatTyping(
+                          true,
+                          widget.chatId,
+                          widget.appUser,
+                          widget.friend,
+                        );
+                      }
+                    } else {
+                      if (widget.isCurrentUserTyping) {
+                        widget.updateChatTyping(
+                          false,
+                          widget.chatId,
+                          widget.appUser,
+                          widget.friend,
+                        );
+                      }
+                    }
+                  },
                 ),
               ),
               GestureDetector(
                 onTap: () {
                   if (_messageController.text != '') {
+                    widget.updateChatTyping(
+                      false,
+                      widget.chatId,
+                      widget.appUser,
+                      widget.friend,
+                    );
                     final _text = _messageController.text.trim();
                     _messageController.clear();
                     final _message = TextMessage(
@@ -201,16 +190,28 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
                 const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
             child: Row(
               children: <Widget>[
-                Icon(
-                  Icons.add_circle_outline,
-                  color: Color(0xff3D4A5A),
+                GestureDetector(
+                  onTap: _onPressedImage,
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Icon(
+                      Icons.image,
+                      color: Color(0xff3D4A5A),
+                    ),
+                  ),
                 ),
                 SizedBox(
-                  width: 10.0,
+                  width: 15.0,
                 ),
-                Icon(
-                  Icons.tag_faces,
-                  color: Color(0xff3D4A5A),
+                GestureDetector(
+                  onTap: _onPressedCall,
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Icon(
+                      Icons.call,
+                      color: Color(0xff3D4A5A),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -218,6 +219,63 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
         ],
       ),
     );
+  }
+
+  _onPressedImage() async {
+    final _chatConvoVmProvider = Provider.of<TempImgVm>(context, listen: false);
+
+    final _pickedImg = await ImagePicker().getImage(
+      source: ImageSource.gallery,
+    );
+
+    final _imgFile = _pickedImg != null ? File(_pickedImg.path) : null;
+
+    final _message = TextMessage(
+      senderId: widget.appUser.uid,
+      receiverId: widget.friend.uid,
+      milliseconds: DateTime.now().millisecondsSinceEpoch,
+      type: MessageType.Image,
+    );
+
+    if (_imgFile != null) {
+      final _tempImg = TempImage(
+        chatId: widget.chatId,
+        imgFile: _imgFile,
+      );
+
+      _chatConvoVmProvider.addItemToTempImagesList(_tempImg);
+      await ChatStorage(
+        chatId: widget.chatId,
+        message: _message,
+        sendMsgCallback: widget.sendMessage,
+      ).uploadChatImage(imgFile: _imgFile);
+
+      _chatConvoVmProvider.removeItemToTempImagesList(_tempImg);
+    }
+  }
+
+  _onPressedCall() async {
+    await _handleCameraAndMic();
+    final _friend = await AppUserProvider(uid: widget.friend.uid).getUserById();
+
+    if (_friend.onlineStatus == OnlineStatus.active) {
+      final _alreadyInCall =
+          await CallProvider(friend: widget.friend).checkAlreadyInCall() ??
+              false;
+
+      if (_alreadyInCall) {
+        DialogProvider(context).showAlreadyInCallDialog(widget.friend);
+      } else {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => CallOverlayScreen(widget.friend),
+          ),
+        );
+      }
+    } else {
+      DialogProvider(context).showFriendNotOnlineDialog(widget.friend);
+    }
   }
 
   Future<void> _handleCameraAndMic() async {

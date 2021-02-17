@@ -38,7 +38,7 @@ class FeedCommentItem extends StatelessWidget {
                                 style: TextStyle(
                                   fontFamily: 'Nunito',
                                   fontSize: 12.0,
-                                  color: Colors.black45,
+                                  color: Colors.grey,
                                 ),
                                 children: [
                                   TextSpan(

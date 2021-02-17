@@ -1,17 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:peaman/models/app_models/feed_model.dart';
+import 'package:peaman/models/app_models/user_model.dart';
 
 class PeopleWhoReacted extends StatelessWidget {
   final Feed feed;
-  PeopleWhoReacted(this.feed);
+  final AppUser appUser;
+  PeopleWhoReacted(
+    this.feed,
+    this.appUser,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: feed.reactorsPhoto.isNotEmpty && feed.initialReactor != ''
-          ? 28.0
-          : 0.0,
+      height: feed.reactorsPhoto.isNotEmpty ? 28.0 : 0.0,
       child: Row(
         children: [
           if (feed.reactorsPhoto.isNotEmpty)
@@ -25,12 +28,20 @@ class PeopleWhoReacted extends StatelessWidget {
                 children: _getChildren(),
               ),
             ),
-          if (feed.initialReactor != '' && feed.reactionCount != null)
+          if (feed.reactionCount != null)
             Expanded(
               child: Text(
-                feed.reactionCount == 1 || feed.reactionCount == 0
-                    ? '${feed.initialReactor}'
-                    : '${feed.initialReactor} and ${feed.reactionCount - 1} others',
+                feed.isReacted
+                    ? feed.reactionCount == 1 || feed.reactionCount == 0
+                        ? 'Reacted by You'
+                        : 'Reacted by You and ${feed.reactionCount - 1} ${feed.reactionCount >= 3 ? 'others' : 'other'}'
+                    : feed.initialReactor == null ||
+                            (feed.initialReactor != null &&
+                                feed.initialReactor.uid == appUser.uid)
+                        ? 'Reacted by ${feed.reactionCount} ${feed.reactionCount >= 2 ? 'others' : 'other'}'
+                        : feed.reactionCount <= 1
+                            ? 'Reacted by ${feed.initialReactor.name}'
+                            : 'Reacted by ${feed.initialReactor.name} and ${feed.reactionCount - 1} ${feed.reactionCount >= 3 ? 'others' : 'other'}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12.0,

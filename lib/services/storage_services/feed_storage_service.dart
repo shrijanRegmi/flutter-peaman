@@ -13,8 +13,8 @@ class FeedStorage {
       for (final photo in photos) {
         final _path = 'feed_imgs/$uid/${DateTime.now().millisecondsSinceEpoch}';
         final _ref = FirebaseStorage.instance.ref().child(_path);
-        StorageUploadTask _uploadTask = _ref.putFile(photo);
-        await _uploadTask.onComplete;
+        final _uploadTask = _ref.putFile(photo);
+        await _uploadTask.whenComplete(() => null);
         print('Upload Completed!!!');
         final _downloadUrl = await _ref.getDownloadURL();
         _downloadUrls.add(_downloadUrl);
@@ -25,6 +25,23 @@ class FeedStorage {
     } catch (e) {
       print(e);
       print('Error!!!: Uploading feed image');
+      return null;
+    }
+  }
+
+  // upload moment image
+  Future<String> uploadMomentImage(final File photo) async {
+    try {
+      final _path = 'moment_images/$uid/${DateTime.now().millisecondsSinceEpoch}';
+      final _ref = FirebaseStorage.instance.ref().child(_path);
+      final _uploadTask = _ref.putFile(photo);
+      await _uploadTask.whenComplete(() => null);
+      print('Success: Uploading moment image');
+      final _downloadUrl = await _ref.getDownloadURL();
+      return _downloadUrl;
+    } catch (e) {
+      print(e);
+      print('Error!!!: Uploading moment image');
       return null;
     }
   }

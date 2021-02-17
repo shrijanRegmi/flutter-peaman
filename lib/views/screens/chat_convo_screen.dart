@@ -4,8 +4,10 @@ import 'package:peaman/enums/online_status.dart';
 import 'package:peaman/helpers/chat_helper.dart';
 import 'package:peaman/models/app_models/chat_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
+import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:peaman/viewmodels/chat_convo_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
+import 'package:peaman/views/screens/call_overlay_screen.dart';
 import 'package:peaman/views/widgets/chat_convo_widgets/chat_compose_area.dart';
 import 'package:peaman/views/widgets/chat_convo_widgets/chat_convo_list.dart';
 import 'package:peaman/views/widgets/common_widgets/appbar.dart';
@@ -30,7 +32,8 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ViewmodelProvider(
+    final _appUser = Provider.of<AppUser>(context);
+    return ViewmodelProvider<ChatConvoVm>(
       vm: ChatConvoVm(
         context: context,
       ),
@@ -43,33 +46,60 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
           _isPinned = widget.chat?.secondUserPinnedFirstUser;
         }
       },
+      onDispose: (vm) {
+        vm.updateChatTyping(
+          false,
+          widget.chat.id,
+          _appUser,
+          widget.friend,
+        );
+      },
       builder: (context, vm, appVm, appUser) {
         final _appUser = vm.appUser;
-
         final bool _isAppUserFirstUser = ChatHelper().isAppUserFirstUser(
             myId: vm.appUser.uid, friendId: widget.friend.uid);
 
-        final _chats = Provider.of<List<Chat>>(context) ?? [];
-        final _dChat = _chats.firstWhere((chat) => chat.id == widget.chat?.id,
+        final _thisChat = vm.chats.firstWhere(
+            (element) => element.id == widget.chat?.id,
             orElse: () => null);
 
-        Map<String, dynamic> _data = {};
-        int _unreadMessagesCount;
+        bool _isSeen = false;
+        bool _isTyping = false;
+        bool _isCurrentUserTyping = false;
 
-        if (_isAppUserFirstUser) {
-          _unreadMessagesCount = _dChat?.firstUserUnreadMessagesCount;
-          _data.addAll({
-            'first_user_unread_messages_count': 0,
-          });
-        } else {
-          _unreadMessagesCount = _dChat?.secondUserUnreadMessagesCount;
-          _data.addAll({
-            'second_user_unread_messages_count': 0,
-          });
+        if (_thisChat != null) {
+          Map<String, dynamic> _data = {};
+          int _unreadMessagesCount;
+
+          if (_isAppUserFirstUser) {
+            _unreadMessagesCount = _thisChat.firstUserUnreadMessagesCount;
+            _isSeen = _thisChat.secondUserUnreadMessagesCount == 0;
+            _isTyping = _thisChat.secondUserTyping;
+            _isCurrentUserTyping = _thisChat.firstUserTyping;
+            _data.addAll({
+              'first_user_unread_messages_count': 0,
+            });
+          } else {
+            _unreadMessagesCount = _thisChat.secondUserUnreadMessagesCount;
+            _isSeen = _thisChat.firstUserUnreadMessagesCount == 0;
+            _isTyping = _thisChat.firstUserTyping;
+            _isCurrentUserTyping = _thisChat.secondUserTyping;
+            _data.addAll({
+              'second_user_unread_messages_count': 0,
+            });
+          }
+
+          if (_unreadMessagesCount != 0) {
+            vm.updateChatData(_data, _thisChat.id);
+          }
         }
 
-        if (_unreadMessagesCount != 0) {
-          vm.updateChatData(_data, widget.chat?.id);
+        if (vm.receivingCall != null) {
+          return CallOverlayScreen(
+            vm.receivingCall.caller,
+            isReceiving: true,
+            call: vm.receivingCall,
+          );
         }
 
         return Scaffold(
@@ -100,15 +130,43 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                         color: Color(0xff3D4A5A),
                       ),
                     ),
-                    if (widget.friend.onlineStatus == OnlineStatus.active)
-                      SizedBox(
-                        width: 10.0,
-                      ),
-                    if (widget.friend.onlineStatus == OnlineStatus.active)
-                      CircleAvatar(
-                        maxRadius: 4.0,
-                        backgroundColor: Colors.pink,
-                      )
+                    StreamBuilder<AppUser>(
+                      stream: AppUserProvider(uid: widget.friend.uid).appUser,
+                      builder: (context, snap) {
+                        if (snap.hasData) {
+                          final _friend = snap.data;
+                          return Row(
+                            children: [
+                              if (_friend.onlineStatus == OnlineStatus.active)
+                                SizedBox(
+                                  width: 10.0,
+                                ),
+                              if (_friend.onlineStatus == OnlineStatus.active)
+                                CircleAvatar(
+                                  maxRadius: 4.0,
+                                  backgroundColor: Colors.pink,
+                                )
+                            ],
+                          );
+                        }
+                        // return Row(
+                        //   children: [
+                        //     if (widget.friend.onlineStatus ==
+                        //         OnlineStatus.active)
+                        //       SizedBox(
+                        //         width: 10.0,
+                        //       ),
+                        //     if (widget.friend.onlineStatus ==
+                        //         OnlineStatus.active)
+                        //       CircleAvatar(
+                        //         maxRadius: 4.0,
+                        //         backgroundColor: Colors.pink,
+                        //       )
+                        //   ],
+                        // );
+                        return Container();
+                      },
+                    ),
                   ],
                 ),
                 actions: widget.fromSearch
@@ -116,7 +174,9 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                     : <Widget>[
                         IconButton(
                           icon: Icon(Icons.star),
-                          color: _isPinned ? Colors.deepOrange : Colors.black12,
+                          color: _isPinned ?? false
+                              ? Colors.blue
+                              : Colors.black12,
                           iconSize: 30.0,
                           onPressed: () {
                             vm.pinChat(
@@ -154,6 +214,8 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                     isTypingActive: vm.isTyping,
                     focusNode: _focusNode,
                     scaffoldKey: _scaffolKey,
+                    updateChatTyping: vm.updateChatTyping,
+                    isCurrentUserTyping: _isCurrentUserTyping,
                   ),
                 )
               : null,
@@ -167,6 +229,8 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                   isTypingActive: vm.isTyping,
                   focusNode: _focusNode,
                   scaffoldKey: _scaffolKey,
+                  updateChatTyping: vm.updateChatTyping,
+                  isCurrentUserTyping: _isCurrentUserTyping,
                 )
               : null,
           floatingActionButtonLocation:
@@ -175,6 +239,7 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
             child: GestureDetector(
               onTap: () {
                 _focusNode.unfocus();
+                vm.updateTypingValue(false);
               },
               child: Container(
                 color: Color(0xffF3F5F8),
@@ -186,6 +251,8 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                           isTypingActive: vm.isTyping,
                           friend: widget.friend,
                           appUser: vm.appUser,
+                          isSeen: _isSeen,
+                          isTyping: _isTyping,
                         ),
                       ),
                     ],

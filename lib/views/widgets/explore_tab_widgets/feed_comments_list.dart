@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:lottie/lottie.dart';
 import 'package:peaman/models/app_models/feed_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/viewmodels/comment_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/common_widgets/appbar.dart';
 import 'package:peaman/views/widgets/explore_tab_widgets/feed_comment_item.dart';
+import 'package:provider/provider.dart';
 
 class FeedCommentScreen extends StatelessWidget {
   final Feed feed;
-  FeedCommentScreen(this.feed);
+  final String feedId;
+  FeedCommentScreen(this.feed, {this.feedId});
 
   @override
   Widget build(BuildContext context) {
+    final _appUser = Provider.of<AppUser>(context);
+
     return ViewmodelProvider<CommentVm>(
       vm: CommentVm(),
-      onInit: (vm) => vm.onInit(feed),
+      onInit: (vm) => vm.onInit(_appUser, feed, feedId),
       builder: (context, vm, appVm, appUser) {
         return Scaffold(
           backgroundColor: Color(0xffF3F5F8),
@@ -38,7 +43,16 @@ class FeedCommentScreen extends StatelessWidget {
           ),
           body: SafeArea(
             child: vm.comments == null
-                ? Container()
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 120.0),
+                      child: Lottie.asset(
+                        'assets/lottie/chat_loader.json',
+                        width: MediaQuery.of(context).size.width - 200.0,
+                        height: MediaQuery.of(context).size.width - 200.0,
+                      ),
+                    ),
+                  )
                 : ListView.separated(
                     // reverse: true,
                     itemCount: vm.comments.length,

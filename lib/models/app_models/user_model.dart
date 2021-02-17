@@ -42,8 +42,17 @@ class AppUser {
     };
   }
 
+  Map<String, dynamic> toFeedUser() {
+    return {
+      'uid': uid,
+      'photoUrl': photoUrl,
+      'name': name,
+      'email': email,
+    };
+  }
+
   static AppUser fromJson(Map<String, dynamic> data) {
-    final _ref = Firestore.instance;
+    final _ref = FirebaseFirestore.instance;
 
     return AppUser(
       uid: data['uid'],
@@ -54,7 +63,7 @@ class AppUser {
       onlineStatus:
           data['active_status'] == 1 ? OnlineStatus.active : OnlineStatus.away,
       profileStatus: data['profile_status'] ?? 'I am a person with good heart',
-      appUserRef: _ref.collection('users').document(data['uid']),
+      appUserRef: _ref.collection('users').doc(data['uid']),
       photos: data['photos'] ?? 0,
       followers: data['followers'] ?? 0,
       following: data['following'] ?? 0,
@@ -64,15 +73,15 @@ class AppUser {
   }
 
   DocumentReference getUserRef(final String uid) {
-    final _ref = Firestore.instance;
-    return _ref.collection('users').document(uid);
+    final _ref = FirebaseFirestore.instance;
+    return _ref.collection('users').doc(uid);
   }
 
   Future<AppUser> fromRef(final DocumentReference userRef) async {
     final _userSnap = await userRef.get();
 
     if (_userSnap.exists) {
-      final _userData = _userSnap.data;
+      final _userData = _userSnap.data();
       if (_userData != null) {
         return AppUser.fromJson(_userData);
       }

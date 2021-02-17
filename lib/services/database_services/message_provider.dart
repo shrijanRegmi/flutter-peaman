@@ -10,44 +10,42 @@ class MessageProvider {
   final String appUserId;
   MessageProvider({this.chatId, this.messageRef, this.appUserId});
 
-  final _ref = Firestore.instance;
+  final _ref = FirebaseFirestore.instance;
 
   // send message
   Future sendMessage({@required final Message message}) async {
     try {
       final _message = Message.toJson(message);
       final _messagesRef =
-          _ref.collection('chats').document(chatId).collection('messages');
-      final _chatRef = _ref.collection('chats').document(chatId);
+          _ref.collection('chats').doc(chatId).collection('messages');
+      final _chatRef = _ref.collection('chats').doc(chatId);
 
-      final _messagesDocs = await _messagesRef.limit(2).getDocuments();
+      final _messagesDocs = await _messagesRef.limit(2).get();
 
-      if (_messagesDocs.documents.length == 0) {
-        await _chatRef.setData({'id': chatId});
+      if (_messagesDocs.docs.length == 0) {
+        await _chatRef.set({'id': chatId});
       }
-      final _lastMsgRef = await _messagesRef.add(_message);
-
       final bool _isAppUserFirstUser = ChatHelper().isAppUserFirstUser(
           myId: message.senderId, friendId: message.receiverId);
 
       final _chatSnap = await _chatRef.get();
       if (_isAppUserFirstUser) {
-        final _secondUserUnreadMessagesCount = _chatSnap.data != null
-            ? _chatSnap.data['second_user_unread_messages_count'] ?? 0
+        final _secondUserUnreadMessagesCount = _chatSnap.data() != null
+            ? _chatSnap.data()['second_user_unread_messages_count'] ?? 0
             : 0;
 
-        _chatRef.updateData(
+        _chatRef.update(
           {
             'second_user_unread_messages_count':
                 _secondUserUnreadMessagesCount + 1
           },
         );
       } else {
-        final _firstUserUnreadMessagesCount = _chatSnap.data != null
-            ? _chatSnap.data['first_user_unread_messages_count'] ?? 0
+        final _firstUserUnreadMessagesCount = _chatSnap.data() != null
+            ? _chatSnap.data()['first_user_unread_messages_count'] ?? 0
             : 0;
 
-        _chatRef.updateData(
+        _chatRef.update(
           {
             'first_user_unread_messages_count':
                 _firstUserUnreadMessagesCount + 1
@@ -55,10 +53,12 @@ class MessageProvider {
         );
       }
 
-      _chatRef.updateData({'last_updated': DateTime.now()});
-      _chatRef.updateData({'last_msg_ref': _lastMsgRef});
+      final _lastMsgRef = await _messagesRef.add(_message);
 
-      if (_messagesDocs.documents.length == 0) {
+      _chatRef.update({'last_updated': DateTime.now()});
+      _chatRef.update({'last_msg_ref': _lastMsgRef});
+
+      if (_messagesDocs.docs.length == 0) {
         _sendAdditionalProperties(
           myId: message.senderId,
           friendId: message.receiverId,
@@ -76,7 +76,7 @@ class MessageProvider {
   Future _sendAdditionalProperties(
       {final String myId, final String friendId}) async {
     try {
-      final _chatRef = _ref.collection('chats').document(chatId);
+      final _chatRef = _ref.collection('chats').doc(chatId);
 
       final bool _isAppUserFirstUser =
           ChatHelper().isAppUserFirstUser(myId: myId, friendId: friendId);
@@ -90,15 +90,15 @@ class MessageProvider {
       };
 
       if (_isAppUserFirstUser) {
-        _firstUserRef = _ref.collection('users').document(myId);
-        _secondUserRef = _ref.collection('users').document(friendId);
+        _firstUserRef = _ref.collection('users').doc(myId);
+        _secondUserRef = _ref.collection('users').doc(friendId);
       } else {
-        _firstUserRef = _ref.collection('users').document(friendId);
-        _secondUserRef = _ref.collection('users').document(myId);
+        _firstUserRef = _ref.collection('users').doc(friendId);
+        _secondUserRef = _ref.collection('users').doc(myId);
       }
-      await _chatRef.updateData(_userData);
-      await _chatRef.updateData({'first_user_ref': _firstUserRef});
-      await _chatRef.updateData({'second_user_ref': _secondUserRef});
+      await _chatRef.update(_userData);
+      await _chatRef.update({'first_user_ref': _firstUserRef});
+      await _chatRef.update({'second_user_ref': _secondUserRef});
 
       print('Success: Sending additonal fields in chats collection');
     } catch (e) {
@@ -118,7 +118,7 @@ class MessageProvider {
         friendId: friendId,
       );
 
-      final _chatRef = _ref.collection('chats').document(chatId);
+      final _chatRef = _ref.collection('chats').doc(chatId);
 
       Map<String, dynamic> _data;
 
@@ -132,7 +132,7 @@ class MessageProvider {
         };
       }
 
-      await _chatRef.updateData(_data);
+      await _chatRef.update(_data);
       print('Success: Pinned user with id $friendId');
       return 'Sucess';
     } catch (e) {
@@ -145,8 +145,8 @@ class MessageProvider {
   // update chat data
   Future updateChatData(final Map<String, dynamic> data) async {
     try {
-      final _chatRef = _ref.collection('chats').document(chatId);
-      await _chatRef.updateData(data);
+      final _chatRef = _ref.collection('chats').doc(chatId);
+      await _chatRef.update(data);
       print('Success: Updating chat data having chatId $chatId');
       return 'Success';
     } catch (e) {
@@ -156,22 +156,34 @@ class MessageProvider {
     }
   }
 
+  // read chat message
+  Future readChatMessage() async {
+    try {
+      final _chatRef = _ref.collection('chats').doc(chatId);
+      await _chatRef.update({});
+      print('Success: Reading message by user');
+    } catch (e) {
+      print(e);
+      print('Error: Reading message by user');
+    }
+  }
+
   // message from firebase
   List<Message> _messageFromFirebase(QuerySnapshot snap) {
-    return snap.documents.map((doc) {
-      return Message.fromJson(doc.data);
+    return snap.docs.map((doc) {
+      return Message.fromJson(doc.data());
     }).toList();
   }
 
   // message from firebase
   Message _singleMessageFrom(DocumentSnapshot snap) {
-    return Message.fromJson(snap.data);
+    return Message.fromJson(snap.data());
   }
 
   // chats from firebase
   List<Chat> _chatsFromFirebase(QuerySnapshot snap) {
-    return snap.documents.map((doc) {
-      return Chat.fromJson(doc.data);
+    return snap.docs.map((doc) {
+      return Chat.fromJson(doc.data());
     }).toList();
   }
 
@@ -179,9 +191,10 @@ class MessageProvider {
   Stream<List<Message>> get messagesList {
     return _ref
         .collection('chats')
-        .document(chatId)
+        .doc(chatId)
         .collection('messages')
         .orderBy('milliseconds', descending: true)
+        .limit(50)
         .snapshots()
         .map(_messageFromFirebase);
   }

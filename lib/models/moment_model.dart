@@ -8,6 +8,8 @@ class Moment {
   final String ownerId;
   final DocumentReference ownerRef;
   final int updatedAt;
+  final int expiresAt;
+  final bool isSeen;
 
   Moment({
     this.id,
@@ -16,6 +18,8 @@ class Moment {
     this.ownerId,
     this.ownerRef,
     this.updatedAt,
+    this.expiresAt,
+    this.isSeen,
   });
 
   Moment copyWith({
@@ -25,6 +29,7 @@ class Moment {
     final String ownerId,
     final DocumentReference ownerRef,
     final int updatedAt,
+    final bool isSeen,
   }) {
     return Moment(
       id: id ?? this.id,
@@ -33,25 +38,34 @@ class Moment {
       ownerId: ownerId ?? this.ownerId,
       ownerRef: ownerRef ?? this.ownerRef,
       updatedAt: updatedAt ?? this.updatedAt,
+      expiresAt: expiresAt ?? this.expiresAt,
+      isSeen: isSeen ?? this.isSeen,
     );
   }
 
-  static Moment fromJson(final Map<String, dynamic> data, final AppUser owner) {
+  static Moment fromJson(final Map<String, dynamic> data) {
     return Moment(
+      id: data['id'],
       photo: data['photo'],
-      owner: owner,
+      owner: AppUser.fromJson(data['owner']),
       ownerId: data['owner_id'],
       ownerRef: data['owner_ref'],
       updatedAt: data['updated_at'],
+      expiresAt: data['expires_at'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'photo': photo,
       'owner_id': ownerId,
       'owner_ref': ownerRef,
       'updated_at': updatedAt,
+      'expires_at': DateTime.fromMillisecondsSinceEpoch(updatedAt)
+          .add(Duration(minutes: 1440))
+          .millisecondsSinceEpoch,
+      'owner': owner.toFeedUser(),
     };
   }
 }

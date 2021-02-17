@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:peaman/models/app_models/notification_model.dart';
+import 'package:peaman/models/app_models/follow_request_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/friend_provider.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class FollowRequestListItem extends StatelessWidget {
-  final Notifications followRequest;
+  final FollowRequest followRequest;
   FollowRequestListItem(this.followRequest);
 
   @override
@@ -20,7 +21,7 @@ class FollowRequestListItem extends StatelessWidget {
       },
       builder: (context, vm, appVm, appUser) {
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
           child: _followNotifBuilder(vm, appUser),
         );
       },
@@ -32,30 +33,54 @@ class FollowRequestListItem extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: <Widget>[
-            // user image
-            AvatarBuilder(
-              imgUrl: followRequest.sender.photoUrl,
-              radius: 22.0,
-            ),
-            SizedBox(
-              width: 20.0,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "${followRequest.sender.name}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.0,
-                    color: Color(0xff3D4A5A),
-                  ),
+        Expanded(
+          child: Row(
+            children: <Widget>[
+              // user image
+              AvatarBuilder(
+                imgUrl: followRequest.sender.photoUrl,
+                radius: 22.0,
+              ),
+              SizedBox(
+                width: 20.0,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black,
+                          fontFamily: 'Nunito',
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '${followRequest.sender.name}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' wants to follow you.',
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      timeago.format(DateTime.fromMillisecondsSinceEpoch(
+                          followRequest.updatedAt)),
+                      style: TextStyle(
+                        fontSize: 10.0,
+                        color: Colors.black38,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
         Row(
           children: [
@@ -80,11 +105,12 @@ class FollowRequestListItem extends StatelessWidget {
             SizedBox(
               width: 10.0,
             ),
-            if (vm.btnText != 'Follow back' && !followRequest.isAccepted)
+            if (vm.btnText == 'Follow' && !followRequest.isAccepted)
               Container(
                 width: 30.0,
                 height: 30.0,
                 child: FloatingActionButton(
+                  heroTag: followRequest.id,
                   backgroundColor: Colors.red,
                   onPressed: () => vm.ignoreRequest(
                       appUser, followRequest, followRequest.sender.uid),
@@ -108,7 +134,7 @@ class FollowRequestItemVm extends ChangeNotifier {
 
   // on click positive btn
   onClickPositiveBtn(final AppUser appUser, final String userId,
-      final Notifications followRequest) {
+      final FollowRequest followRequest) {
     if (_btnText == 'Accept') {
       _acceptFollow(appUser, userId, followRequest);
     } else if (_btnText == 'Follow back') {
@@ -118,38 +144,38 @@ class FollowRequestItemVm extends ChangeNotifier {
 
   // accept follow
   _acceptFollow(final AppUser appUser, final String userId,
-      final Notifications followRequest) {
+      final FollowRequest followRequest) {
     updateBtnText('Follow back');
 
     final _user = AppUser(
       uid: userId,
       appUserRef: AppUser().getUserRef(userId),
     );
-    FriendProvider(appUser: appUser, user: _user, notification: followRequest)
+    FriendProvider(appUser: appUser, user: _user, followRequest: followRequest)
         .acceptFollow();
   }
 
   // follow back user
   _followBack(final AppUser appUser, final String userId,
-      final Notifications followRequest) {
+      final FollowRequest followRequest) {
     updateBtnText('Following');
 
     final _user = AppUser(
       uid: userId,
       appUserRef: AppUser().getUserRef(userId),
     );
-    FriendProvider(appUser: appUser, user: _user, notification: followRequest)
+    FriendProvider(appUser: appUser, user: _user, followRequest: followRequest)
         .followBack();
   }
 
   // ignore request
-  ignoreRequest(final AppUser appUser, final Notifications followRequest,
+  ignoreRequest(final AppUser appUser, final FollowRequest followRequest,
       final String userId) {
     final _user = AppUser(
       uid: userId,
       appUserRef: AppUser().getUserRef(userId),
     );
-    FriendProvider(appUser: appUser, notification: followRequest, user: _user)
+    FriendProvider(appUser: appUser, followRequest: followRequest, user: _user)
         .cancleFollow();
   }
 
