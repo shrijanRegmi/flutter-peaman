@@ -34,6 +34,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338536543666:android:4e6db42e3d2f6a9598a0ab",
+        "android_client_info": {
+          "package_name": "com.smartchamp.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "338536543666-u8rqjbokv9jcmea9q3r88rj196hvgj6a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBI478uE6c6zgPPVPzBve-9VKsqS0iLiyY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "338536543666-u8rqjbokv9jcmea9q3r88rj196hvgj6a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

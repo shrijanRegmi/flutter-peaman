@@ -1,4 +1,4 @@
-package com.example.peaman
+package com.smartchamp.app
 
 import io.flutter.embedding.android.FlutterActivity
 
