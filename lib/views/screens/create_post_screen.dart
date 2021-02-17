@@ -8,6 +8,9 @@ import 'package:peaman/views/widgets/create_post_widgets/photos.dart';
 import 'package:peaman/views/widgets/create_post_widgets/write_caption.dart';
 
 class CreatePostScreen extends StatelessWidget {
+  final TabController tabController;
+  CreatePostScreen(this.tabController);
+
   @override
   Widget build(BuildContext context) {
     return ViewmodelProvider<CreatePostVm>(
@@ -79,7 +82,7 @@ class CreatePostScreen extends StatelessWidget {
               : Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: BorderBtn(
-                    onPressed: () => vm.createPost(appUser, appVm),
+                    onPressed: () => vm.createPost(appUser, appVm, tabController),
                     title: 'Share',
                     textColor: Colors.green,
                   ),
