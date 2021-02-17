@@ -38,8 +38,11 @@ class FeaturedPostList extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) =>
-                    FriendsFeedViewerScreen('Featured Posts', feeds),
+                builder: (_) => FriendsFeedViewerScreen(
+                  'Featured Posts',
+                  feeds,
+                  isFeaturedPosts: true,
+                ),
               ),
             );
           },

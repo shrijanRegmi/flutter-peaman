@@ -106,6 +106,7 @@ class FeedProvider {
 
       await _featuredPostsRef.set({
         'post_ref': _feed.feedRef,
+        'updated_at': _feed.updatedAt,
       });
 
       print('Success: Saving featured post ${feed.id}');
@@ -299,79 +300,6 @@ class FeedProvider {
     }
   }
 
-  // get single post by id
-  Future<Feed> getSinglePostById(final String id) async {
-    Feed _feed;
-    try {
-      final _feedRef = _ref.collection('posts').doc(id);
-      final _feedSnap = await _feedRef.get();
-
-      if (_feedSnap.exists) {
-        final _feedData = _feedSnap.data();
-
-        _feed = Feed.fromJson(_feedData);
-
-        final _reactionsRef = _ref
-            .collection('posts')
-            .doc(_feed.id)
-            .collection('reactions')
-            .doc(appUser.uid);
-
-        final _savedPostRef =
-            appUser.appUserRef.collection('saved_posts').doc(_feed.id);
-
-        final _reactionSnap = await _reactionsRef.get();
-        final _savedPostSnap = await _savedPostRef.get();
-
-        if (_reactionSnap.exists) {
-          final _reactionData = _reactionSnap.data();
-          final _isUnreacted = _reactionData['unreacted'] ?? false;
-
-          _feed = _feed.copyWith(isReacted: !_isUnreacted);
-        } else {
-          _feed = _feed.copyWith(isReacted: false);
-        }
-
-        _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
-
-        if (_feed.initialReactor != null &&
-            _feed.initialReactor.uid == appUser.uid &&
-            _feed.reactorsPhoto.contains(appUser.photoUrl)) {
-          _feed = _feed.copyWith(initialReactor: appUser);
-        }
-        print('Success: Getting single post by id $id');
-      }
-    } catch (e) {
-      print(e);
-      print('Error!!!: Getting single post by id $id');
-    }
-    return _feed;
-  }
-
-  // get posts by id
-  Future<List<Feed>> getPostsById() async {
-    try {
-      List<Feed> _feeds = [];
-
-      final _postsRef = _ref
-          .collection('posts')
-          .where('owner_id', isEqualTo: user.uid)
-          .orderBy('updated_at', descending: true)
-          .limit(6);
-
-      final _postSnap = await _postsRef.get();
-
-      _feeds = await _getFeedsList(_postSnap, isTimelinePosts: false);
-
-      print('Success: Getting my posts');
-      return _feeds;
-    } catch (e) {
-      print(e);
-      print('Error!!!: Getting my posts');
-      return null;
-    }
-  }
-
   // get list of feeds
   Future<List<Feed>> _getFeedsList(final QuerySnapshot postsSnap,
       {bool isTimelinePosts = true, AppVm appVm}) async {
@@ -500,13 +428,88 @@ class FeedProvider {
     return _moments;
   }
 
+  // get single post by id
+  Future<Feed> getSinglePostById(final String id) async {
+    Feed _feed;
+    try {
+      final _feedRef = _ref.collection('posts').doc(id);
+      final _feedSnap = await _feedRef.get();
+
+      if (_feedSnap.exists) {
+        final _feedData = _feedSnap.data();
+
+        _feed = Feed.fromJson(_feedData);
+
+        final _reactionsRef = _ref
+            .collection('posts')
+            .doc(_feed.id)
+            .collection('reactions')
+            .doc(appUser.uid);
+
+        final _savedPostRef =
+            appUser.appUserRef.collection('saved_posts').doc(_feed.id);
+
+        final _reactionSnap = await _reactionsRef.get();
+        final _savedPostSnap = await _savedPostRef.get();
+
+        if (_reactionSnap.exists) {
+          final _reactionData = _reactionSnap.data();
+          final _isUnreacted = _reactionData['unreacted'] ?? false;
+
+          _feed = _feed.copyWith(isReacted: !_isUnreacted);
+        } else {
+          _feed = _feed.copyWith(isReacted: false);
+        }
+
+        _feed = _feed.copyWith(isSaved: _savedPostSnap.exists);
+
+        if (_feed.initialReactor != null &&
+            _feed.initialReactor.uid == appUser.uid &&
+            _feed.reactorsPhoto.contains(appUser.photoUrl)) {
+          _feed = _feed.copyWith(initialReactor: appUser);
+        }
+        print('Success: Getting single post by id $id');
+      }
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting single post by id $id');
+    }
+    return _feed;
+  }
+
+  // get posts by id
+  Future<List<Feed>> getPostsById() async {
+    try {
+      List<Feed> _feeds = [];
+
+      final _postsRef = _ref
+          .collection('posts')
+          .where('owner_id', isEqualTo: user.uid)
+          .orderBy('updated_at', descending: true)
+          .limit(6);
+
+      final _postSnap = await _postsRef.get();
+
+      _feeds = await _getFeedsList(_postSnap, isTimelinePosts: false);
+
+      print('Success: Getting my posts');
+      return _feeds;
+    } catch (e) {
+      print(e);
+      print('Error!!!: Getting my posts');
+      return null;
+    }
+  }
+
   // get featured posts by id
   Future<List<Feed>> getFeaturedPostsById() async {
     try {
       List<Feed> _feeds = [];
 
-      final _featuredPosts =
-          user.appUserRef.collection('featured_posts').limit(6);
+      final _featuredPosts = user.appUserRef
+          .collection('featured_posts')
+          .orderBy('updated_at', descending: true)
+          .limit(6);
       final _featuredPostsSnap = await _featuredPosts.get();
 
       _feeds = await _getFeedsList(_featuredPostsSnap);
@@ -547,26 +550,26 @@ class FeedProvider {
     }
   }
 
-  // get posts by id
-  Future<List<Feed>> getPosts() async {
+  // get old featured posts by id
+  Future<List<Feed>> getOldFeaturedPostsById() async {
     try {
       List<Feed> _feeds = [];
 
-      final _postsRef = _ref
-          .collection('posts')
-          .where('owner_id', isEqualTo: appUser.uid)
+      final _userRef = user.appUserRef;
+
+      final _featuredPostsRef = _userRef
+          .collection('featured_posts')
           .orderBy('updated_at', descending: true)
-          .limit(6);
+          .startAfter([feed.updatedAt]).limit(5);
+      final _featuredPostsSnap = await _featuredPostsRef.get();
 
-      final _postSnap = await _postsRef.get();
+      _feeds = await _getFeedsList(_featuredPostsSnap);
 
-      _feeds = await _getFeedsList(_postSnap, isTimelinePosts: false);
-
-      print('Success: Getting my posts');
+      print('Success: Getting old featured posts');
       return _feeds;
     } catch (e) {
       print(e);
-      print('Error!!!: Getting my posts');
+      print('Error!!!: Getting old featured posts');
       return null;
     }
   }
