@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+// import 'package:flutter_svg/svg.dart';
 import 'package:peaman/models/app_models/comment_model.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -75,18 +75,18 @@ class FeedCommentItem extends StatelessWidget {
           SizedBox(
             width: 10.0,
           ),
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              color: Colors.transparent,
-              child: SvgPicture.asset(
-                'assets/images/svgs/heart_blank.svg',
-                width: 16.0,
-                height: 16.0,
-                color: Color(0xff3D4A5A),
-              ),
-            ),
-          ),
+          // GestureDetector(
+          //   onTap: () {},
+          //   child: Container(
+          //     color: Colors.transparent,
+          //     child: SvgPicture.asset(
+          //       'assets/images/svgs/heart_blank.svg',
+          //       width: 16.0,
+          //       height: 16.0,
+          //       color: Color(0xff3D4A5A),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
