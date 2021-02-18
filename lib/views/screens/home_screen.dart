@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen>
         controller: _tabController,
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
-          ExploreTab(),
+          ExploreTab(_tabController),
           ChatListTab(),
           BrowserTab(),
           NotificationTab(),

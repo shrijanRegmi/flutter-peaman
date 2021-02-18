@@ -60,11 +60,11 @@ class ExploreVm extends ChangeNotifier {
   // fetch old feeds
   getNewFeeds(AppVm appVm, AppUser appUser) async {
     if (!appVm.isLoadingOldFeeds) {
-      _scrollController.jumpTo(0);
+      _scrollController.jumpTo(1);
       AppUserProvider(uid: appUser.uid).updateUserDetail(data: {
         'new_posts': false,
       });
-      appVm.updateIsLoadingNewFeeds(true);
+      appVm.updateIsLoadingFeeds(true);
       final _newFeeds = appVm.feeds.isEmpty
           ? await FeedProvider(appUser: appUser).getTimeline()
           : await FeedProvider(appUser: appUser, feed: appVm.feeds.first)
@@ -75,7 +75,7 @@ class ExploreVm extends ChangeNotifier {
         }
 
         appVm.updateFeedsList([..._newFeeds, ...appVm.feeds]);
-        appVm.updateIsLoadingNewFeeds(false);
+        appVm.updateIsLoadingFeeds(false);
       }
     }
   }

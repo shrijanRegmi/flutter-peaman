@@ -14,6 +14,9 @@ import 'package:peaman/views/widgets/explore_tab_widgets/moments_list.dart';
 import 'package:provider/provider.dart';
 
 class ExploreTab extends HookWidget {
+  final TabController tabController;
+  ExploreTab(this.tabController);
+
   @override
   Widget build(BuildContext context) {
     final _appVm = Provider.of<AppVm>(context);
@@ -61,7 +64,7 @@ class ExploreTab extends HookWidget {
                     Divider(
                       color: Color(0xff3D4A5A).withOpacity(0.2),
                     ),
-                    appVm.feeds == null
+                    appVm.feeds == null || appVm.isLoadingFeeds
                         ? FeedLoader()
                         : Column(
                             children: [
@@ -124,7 +127,7 @@ class ExploreTab extends HookWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => CreatePostScreen(),
+                        builder: (_) => CreatePostScreen(tabController),
                       ),
                     );
                   },
@@ -146,14 +149,6 @@ class ExploreTab extends HookWidget {
           color: Colors.blue,
           borderRadius: BorderRadius.circular(50.0),
         ),
-        // child: FloatingActionButton(
-        //   backgroundColor: Colors.blue,
-        //   onPressed: () => ,
-        //   child: Icon(
-        //     Icons.replay_outlined,
-        //     size: 15.0,
-        //   ),
-        // ),
         child: Row(
           children: [
             Text(

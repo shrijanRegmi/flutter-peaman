@@ -12,7 +12,12 @@ import 'package:provider/provider.dart';
 class FriendsFeedViewerScreen extends StatelessWidget {
   final String title;
   final List<Feed> feeds;
-  FriendsFeedViewerScreen(this.title, this.feeds);
+  final bool isFeaturedPosts;
+  FriendsFeedViewerScreen(
+    this.title,
+    this.feeds, {
+    this.isFeaturedPosts = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +27,13 @@ class FriendsFeedViewerScreen extends StatelessWidget {
     return ViewmodelProvider<FriendFeedViewerVm>(
       vm: FriendFeedViewerVm(),
       onInit: (vm) {
-        vm.onInit(_appVm, _appUser, feeds, feeds[0].owner);
+        vm.onInit(
+          _appVm,
+          _appUser,
+          feeds,
+          feeds[0].owner,
+          isFeaturedPosts,
+        );
       },
       builder: (context, vm, appVm, appUser) {
         return Scaffold(
