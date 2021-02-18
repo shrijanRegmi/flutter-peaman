@@ -119,25 +119,25 @@ class FeedCommentScreen extends StatelessWidget {
               ),
             ],
           ),
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Icons.add_circle_outline,
-                  color: Color(0xff3D4A5A),
-                ),
-                SizedBox(
-                  width: 10.0,
-                ),
-                Icon(
-                  Icons.tag_faces,
-                  color: Color(0xff3D4A5A),
-                ),
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding:
+          //       const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
+          //   child: Row(
+          //     children: <Widget>[
+          //       Icon(
+          //         Icons.add_circle_outline,
+          //         color: Color(0xff3D4A5A),
+          //       ),
+          //       SizedBox(
+          //         width: 10.0,
+          //       ),
+          //       Icon(
+          //         Icons.tag_faces,
+          //         color: Color(0xff3D4A5A),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );
