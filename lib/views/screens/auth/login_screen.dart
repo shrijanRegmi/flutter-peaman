@@ -51,7 +51,7 @@ class LoginScreen extends StatelessWidget {
                                   SizedBox(
                                     height: 20.0,
                                   ),
-                                  _forgetPassSection(),
+                                  // _forgetPassSection(),
                                   SizedBox(
                                     height: 50.0,
                                   ),
@@ -123,21 +123,21 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _forgetPassSection() {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Padding(
-        padding: const EdgeInsets.only(right: 20.0),
-        child: Text(
-          'Forget Password ?',
-          style: TextStyle(
-            color: Colors.grey,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _forgetPassSection() {
+  //   return Align(
+  //     alignment: Alignment.centerRight,
+  //     child: Padding(
+  //       padding: const EdgeInsets.only(right: 20.0),
+  //       child: Text(
+  //         'Forget Password ?',
+  //         style: TextStyle(
+  //           color: Colors.grey,
+  //           fontWeight: FontWeight.bold,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _btnSection(BuildContext context, AuthVm vm) {
     return Column(
