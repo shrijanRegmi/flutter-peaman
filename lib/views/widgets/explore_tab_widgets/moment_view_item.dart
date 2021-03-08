@@ -10,6 +10,7 @@ import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/widgets/common_widgets/avatar_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:peaman/services/database_services/feed_provider.dart';
 
 class MomentViewItem extends StatefulWidget {
   @override
@@ -27,6 +28,7 @@ class _MomentViewItemState extends State<MomentViewItem>
 
   bool _isLongTap = false;
   bool _isDragging = false;
+  bool _isBottomSheetOpen = false;
 
   @override
   void initState() {
@@ -71,6 +73,9 @@ class _MomentViewItemState extends State<MomentViewItem>
           },
           onTapUp: (details) {
             _animation.forward();
+            if (_isBottomSheetOpen) {
+              Navigator.pop(context);
+            }
 
             final _leftTapPos = 20 / 100 * _width;
             final _rightTapPos = 80 / 100 * _width;
@@ -98,6 +103,8 @@ class _MomentViewItemState extends State<MomentViewItem>
                   ),
                 ),
                 _headerSectionBuilder(),
+                if (widget.moment.ownerId == appUser.uid)
+                  _viewsBuilder(appUser),
               ],
             ),
           ),
@@ -150,6 +157,114 @@ class _MomentViewItemState extends State<MomentViewItem>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _viewsBuilder(final AppUser appUser) {
+    return Positioned(
+      bottom: 20.0,
+      left: 20.0,
+      child: StreamBuilder<List<AppUser>>(
+        stream: FeedProvider(moment: widget.moment).momentViewers,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final _seenUsers = snapshot.data ?? [];
+
+            return GestureDetector(
+              onTap: _seenUsers.isEmpty
+                  ? () {}
+                  : () async {
+                      setState(() {
+                        _isBottomSheetOpen = true;
+                      });
+                      _animation.stop();
+
+                      final _controller = showBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            height: MediaQuery.of(context).size.height / 2,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.visibility,
+                                        color: Colors.black,
+                                      ),
+                                      SizedBox(
+                                        width: 10.0,
+                                      ),
+                                      Text(
+                                        '${_seenUsers.length}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: ListView.separated(
+                                    itemBuilder: (context, index) {
+                                      final _seenUser = _seenUsers[index];
+                                      return ListTile(
+                                        leading: AvatarBuilder(
+                                          imgUrl: _seenUser.photoUrl,
+                                        ),
+                                        title: Text(
+                                          '${_seenUser.name}',
+                                        ),
+                                      );
+                                    },
+                                    itemCount: _seenUsers.length,
+                                    separatorBuilder: (context, index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20.0),
+                                        child: Divider(),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                      final _val = await _controller.closed;
+                      if (_val == null) {
+                        _animation.forward();
+                      }
+                    },
+              child: Container(
+                color: Colors.transparent,
+                child: Row(
+                  children: [
+                    Icon(Icons.visibility, color: Colors.white),
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Text(
+                      '${_seenUsers.length}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          }
+          return CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(Colors.white),
+          );
+        },
+      ),
     );
   }
 

@@ -11,7 +11,9 @@ class MomentVm extends ChangeNotifier {
   // init function
   onInit(final AppUser appUser, final AppVm appVm, final Moment moment) {
     _updateMoment(moment);
-    viewMoment(appUser, appVm);
+    if (!moment.isSeen && moment.ownerId != appUser.uid) {
+      viewMoment(appUser, appVm);
+    }
   }
 
   // view moment

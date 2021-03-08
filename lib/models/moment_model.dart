@@ -10,6 +10,7 @@ class Moment {
   final int updatedAt;
   final int expiresAt;
   final bool isSeen;
+  final int views;
 
   Moment({
     this.id,
@@ -19,7 +20,8 @@ class Moment {
     this.ownerRef,
     this.updatedAt,
     this.expiresAt,
-    this.isSeen,
+    this.isSeen = false,
+    this.views,
   });
 
   Moment copyWith({
@@ -52,6 +54,7 @@ class Moment {
       ownerRef: data['owner_ref'],
       updatedAt: data['updated_at'],
       expiresAt: data['expires_at'],
+      views: data['views'] ?? 0,
     );
   }
 

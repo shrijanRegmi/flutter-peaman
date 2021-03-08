@@ -97,6 +97,7 @@ class ExploreVm extends ChangeNotifier {
         owner: appUser,
         ownerRef: appUser.appUserRef,
         updatedAt: DateTime.now().millisecondsSinceEpoch,
+        isSeen: false,
       );
 
       final _existingMoments = appVm.moments;

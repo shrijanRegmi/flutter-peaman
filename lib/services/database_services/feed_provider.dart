@@ -288,14 +288,29 @@ class FeedProvider {
           _momentRef.collection('seen_users').doc(appUser.uid);
 
       await _seenUsersRef.set({
-        'uid': appUser.uid,
+        'user_data': appUser.toFeedUser(),
         'updated_at': DateTime.now().millisecondsSinceEpoch,
       });
+      await _updateMomentViewsCount();
       print('Success: Viewing moment ${moment.id}');
       return 'Success';
     } catch (e) {
       print(e);
       print('Error!!!: Viewing moment ${moment.id}');
+      return null;
+    }
+  }
+
+  // update moment views count
+  Future _updateMomentViewsCount() async {
+    try {
+      final _momentRef = _ref.collection('moments').doc(moment.id);
+      await _momentRef.update({
+        'views': FieldValue.increment(1),
+      });
+    } catch (e) {
+      print(e);
+      print('Error!!!: Updating moment view count of ${moment.id}');
       return null;
     }
   }
@@ -697,5 +712,22 @@ class FeedProvider {
       print('Error!!!: Getting all comments');
       return null;
     }
+  }
+
+  // list of app user from firebase
+  List<AppUser> _usersFromFirebase(final QuerySnapshot colSnap) {
+    return colSnap.docs.map((doc) {
+      return AppUser.fromJson(doc.data()['user_data']);
+    }).toList();
+  }
+
+  // stream of moment viewers
+  Stream<List<AppUser>> get momentViewers {
+    return _ref
+        .collection('moments')
+        .doc(moment.id)
+        .collection('seen_users')
+        .snapshots()
+        .map(_usersFromFirebase);
   }
 }
