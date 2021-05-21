@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'Peaman',
+                    'Bally',
                     style: TextStyle(
                       fontSize: 34.0,
                       fontWeight: FontWeight.bold,
