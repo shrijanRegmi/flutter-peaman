@@ -80,14 +80,14 @@ class _ChatComposeAreaState extends State<ChatComposeArea> {
                 widget.focusNode.requestFocus();
               },
             ),
-            SizedBox(
-              width: 20.0,
-            ),
-            SingleIconBtn(
-              radius: 50.0,
-              icon: 'assets/images/svgs/call_btn.svg',
-              onPressed: _onPressedCall,
-            ),
+            // SizedBox(
+            //   width: 20.0,
+            // ),
+            // SingleIconBtn(
+            //   radius: 50.0,
+            //   icon: 'assets/images/svgs/call_btn.svg',
+            //   onPressed: _onPressedCall,
+            // ),
           ],
         ),
       ),
