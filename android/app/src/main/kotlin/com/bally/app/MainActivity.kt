@@ -1,4 +1,4 @@
-package com.example.peaman
+package com.bally.app
 
 import io.flutter.embedding.android.FlutterActivity
 
