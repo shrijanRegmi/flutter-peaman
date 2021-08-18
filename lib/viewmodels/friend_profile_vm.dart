@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peaman/models/app_models/feed_model.dart';
+import 'package:peaman/models/app_models/follow_request_model.dart';
 import 'package:peaman/models/app_models/user_model.dart';
 import 'package:peaman/services/database_services/feed_provider.dart';
 import 'package:peaman/services/database_services/friend_provider.dart';
@@ -40,25 +41,65 @@ class FriendProfileVm extends ChangeNotifier {
   // follow user
   Future followUser(final AppUser appUser, final AppUser user) async {
     _updateBtnText('Cancle Follow');
-    await FriendProvider(appUser: appUser, user: user).follow();
+    final _followRequest = FollowRequest(
+      id: appUser.uid,
+      sender: appUser,
+      isAccepted: false,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
+    );
+    await FriendProvider(
+      appUser: appUser,
+      user: user,
+      followRequest: _followRequest,
+    ).follow();
   }
 
   // accept follow
   Future acceptFollow(final AppUser appUser, final AppUser user) async {
     _updateBtnText('Follow Back');
-    await FriendProvider(appUser: appUser, user: user).acceptFollow();
+    final _followRequest = FollowRequest(
+      id: appUser.uid,
+      sender: appUser,
+      isAccepted: false,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
+    );
+    await FriendProvider(
+      appUser: appUser,
+      user: user,
+      followRequest: _followRequest,
+    ).acceptFollow();
   }
 
   // followback
   Future followBack(final AppUser appUser, final AppUser user) async {
     _updateBtnText('Following');
-    await FriendProvider(appUser: appUser, user: user).followBack();
+    final _followRequest = FollowRequest(
+      id: appUser.uid,
+      sender: appUser,
+      isAccepted: false,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
+    );
+    await FriendProvider(
+      appUser: appUser,
+      user: user,
+      followRequest: _followRequest,
+    ).followBack();
   }
 
   // cancle follow
   Future cancleFollow(final AppUser appUser, final AppUser user) async {
     _updateBtnText('Follow');
-    await FriendProvider(appUser: appUser, user: user).cancleFollow();
+    final _followRequest = FollowRequest(
+      id: user.uid,
+      sender: user,
+      isAccepted: false,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
+    );
+    await FriendProvider(
+      appUser: user,
+      user: appUser,
+      followRequest: _followRequest,
+    ).cancleFollow();
   }
 
   // get posts

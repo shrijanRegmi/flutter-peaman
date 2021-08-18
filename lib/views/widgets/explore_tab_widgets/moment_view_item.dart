@@ -164,107 +164,128 @@ class _MomentViewItemState extends State<MomentViewItem>
     return Positioned(
       bottom: 20.0,
       left: 20.0,
-      child: StreamBuilder<List<AppUser>>(
-        stream: FeedProvider(moment: widget.moment).momentViewers,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final _seenUsers = snapshot.data ?? [];
+      child: widget.moment.id == null
+          ? Container(
+              color: Colors.transparent,
+              child: Row(
+                children: [
+                  Icon(Icons.visibility, color: Colors.white),
+                  SizedBox(
+                    width: 10.0,
+                  ),
+                  Text(
+                    '${0}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  )
+                ],
+              ),
+            )
+          : StreamBuilder<List<AppUser>>(
+              stream: FeedProvider(moment: widget.moment).momentViewers,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final _seenUsers = snapshot.data ?? [];
 
-            return GestureDetector(
-              onTap: _seenUsers.isEmpty
-                  ? () {}
-                  : () async {
-                      setState(() {
-                        _isBottomSheetOpen = true;
-                      });
-                      _animation.stop();
+                  return GestureDetector(
+                    onTap: _seenUsers.isEmpty
+                        ? () {}
+                        : () async {
+                            setState(() {
+                              _isBottomSheetOpen = true;
+                            });
+                            _animation.stop();
 
-                      final _controller = showBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            height: MediaQuery.of(context).size.height / 2,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Row(
+                            final _controller = showBottomSheet(
+                              context: context,
+                              builder: (context) {
+                                return Container(
+                                  height:
+                                      MediaQuery.of(context).size.height / 2,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(
-                                        Icons.visibility,
-                                        color: Colors.black,
-                                      ),
-                                      SizedBox(
-                                        width: 10.0,
-                                      ),
-                                      Text(
-                                        '${_seenUsers.length}',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
+                                      Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.visibility,
+                                              color: Colors.black,
+                                            ),
+                                            SizedBox(
+                                              width: 10.0,
+                                            ),
+                                            Text(
+                                              '${_seenUsers.length}',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          ],
                                         ),
-                                      )
+                                      ),
+                                      Expanded(
+                                        child: ListView.separated(
+                                          itemBuilder: (context, index) {
+                                            final _seenUser = _seenUsers[index];
+                                            return ListTile(
+                                              leading: AvatarBuilder(
+                                                imgUrl: _seenUser.photoUrl,
+                                              ),
+                                              title: Text(
+                                                '${_seenUser.name}',
+                                              ),
+                                            );
+                                          },
+                                          itemCount: _seenUsers.length,
+                                          separatorBuilder: (context, index) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20.0),
+                                              child: Divider(),
+                                            );
+                                          },
+                                        ),
+                                      ),
                                     ],
                                   ),
-                                ),
-                                Expanded(
-                                  child: ListView.separated(
-                                    itemBuilder: (context, index) {
-                                      final _seenUser = _seenUsers[index];
-                                      return ListTile(
-                                        leading: AvatarBuilder(
-                                          imgUrl: _seenUser.photoUrl,
-                                        ),
-                                        title: Text(
-                                          '${_seenUser.name}',
-                                        ),
-                                      );
-                                    },
-                                    itemCount: _seenUsers.length,
-                                    separatorBuilder: (context, index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: Divider(),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
+                                );
+                              },
+                            );
+                            final _val = await _controller.closed;
+                            if (_val == null) {
+                              _animation.forward();
+                            }
+                          },
+                    child: Container(
+                      color: Colors.transparent,
+                      child: Row(
+                        children: [
+                          Icon(Icons.visibility, color: Colors.white),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          Text(
+                            '${_seenUsers.length}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
-                          );
-                        },
-                      );
-                      final _val = await _controller.closed;
-                      if (_val == null) {
-                        _animation.forward();
-                      }
-                    },
-              child: Container(
-                color: Colors.transparent,
-                child: Row(
-                  children: [
-                    Icon(Icons.visibility, color: Colors.white),
-                    SizedBox(
-                      width: 10.0,
-                    ),
-                    Text(
-                      '${_seenUsers.length}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                          )
+                        ],
                       ),
-                    )
-                  ],
-                ),
-              ),
-            );
-          }
-          return CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(Colors.white),
-          );
-        },
-      ),
+                    ),
+                  );
+                }
+                return CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                );
+              },
+            ),
     );
   }
 

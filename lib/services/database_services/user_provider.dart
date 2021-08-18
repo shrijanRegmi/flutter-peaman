@@ -23,6 +23,9 @@ class AppUserProvider {
       final _status = {
         'active_status': onlineStatus.index,
       };
+      if (onlineStatus == OnlineStatus.away) {
+        _status['last_active'] = DateTime.now().millisecondsSinceEpoch;
+      }
       await _userRef.update(_status);
       print(
           'Success: Setting activity status of user $uid to ${onlineStatus.index}');

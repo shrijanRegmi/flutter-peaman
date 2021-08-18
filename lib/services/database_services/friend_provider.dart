@@ -57,8 +57,9 @@ class FriendProvider {
     try {
       final _friendRef = user.appUserRef;
       final _userRef = appUser.appUserRef;
-      final _followReqRef =
-          appUser.appUserRef.collection('follow_requests').doc(followRequest.id);
+      final _followReqRef = appUser.appUserRef
+          .collection('follow_requests')
+          .doc(followRequest.id);
 
       final _friendFollowersRef =
           _friendRef.collection('followers').doc(appUser.uid);

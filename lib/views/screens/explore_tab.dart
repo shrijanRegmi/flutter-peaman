@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
@@ -195,6 +196,7 @@ class ExploreTab extends HookWidget {
           ),
           // searchbar
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               Navigator.push(
                 context,
@@ -204,7 +206,7 @@ class ExploreTab extends HookWidget {
               );
             },
             child: Container(
-              color: Colors.transparent,
+              padding: const EdgeInsets.only(left: 20.0),
               child: SvgPicture.asset('assets/images/svgs/search_icon.svg'),
             ),
           ),

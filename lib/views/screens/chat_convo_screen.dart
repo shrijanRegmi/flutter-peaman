@@ -8,6 +8,7 @@ import 'package:peaman/services/database_services/user_provider.dart';
 import 'package:peaman/viewmodels/chat_convo_vm.dart';
 import 'package:peaman/viewmodels/viewmodel_builder.dart';
 import 'package:peaman/views/screens/call_overlay_screen.dart';
+import 'package:peaman/views/screens/friend_profile_screen.dart';
 import 'package:peaman/views/widgets/chat_convo_widgets/chat_compose_area.dart';
 import 'package:peaman/views/widgets/chat_convo_widgets/chat_convo_list.dart';
 import 'package:peaman/views/widgets/common_widgets/appbar.dart';
@@ -122,12 +123,23 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                     : null,
                 title: Row(
                   children: <Widget>[
-                    Text(
-                      widget.friend.name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
-                        color: Color(0xff3D4A5A),
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => FriendProfileScreen(widget.friend),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        widget.friend.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
+                          color: Color(0xff3D4A5A),
+                        ),
                       ),
                     ),
                     StreamBuilder<AppUser>(
@@ -149,21 +161,6 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                             ],
                           );
                         }
-                        // return Row(
-                        //   children: [
-                        //     if (widget.friend.onlineStatus ==
-                        //         OnlineStatus.active)
-                        //       SizedBox(
-                        //         width: 10.0,
-                        //       ),
-                        //     if (widget.friend.onlineStatus ==
-                        //         OnlineStatus.active)
-                        //       CircleAvatar(
-                        //         maxRadius: 4.0,
-                        //         backgroundColor: Colors.pink,
-                        //       )
-                        //   ],
-                        // );
                         return Container();
                       },
                     ),
@@ -174,9 +171,8 @@ class _ChatConvoScreenState extends State<ChatConvoScreen> {
                     : <Widget>[
                         IconButton(
                           icon: Icon(Icons.star),
-                          color: _isPinned ?? false
-                              ? Colors.blue
-                              : Colors.black12,
+                          color:
+                              _isPinned ?? false ? Colors.blue : Colors.black12,
                           iconSize: 30.0,
                           onPressed: () {
                             vm.pinChat(
